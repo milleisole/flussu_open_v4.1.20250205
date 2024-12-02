@@ -1,5 +1,4 @@
-# flussuserver
-The Flussu server (v4.0) open source
+# flussuserver 4.0 Open Source
 
 What you need to put it on work:
 
