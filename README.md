@@ -1,9 +1,9 @@
 # flussuserver
-The Flussu server (v3.0) code
+The Flussu server (v4.0) open source
 
 What you need to put it on work:
   a. Server operating system (linux/windows)
-     b. Php 7.4 to >=8.1 (avoid 8.0.*)
+     b. Php 8 from >=8.1 (avoid 8.0.*)
      c. Python 3
      d. Composer (or windows version)
      e. Apache2  (or IIS)
@@ -21,17 +21,25 @@ How to install:
     the OCR and OCR-ri folders with "WebServer User" write permissions
 
 then: 
+
 5. create database (see /Docs/install folder)
 6. add apache2 config (see /Docs/install folder)
    at this stage we do not have IIS config needs
 
 then use the following command at prompt:
+
 7. apt-get install chromium-chromedriver firefox-geckodriver 
    (non mandatory, it is needed if you want to use the scraping functions)
 8. composer install
 
+configure your installation:
+
+9. use the file ".env.sample" rename to ".env" then open with a text editor
+   and configure as you need/wish
+
 Open a browser and call flussu server to check version and
-update the database.
-9. http(s)://yourwebsite.com/api.php/checkversion
+update the database:
+
+10. http(s)://yourwebsite.com/api.php/checkversion
 
 
