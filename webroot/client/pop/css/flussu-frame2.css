@@ -1,0 +1,176 @@
+:root {
+    --main-color:rgb(43, 42, 129);
+    --main-font:Fira, Fira mono, Roboto, sans-serif;
+    --btn-hover-color:rgb(252, 255, 46);
+    --text-color:white;
+    --box-shadow:0 2px 5px rgba(0, 0, 0, 0.4);
+    --avt-box-shadow:0 2px 2px rgba(0, 0, 0, 0.4);
+    --title-size:16pt;
+    --chat-width:380px;
+    --chat-footer:rgb(165, 175, 233);
+    --header-width: calc(var(--chat-width)+2px);
+    --title-width:88%;
+    --font-family:"Montserrat", sans-serif
+}
+.flussu-chat-frame{
+    font-family:var(--font-family);
+    height: 490px;
+    max-height:60%;
+    min-height:20%;
+    width:var(--chat-width);
+    border:solid 1px #f8f8f8;
+    font-size:0.65em;
+}
+.flussu-head-icon{
+    cursor: pointer;
+    box-shadow:var(--box-shadow);
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-style: none;
+    box-sizing: border-box;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 8px;
+    left: 10px;
+    object-fit: cover;
+    background:#f5f5f5;
+}
+.flussu-header-pic {
+    margin:0;
+    padding:0;
+    content: url("/client/assets/img/favicon.png");
+    width: 26px;
+    display: inline-block;
+    opacity:1 !important;
+}
+.flussu-badge {
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    color: var(--text-color);
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    z-index:1000;
+}
+.flussu-badge:after {
+    display: inline-block;
+    font-size: 19pt;
+    font-weight:900;
+    content: "\00d7"; 
+}
+.flussu-chat-popup{
+    right:0px;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    height:100vh;
+    width:100%;
+    max-height:100vh;
+}
+.flussu-chatbot{
+    overscroll-behavior-block: none;
+    position: fixed; 
+    overflow-y: clip;
+    overflow-x: hidden;
+    scrollbar-width:thin;
+    scrollbar-gutter:none ;
+    display:none;
+    width:var(--chat-width);
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    border-radius: 6px;
+    z-index: 99999;
+    position: fixed;
+    right: 50px;
+    bottom: 30px;
+}
+.flussu-chat-btn {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+    box-shadow:var(--box-shadow);
+    margin: 0px 4px 4px 0px;
+    background:var(--main-color);
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    z-index: 100;
+    position: fixed;
+    right: 50px;
+    bottom: 50px;
+}
+.flussu-chat-btn:hover
+{
+    opacity: 1;
+    border: solid 2px var(--btn-hover-color);
+}
+.flussu-chat-header, .flussu-chat-footer {
+    background-color: var(--main-color);
+    width: var(--header-width);
+}
+.flussu-chat-header{
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    min-height: 55px;
+    height: 55px;
+}
+.flussu-chat-footer{
+    min-height: 25px;
+    height: 25px;
+    background-color: var(--main-color);
+    text-align:center;
+    font-size:12px;
+    margin-top:-7px;
+    color:var(--text-color);
+}
+.flussu-chat-footer a{
+    text-decoration:none;
+    color:var(--chat-footer);
+}
+.flussu-chat-title {
+    width: var(--title-width);
+    line-height: 22px;
+    color: var(--text-color);
+
+    font-family:var(--font-family);
+    font-size: var(--title-size);
+    font-weight: bold;
+    text-overflow: ellipsis;
+    text-align:left;
+
+    overflow: hidden;
+    margin: auto;
+    white-space: nowrap;
+
+    padding: 15px 45px 15px 75px;
+    position:absolute;
+    top:-2px;
+    left:-20px;
+}
+@media only screen and (min-width: 100px) and (max-width: 500px) { 
+    /* for 10 inches tablet screens */
+    .flussu-chatbot{
+        width: 96vw;
+        /*height: 100vh;*/
+        border:0;
+        box-shadow:0;
+        padding:3px;
+        position:fixed;
+        left:0px;
+        top:50px;
+        box-shadow:none;
+        box-sizing:inherit;
+        /*right:95vw;
+        bottom:100vh;*/
+    }
+    .flussu-chat-frame{
+        width:95vw;
+        /*height: 90vh;*/
+    }
+} 

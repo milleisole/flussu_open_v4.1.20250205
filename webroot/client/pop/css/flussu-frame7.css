@@ -1,0 +1,212 @@
+:root {
+    --main-color:rgb(42, 129, 61);;
+    --main-font:Fira, Fira mono, Roboto, sans-serif;
+    --btn-hover-color:white;
+    --text-color:white;
+    --box-shadow:0 2px 5px rgba(0, 0, 0, 0.4);
+    --avt-box-shadow:0 2px 2px rgba(0, 0, 0, 0.4);
+    --title-size:16pt;
+    --chat-width:325px;
+    --chat-height: 500px;
+    --chat-footer:rgb(179, 233, 165);
+    --header-width: calc(var(--chat-width)+2px);
+    --title-width:88%;
+    --font-family:"Montserrat", sans-serif
+}
+
+.flussu-chat-container{
+    height: 400px;
+    position: absolute;
+}
+
+.flussu-chat-frame{
+    display: flex;
+    font-family:var(--font-family);
+    height: 450px;
+    /*
+    max-height:60%;
+    min-height:60%;
+    */
+    width:var(--chat-width);
+    font-size:0.65em;
+    position: absolute;
+   margin-top: 2.5px;
+   margin-left: 0;
+}
+
+.flussu-btn-svg{
+    margin-top: 8px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.flussu-head-icon{
+    cursor: pointer;
+    box-shadow:var(--box-shadow);
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-style: none;
+    box-sizing: border-box;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 8px;
+    left: 10px;
+    object-fit: cover;
+    background:#f5f5f5;
+    margin-top: 4px;
+    margin-left: 5px;
+}
+
+.flussu-header-pic {
+    margin-top: 10px;
+    margin:0;
+    padding:0;
+    content: url("/client/assets/img/favicon.png");
+    width: 25px;
+    display: inline-block;
+    opacity:1 !important;
+}
+.flussu-badge {
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    color: var(--text-color);
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    z-index:1000;
+    margin-right: 10px;
+    margin-top: 4px;
+}
+.flussu-badge:after {
+    display: inline-block;
+    font-size: 19pt;
+    font-weight:900;
+    content: "\00d7"; 
+}
+.flussu-chatbot{
+    overscroll-behavior-block: none;
+    position: fixed; 
+    overflow-y: clip;
+    overflow-x: hidden;
+    scrollbar-width:thin;
+    scrollbar-gutter:none ;
+    display:none;
+    width:var(--chat-width);
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    border-radius: 6px;
+    z-index: 99999;
+    position: fixed;
+    right: 50px;
+    bottom: 30px;
+    height: var(--chat-height);
+    background-color: white;
+}
+.flussu-chat-btn {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+    box-shadow:var(--box-shadow);
+    margin: 0px 4px 4px 0px;
+    background:var(--main-color);
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    z-index: 100;
+    position: fixed;
+    right: 50px;
+    bottom: 50px;
+}
+.flussu-chat-btn:hover
+{
+    opacity: 1;
+    border: solid 2px var(--btn-hover-color);
+}
+
+.flussu-sticky-call{
+    height: var(--chat-height);
+}
+.flussu-sticky-chat{
+    height: var(--chat-height);
+}
+
+.flussu-chat-header, .flussu-chat-footer {
+    background-color: var(--main-color);
+    width: var(--header-width);
+}
+.flussu-chat-header{
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    min-height: 55px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.flussu-chat-footer{
+    min-height: 25px;
+    height: 25px;
+    background-color: var(--main-color);
+    text-align:center;
+    font-size:12px;
+    color:var(--text-color);
+    position:absolute;
+    bottom:0;
+    left:0;
+    margin-bottom: -7.5px;
+    width: var(--chat-width);
+}
+
+.flussu-chat-footer a{
+    text-decoration:none;
+    margin-top: 10px;
+    color:var(--chat-footer);
+}
+.flussu-chat-title {
+    width: var(--title-width);
+    line-height: 22px;
+    color: var(--text-color);
+
+    font-family:var(--font-family);
+    font-size: var(--title-size);
+    font-weight: bold;
+    text-overflow: ellipsis;
+    text-align:left;
+
+    overflow: hidden;
+    margin: auto;
+    white-space: nowrap;
+
+    padding: 15px 45px 15px 75px;
+    position:absolute;
+    top:-2px;
+    left:-20px;
+    margin-top: 4px;
+}
+@media only screen and (min-width: 100px) and (max-width: 500px) { 
+    /* for 10 inches tablet screens */
+    .flussu-chatbot{
+        width: 96vw;
+        /*height: 100vh;*/
+        border:0;
+        box-shadow:0;
+        padding:3px;
+        position:fixed;
+        left:0px;
+        top:50px;
+        box-shadow:none;
+        box-sizing:inherit;
+        /*right:95vw;
+        bottom:100vh;*/
+    }
+    .flussu-chat-frame{
+        width:95vw;
+        /*height: 90vh;*/
+    }
+} 

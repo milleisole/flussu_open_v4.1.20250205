@@ -1,0 +1,366 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.flussu-chat-btn {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    z-index: 100
+}
+
+.flussu-section {
+    font-family: sans-serif !important;
+    text-rendering: optimizeLegibility;
+    display: flex;
+    justify-content: center;
+    max-width: 1500px;
+    margin: auto;
+    text-align: center;
+    padding: 0 1rem;
+    z-index: 100
+}
+
+#flussu-inparea,
+#flussu-selarea,
+#flussu-filarea,
+#flussu-btnarea {
+    margin-top: 3px;
+    padding-top: 3px;
+    display: none;
+}
+
+#flussu-inparea {
+    margin-top: 8px;
+    margin-bottom: 5px;
+    z-index: 100
+}
+
+#flussu-text-input {
+    border: solid 1px silver;
+    padding: 4px;
+    outline: none;
+    padding-left: 4px;
+    margin: 4px;
+    font-size: 1.2rem;
+    height: 30px
+}
+
+.flussu-null-area {
+    position: relative;
+    display: flex;
+    height: 60px;
+}
+
+.flussu-start-area {
+    /*background-color: blue;*/
+    height: 250px;
+    z-index: 100
+}
+
+.flussu-chat-btn,
+.flussu-btn-lang,
+.flussu-btn-choose {
+    color: white;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.4);
+}
+
+.flussu-btn-choose,
+.flussu-btn-lang {
+    background-color: rgb(14, 146, 25);
+    border-radius: 10px;
+    width: 90%;
+    height: 40px;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    margin-right: 2px;
+}
+
+.flussu-btn-lang {
+    margin-bottom: 200px;
+    width: 80px;
+    height: 70px;
+}
+
+.flussu-chat-btn {
+    background: #14c70d;
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    position: fixed;
+    right: 50px;
+    bottom: 50px;
+}
+
+.flussu-chat-btn:hover,
+.flussu-submit:hover,
+.flussu-btn-lang:hover,
+.flussu-btn-choose:hover {
+    opacity: 1;
+    border: solid 2px yellow
+}
+
+#flussu-emoji-btn:hover {
+    opacity: 1;
+}
+
+.flussu-chat-popup {
+    /*display: flex;*/
+    display: none;
+    position: fixed;
+    text-rendering: optimizeLegibility;
+    bottom: 20px;
+    right: 20px;
+    height: 600px;
+    max-height: 94vh;
+    width: 400px;
+    background-color: #ffffff;
+    flex-direction: column;
+    justify-content: space-between;
+    /*padding: 1px;*/
+    border: solid 1px #eeeeee;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+    z-index: 100
+}
+
+.flussu-show {
+    display: flex;
+    z-index: 100
+}
+
+.flussu-hide {
+    display: none;
+}
+
+.flussu-chat-header {
+    z-index: 1000;
+    background-color: rgb(9, 90, 16);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    min-height: 50px;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.6);
+}
+
+.flussu-chat-title {
+    color: white;
+    font-size: 1.2rem;
+    padding: 10px;
+    margin: auto;
+    z-index: 1000
+}
+
+.flussu-chat-area {
+    /*height: 90%;*/
+    overflow-y: auto;
+    overflow-x: hidden;
+    /*background-color: #e0e0e0;*/
+    background-color: white;
+    line-height: 1.35;
+    font-family: "Roboto", "Helvetica Neue", sans-serif;
+    letter-spacing: -0.2px;
+    padding-top: 4px;
+    height: 95vh;
+}
+
+.flussu-powered-by,
+.flussu-powered-by a {
+    margin-top: 4px;
+    font-size: 9pt;
+    color: rgba(0, 128, 0, 0.561)
+}
+
+.flussu-powered-by a {
+    text-decoration: none;
+}
+
+.flussu-income-msg {
+    display: flex;
+    text-align: left;
+    animation: fadeIn;
+    /*font-size: 12pt*/
+    font-size:0.75em;
+    margin-top:5px;
+    margin-bottom:7px;
+}
+
+.flussu-avatar {
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left:0.8rem
+}
+
+.flussu-income-msg .flussu-msg {
+    padding: 0.4rem;
+    padding-top: 0.2rem;
+    /*background-color: white;*/
+    background-color: #f0f0f0;
+    color: #202020;
+    margin: 0.2rem;
+    border-radius: 15px;
+    margin-left: 1rem;
+    margin-right: 3rem;
+    min-width:6rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    border-top-left-radius: 0;
+}
+
+.flussu-usr-reply {
+    font-weight: 600;
+    padding: 5px;
+    border-radius: 3px;
+    /*background-color: rgb(25, 117, 209);*/
+    color: white;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    min-width:6rem;
+}
+
+.flussu-badge {
+    cursor: pointer;
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background-color: rgb(90, 90, 90);
+    color: white;
+    border-radius: 6px;
+    padding-right:29px;
+    padding-bottom:31px;
+    top: 1px;
+    right: 3px;
+    font-size: 1.2em;
+    font-weight: 800;
+}
+
+.flussu-badge:after {
+    /*display: inline-block;*/
+    content: "\00d7";
+    /* This will render the 'X' */
+}
+
+.flussu-input-area {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 96%;
+    left: 1%;
+    font-size: 12pt
+}
+
+.flussu-select-area,
+.flussu-file-area {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.flussu-select-area,
+.flussu-file-area input {
+    font-size: 0.8rem;
+    border: none;
+    width: 95%
+}
+
+
+/*
+.flussu-select-area
+{
+    border: solid 1px silver;
+    border-radius: 5px;
+}*/
+
+.flussu-select {
+    margin-left: 10px;
+    border: solid 1px silver;
+    border-radius: 5px;
+    font-size: 1.3rem;
+}
+
+.flussu-input {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height: 2.2rem;
+    font-size: 12pt;
+    color: #333
+}
+
+#flussu-emoji-btn {
+    position: absolute;
+    font-size: 1.5rem;
+    background-color: transparent;
+    right: 50px;
+    top: 10px;
+    opacity: 0.5;
+}
+
+#flussu-emoji-btn2 {
+    right: 8px;
+}
+
+.flussu-submit {
+    padding: 0.25rem 0.5rem;
+    margin-left: 0.5rem;
+    background-color: dodgerblue;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+    opacity: 0.7;
+}
+
+.flussu-income-msg .flussu-msg .flussu-out-msg .flussu-my-msg {
+    font-weight: 500;
+}
+
+.flussu-out-msg {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    /* referring directly to the animation's @keyframe declaration */
+    animation: fadeInRight;
+    /* don't forget to set a duration! */
+    animation-duration: 1.2s;
+}
+
+.flussu-my-msg {
+    display: flex;
+    justify-content: flex-end;
+    margin: 15px;
+    padding-bottom: 6px;
+    padding-top: 6px;
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: #ddd;
+    border-radius: 7px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+    word-break: break-all;
+    border-bottom-right-radius: 0;
+    background-color: rgb(6, 117, 15);
+    color: white;
+    min-width:6rem;
+    font-size:0.75em;
+
+}
+
+@media (max-width:500px) {
+    .flussu-chat-popup {
+        top: 0px;
+        bottom: 20px;
+        right: 0px;
+        left: 0px;
+        width: 100vw;
+        height: 100vh;
+        z-index: 100
+    }
+}

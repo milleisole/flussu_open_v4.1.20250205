@@ -1,0 +1,277 @@
+/*, v1.0.3.2 */
+
+@import url('https://fonts.googleapis.com/css2?family=Cabin&display=swap');
+
+.overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .35s, visibility .35s, height .35s;
+    overflow: hidden;
+    background: black;
+    z-index: -1;
+}
+
+#main-menu {
+  display: block;
+  height: 100px;
+  width: 100%;
+  background: #3D0E61;
+  margin: 0px;  
+  z-index: 9;
+}
+
+#main-menu ul {
+  max-width: 800px;
+  width: 100%;
+  height: 100%;
+  margin: 0px auto;
+  padding: 0px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  z-index: 9;
+}
+
+#main-menu li {
+  list-style-type: none;
+  font-size: 2rem;
+}
+
+#main-menu a {
+  color: #B9FAF8;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+#main-menu a:hover {
+  text-decoration: underline;
+}
+
+#hamburger-input{
+  display: none;
+}
+
+#hamburger-menu {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    display: none;
+    border: none;
+    padding: 0px;
+    margin: 0px;
+    font-family: 'Cabin', Sans-serif;
+    background: linear-gradient(
+      to bottom, 
+      #3D0E61, #3D0E61 20%, 
+      white 20%, white 40%, 
+      #3D0E61 40%, #3D0E61 60%, 
+      white 60%, white 80%, 
+      #3D0E61 80%, #3D0E61 100%
+    );
+}
+
+#hamburger-menu #sidebar-menu {
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 200px;
+    height: 100%;
+    background-color: #3D0E61;
+    transition: 0.3s;
+    padding: 0px 10px;
+    box-sizing: border-box;
+}
+
+#hamburger-menu h3 {
+  color: #B9FAF8;
+  font-size: 2.2rem;
+}
+
+#hamburger-menu ul {
+  padding-left: 0px;
+}
+
+#hamburger-menu li {
+  list-style-type: none;
+  line-height: 3rem;
+}
+
+#hamburger-menu a {
+  color: #B9FAF8;
+  font-size: 1.3rem;
+  text-decoration: none;
+}
+
+#hamburger-menu a:hover {
+  text-decoration: underline;
+}
+
+#hamburger-input:checked + #hamburger-menu #sidebar-menu {
+    visibility: visible;
+    left: 0;
+}
+#hamburger-input:checked ~ .overlay{
+   visibility: visible;
+  opacity: 0.4;
+}
+
+
+@media screen and (max-width: 750px) {
+  #main-menu {
+    display: none;
+  }
+  #hamburger-menu {
+    display: inline;
+  }
+}
+
+html {
+    font-size: calc(0.6em + 0.6vw);
+    height: 100%;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+body {
+    background: rgb(25, 7, 63);
+    margin: 3px;
+}
+
+.chat_window {
+    background: white;
+    padding: 5px;
+    height: 70vh;
+    width: 95vw;
+    min-height: 400px;
+    min-width: 300px;
+    border-radius: 5px;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.flussu-title {
+    margin-top: 13px;
+    padding: 5px 0px 6px 0px;
+    color: rgb(250, 255, 208);
+    font-weight: 600;
+}
+
+.flussu-par {
+    margin-left: 5%;
+    padding-right: 20px;
+}
+
+.flussu-inpArea,
+.flussu-link,
+.flussu-lbl {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.flussu-select{
+    margin-bottom: 12px;
+    padding: 4px;
+}
+
+
+.flussu-inpArea,
+.flussu-link,
+.flussu-select,
+.flussu-lbl {
+    font-size: 1.5em;
+}
+
+.flussu-lbl {
+    display: block;
+    padding-top: 15px;
+    margin-bottom: -1px;
+}
+
+.flussu-inpArea,
+.flussu-select {
+    width: 85%;
+    min-width: 160px;
+}
+
+.flussu-btn-redo,
+.flussu-lang-btn,
+.flussu-btn {
+    min-width: 80px;
+    border-radius: 8px;
+    margin: 8px;
+    font-size: 20pt;
+    padding: 2px 20px 4px 20px;
+    font-weight: 600;
+    font-size: 1.4rem;
+}
+
+.flussu-lang-btn{
+    padding: 6px;
+    display: block;
+    border:outset 2px white 
+}
+
+.flussu-lang-btn{
+    padding: 6px;
+    display: block;
+    border:outset 2px white;
+    height: 120px;
+    font-size: 1.4rem;
+    font-weight: 500;
+
+}
+
+
+.flussu-btn-row1 {
+    text-align: left;
+}
+
+.flussu-btn {
+    background-color: rgb(17, 112, 54);
+}
+
+.flussu-btn-redo {
+    background-color: rgb(149, 172, 158);
+}
+
+.flussu-btn:hover {
+    background-color: rgb(4, 155, 62);
+}
+
+.flussu-btn-redo:hover {
+    background-color: rgb(149, 172, 158);
+}
+
+.flussu-pic {}
+
+.flussu-med-v,
+.flussu-med-h,
+.flussu-med {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 98%;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	margin-top:10px;
+	margin-bottom:20px;
+}
+
+.flussu-inpText {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 1.5em;
+    width: 100%;
+}
+
+.flussu-wrap {}
+
+.flussu-back {
+    background: #ffffff;
+}

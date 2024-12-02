@@ -1,0 +1,183 @@
+:root {
+    --main-color:rgb(196, 112, 11);
+    --main-font:Fira, Fira mono, Roboto, sans-serif;
+    --btn-hover-color:rgb(55, 139, 112);
+    --text-color:white;
+    --box-shadow:0 2px 5px rgba(0, 0, 0, 0.4);
+    --avt-box-shadow:0 2px 2px rgba(0, 0, 0, 0.4);
+    --title-size:16pt;
+    --chat-width:380px;
+    --chat-footer:rgb(236, 255, 231);
+    --header-width: calc(var(--chat-width)+2px);
+    --title-width:95%;
+    --font-family:"Montserrat", sans-serif
+}
+.flussu-btnsvg{
+    margin-left:-13px;
+    margin-top:3px;
+}
+.flussu-chat-frame{
+    font-family:var(--font-family);
+    height: 490px;
+    max-height:60%;
+    min-height:20%;
+    width:var(--chat-width);
+    border:solid 1px #f8f8f8;
+    font-size:0.65em;
+}
+.flussu-head-icon{
+    cursor: pointer;
+    box-shadow:var(--box-shadow);
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    border-style: none;
+    box-sizing: border-box;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 8px;
+    left: 10px;
+    object-fit: cover;
+    background:#2e2e2e;
+}
+.flussu-header-pic {
+    margin:0;
+    padding:0;
+    content: url("data:image/svg+xml,<svg version='1.1' id='Layer_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 33 40' style='enable-background:new 0 0 33 40;' xml:space='preserve'%3E%3Cstyle type='text/css'%3E .st0%7Bfill-rule:evenodd;clip-rule:evenodd;fill:rgba(147, 197, 234, 0.999);%7D%0A%3C/style%3E%3Cpath class='st0' d='M25,0H8C3.6,0,0,3.6,0,8v17c0,4.4,3.6,8,8,8h7.5l8.1,7v-7H25c4.4,0,8-3.6,8-8V8C33,3.6,29.4,0,25,0z M7.9,18.9 c-1.3,0-2.4-1.1-2.4-2.4s1.1-2.4,2.4-2.4s2.4,1.1,2.4,2.4S9.2,18.9,7.9,18.9z M16.5,18.9c-1.3,0-2.4-1.1-2.4-2.4s1.1-2.4,2.4-2.4 s2.4,1.1,2.4,2.4S17.8,18.9,16.5,18.9z M25.1,18.9c-1.3,0-2.4-1.1-2.4-2.4s1.1-2.4,2.4-2.4c1.3,0,2.4,1.1,2.4,2.4 S26.4,18.9,25.1,18.9z'/%3E</svg>");
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    opacity:1 !important;
+}
+.flussu-badge {
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    color: var(--text-color);
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    z-index:1000;
+}
+.flussu-badge:after {
+    display: inline-block;
+    font-size: 19pt;
+    font-weight:900;
+    content: "\00d7"; 
+}
+.flussu-chat-popup{
+    right:0px;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    height:100vh;
+    width:100%;
+    max-height:100vh;
+}
+.flussu-chatbot{
+    /*overscroll-behavior-block: none;*/
+    position: fixed; 
+    overflow-y: clip;
+    overflow-x: hidden;
+    scrollbar-width:thin;
+    scrollbar-gutter:none ;
+    display:none;
+    width:var(--chat-width);
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    border-radius: 6px;
+    z-index: 99999;
+    right: 30px;
+    bottom: 10px;
+}
+.flussu-chat-btn {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.2s;
+    box-shadow:var(--box-shadow);
+    margin: 0px 4px 4px 0px;
+    background:var(--main-color);
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    z-index: 100;
+    position: fixed;
+    right: 50px;
+    bottom: 50px;
+}
+.flussu-chat-btn:hover
+{
+    opacity: 1;
+    border: solid 2px var(--btn-hover-color);
+}
+.flussu-chat-header, .flussu-chat-footer {
+    background-color: var(--main-color);
+    width: var(--header-width);
+}
+.flussu-chat-header{
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    min-height: 55px;
+    height: 55px;
+}
+.flussu-chat-footer{
+    min-height: 25px;
+    height: 25px;
+    background-color: var(--main-color);
+    text-align:center;
+    margin-top:-7px;
+    color:var(--text-color);
+}
+.flussu-chat-footer-content{
+    font-size:11px;
+    padding-top:3px;
+}
+.flussu-chat-footer a{
+    text-decoration:none;
+    color:var(--chat-footer);
+}
+.flussu-chat-title {
+    width: var(--title-width);
+    line-height: 22px;
+    color: var(--text-color);
+
+    font-family:var(--font-family);
+    font-size: var(--title-size);
+    font-weight: bold;
+    text-overflow: ellipsis;
+    text-align:left;
+
+    overflow: hidden;
+    /*margin: auto;*/
+    white-space: nowrap;
+
+    padding: 15px 45px 15px 75px;
+    position:absolute;
+    top:-2px;
+    left:-20px;
+}
+@media only screen and (min-width: 100px) and (max-width: 500px) { 
+    /* for 10 inches tablet screens */
+    .flussu-chatbot{
+        width: 96vw;
+        /*height: 100vh;*/
+        border:0;
+        box-shadow:0;
+        padding:3px;
+        position:fixed;
+        left:0px;
+        top:50px;
+        box-shadow:none;
+        box-sizing:inherit;
+        /*right:95vw;
+        bottom:100vh;*/
+    }
+    .flussu-chat-frame{
+        width:95vw;
+        /*height: 90vh;*/
+    }
+} 

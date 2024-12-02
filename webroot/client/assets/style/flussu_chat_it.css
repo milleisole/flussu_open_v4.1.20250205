@@ -1,0 +1,8 @@
+.elmbtn:before {
+    font-size:0.8em;
+    content:'scegli una risposta '
+}
+.elminp:before {
+    font-size:0.8em;
+    content:'scrivi qui '
+}

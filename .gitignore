@@ -1,0 +1,11 @@
+/vendor
+/Uploads/*
+/Uploads/temp/*
+/Uploads/flussus_01/*
+/Uploads/flussus_02/*
+/Uploads/OCR/*
+/Uploads/OCR-ri/*
+/Cache
+/Logs
+.env
+composer.lock
