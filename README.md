@@ -2,17 +2,27 @@
 The Flussu server (v4.0) open source
 
 What you need to put it on work:
+
   a. Server operating system (linux/windows)
-     b. Php 8 from >=8.1 (avoid 8.0.*)
-     c. Python 3
-     d. Composer (or windows version)
-     e. Apache2  (or IIS)
-     f. Mariadb (v.>=11)
-   non mandatory:
+  
+  b. Php 8 from >=8.1 (avoid 8.0.*)
+  
+  c. Python 3
+  
+  d. Composer (or windows version)
+  
+  e. Apache2  (or IIS)
+  
+  f. Mariadb (v.>=11)
+  
+  non mandatory:
+
      *. DomPdf (if you need to PDF/PRINT something)
+
      *. Tesseract OCR (if you want to use the OCR functions)
 
 How to install:
+
 1. Copy the code "as is" in a dir with apache read permissions
 2. create an Upload dir with "WebServer User" write permissions
 3. inside that folder create flussus_01, flussus_02, temp folders 
