@@ -46,7 +46,7 @@
  * 
  */
 
-namespace App\Flussu\Flussuserver\NC;
+namespace Flussu\Flussuserver\NC;
 
 class HandlerMultNC extends HandlerBaseNC {
 

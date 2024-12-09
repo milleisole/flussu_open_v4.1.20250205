@@ -23,12 +23,12 @@
  *                 * 13.10.2024 - Flussu v3.0.2
  *                   Changed "temp_dir" > "tempdir" env data get
  * -------------------------------------------------------*/
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use App\Flussu\General;
-use App\Flussu\Flussuserver\Command;
+use Flussu\General;
+use Flussu\Flussuserver\Command;
 
 /**
  * This class is responsible for handling PDF printing functionality.

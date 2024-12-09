@@ -74,8 +74,8 @@
  */
 
 
- namespace App\Flussu\Documents;
-use App\Flussu\General;
+ namespace Flussu\Documents;
+use Flussu\General;
 
 class Res_img extends \Imagick {
 	/**
@@ -393,4 +393,44 @@ class Res_img extends \Imagick {
 		}
 		return true;
 	}
+
+
+	private $position = 0;
+    private $items = [];
+
+    public function __construct(array $items)
+    {
+        $this->items = $items;
+        $this->position = 0;
+    }
+
+    // Restituisce l'elemento corrente
+    public function current(): mixed
+    {
+        return $this->items[$this->position];
+    }
+
+    // Restituisce la chiave corrente
+    public function key(): mixed
+    {
+        return $this->position;
+    }
+
+    // Avanza il puntatore interno all'elemento successivo
+    public function next(): void
+    {
+        ++$this->position;
+    }
+
+    // Riporta il puntatore all'inizio
+    public function rewind(): void
+    {
+        $this->position = 0;
+    }
+
+    // Verifica se la posizione corrente è valida
+    public function valid(): bool
+    {
+        return isset($this->items[$this->position]);
+    }
 }

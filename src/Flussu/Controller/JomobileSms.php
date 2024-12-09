@@ -20,7 +20,7 @@
  * UPDATED DATE:    10.05:2024 - Aldus - Flussu v3.0
  *                  Standardized response like SMS factor
  * -------------------------------------------------------*/
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
 use Auth;
 use Session;

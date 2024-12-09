@@ -51,13 +51,13 @@
  * 
  */
 
-namespace App\Flussu\Flussuserver;
+namespace Flussu\Flussuserver;
 use Api\JomobileSms;
 use Api\SmsFactor;
-use App\Flussu\General;
-use App\Flussu\Documents\Fileuploader;
+use Flussu\General;
+use Flussu\Documents\Fileuploader;
 use PHPMailer\PHPMailer\PHPMailer;
-use App\Flussu\Flussuserver\NC\HandlerNC;
+use Flussu\Flussuserver\NC\HandlerNC;
 
 class Command {
     private $_path;
@@ -689,14 +689,14 @@ class Command {
             $key=$_ENV["sms_".$prv."_key"];
             switch (trim(strtoupper($prv))){
                 case "SFC":
-                    $provider=new SmsFactor($key);
+                    $provider=new \Flussu\Controller\SmsFactor($key);
                     if (!($this->startsWith($phoneNum,"0039") || $this->startsWith($phoneNum,"+39"))){
                         $phoneNum="+39".$phoneNum;
                     }
                     $result=$provider->sendSms($senderName,$phoneNum,$message);
                     break;
                 case "J_M":
-                    $provider=new JomobileSms($key);
+                    $provider=new \Flussu\Controller\JomobileSms($key);
                     $result=$provider->sendSms($senderName,$phoneNum,$message);
                     break;
                 default:

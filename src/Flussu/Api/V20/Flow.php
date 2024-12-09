@@ -51,17 +51,17 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
-namespace App\Flussu\Api\V20;
+namespace Flussu\Api\V20;
 
-use App\Flussu\Flussuserver\Request;
+use Flussu\Flussuserver\Request;
 
-use App\Flussu\General;
-use App\Flussu\Beans;
-use App\Flussu\Persons\User;
-use App\Flussu\Flussuserver\Command;
-use App\Flussu\Flussuserver\Handler;
-use App\Flussu\Flussuserver\NC\HandlerNC;
-use Api\AppController;
+use Flussu\General;
+use Flussu\Beans;
+use Flussu\Persons\User;
+use Flussu\Flussuserver\Command;
+use Flussu\Flussuserver\Handler;
+use Flussu\Flussuserver\NC\HandlerNC;
+use Flussu\Controller\AppController;
 class Flow {
     public function exec(Request $Req, User $theUser, $file_rawdata=null){
         
@@ -529,7 +529,7 @@ class Flow {
                                     if (!empty($endLang)){
 
 
-                                        $chat=new \App\Flussu\Api\Ai\FchatAi();
+                                        $chat=new \Flussu\Api\Ai\FchatAi();
                                         $res=$chat->chat("come ti chiami?");
 
 

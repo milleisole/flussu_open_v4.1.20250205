@@ -22,7 +22,7 @@
  * FOR MYSQL TABLE:  t80_user
  * FOR MYSQL DB:     wofobo
  * -------------------------------------------------------*/
-namespace App\Flussu\Beans;
+namespace Flussu\Beans;
 use PDO;
 class User extends Dbh
 {

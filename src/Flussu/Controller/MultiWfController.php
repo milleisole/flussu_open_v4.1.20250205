@@ -23,13 +23,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * 
  * ------------------------------------------------------- */
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
 use Auth;
 use Session;
 
-use App\Flussu\General;
-use App\Flussu\Flussuserver\NC\HandlerMultNC;
+use Flussu\General;
+use Flussu\Flussuserver\NC\HandlerMultNC;
 
 use Log;
 
@@ -38,7 +38,7 @@ class MultiWfController
     public function registerNew($wf_id,$user_id,$user_email,$data_array){
         // $userId can be $SMAPEID
         if (!is_numeric($user_id)){
-            $theFlussuUser=new \App\Flussu\Persons\User();
+            $theFlussuUser=new \Flussu\Persons\User();
             $ret=$theFlussuUser->emailExist($user_email);
             if ($ret[0]){
                 // esiste

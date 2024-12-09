@@ -23,13 +23,13 @@
  * UPDATE  03.06:24 - Get "CH_" and/or "PI_"      
  *                  - get more than one default API KEY    
  * -------------------------------------------------------*/
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
 use Auth;
 use Dompdf\Dompdf;
 use Dompdf\Options;
-use App\Flussu\General;
-use App\Flussu\Flussuserver\Command;
+use Flussu\General;
+use Flussu\Flussuserver\Command;
 use Log;
 use Stripe;
 /**
@@ -246,47 +246,131 @@ class StripeController
             $this->_stripe = new \Stripe\StripeClient($this->_strkey);
             $events=$this->_stripe->events->all(['limit'=>20,'type'=>'charge.*']);
             foreach ($events->data as $event){
-                if ($event->type=="charge.succeeded"){
-                    $myPaySess=$this->_stripe->checkout->sessions->all(['limit' => 1,'payment_intent'=>$event->data->object->payment_intent]);
-                    if ($myPaySess->data[0]->id==$stripeSessionId){
-                        $dec=substr($event->data->object->amount_captured, 0, -2).",".substr($event->data->object->amount_captured,-2);
-                        $litems=$this->_stripe->checkout->sessions->allLineItems($stripeSessionId,[])->data[0];
-                        $pdec=substr($litems->amount_total, 0, -2).",".substr($litems->amount_total,-2);
-                        $item=[
-                            "id"=>"", $litems->price->id,
-                            "description"=>$litems->description, 
-                            "metadata"=>"", /*$pmdt,*/
-                            "price"=>[
-                                "amount"=>$pdec,
-                                "id"=>$litems->price->id,
-                                "metadata"=>""/*$pmmdt*/
-                            ]
-                        ];
-                        $ret=[
-                            "session"=>$myPaySess->data[0]->id,
-                            "intent"=>$event->data->object->payment_intent,
-                            "charge"=>$event->data->object->id,
-                            "event"=>["date"=>date('Y/m/d', $event->created),"time"=>date('H:i:s', $event->created)],
-                            "customer"=>["name"=>$myPaySess->data[0]->customer_details->name,"email"=>$myPaySess->data[0]->customer_details->email,"phone"=>$myPaySess->data[0]->customer_details->phone],
-                            "email"=>$event->data->object->receipt_email,
-                            "total"=>$dec,
-                            "currency"=>$event->data->object->currency,
-                            "paid"=>true,
-                            "receipt"=>$event->data->object->receipt_url,
-                            "metadata"=>"",
-                            "reference"=>$myPaySess->data[0]->client_reference_id,
-                            "product"=>$item,
-                            "custom_fields"=>""
-                        ];
-                        break;
-                    }
-                }
+                $ret=$this->_eventGet ($event,$stripeSessionId);
+                if (count($ret)>1)
+                    break;
             }
-            
-/*
-*/
         } catch (\Throwable $e) {
             $ret="ERROR : ".$e->getMessage();
+        }
+        return $ret;
+    }
+
+    public function getWebHookData($payload){
+        $ret = [];
+
+        try {
+            $event=json_decode($payload);
+            $ret["charge_date"]=date('Y/m/d H:i:s', $event->created);
+            $ret["charge_id"]=$event->data->object->id;
+            $ret["amount"]=$event->data->object->amount_captured;
+            $ret["currency"]=$event->data->object->currency;
+            $ret["billing_country"]=$event->data->object->billing_details->address->country;
+            $ret["billing_city"]=$event->data->object->billing_details->address->city;
+            $ret["billing_address"]=$event->data->object->billing_details->address->line1;
+            $ret["billing_address_l2"]=$event->data->object->billing_details->address->line2;
+            $ret["billing_postal_code"]=$event->data->object->billing_details->address->postal_code;
+            $ret["billing_state"]=$event->data->object->billing_details->address->state;
+            $ret["billing_email"]=$event->data->object->billing_details->name;
+            $ret["billing_name"]=$event->data->object->billing_details->email;
+            $ret["billing_phone"]=$event->data->object->billing_details->phone;
+            $ret["description"]=$event->data->object->description;
+            $ret["metadata"]=json_encode($event->data->object->metadata);
+            $ret["shipping"]=json_encode($event->data->object->shipping);
+            $ret["payment_intent_id"]=$event->data->object->payment_intent;
+            $ret["payment_method_id"]=$event->data->object->payment_method;
+            $ret["receipt_email"]=$event->data->object->receipt_email;
+            $ret["receipt_url"]=$event->data->object->receipt_url;
+        } catch(\UnexpectedValueException $e) {
+            // Invalid payload
+           //http_response_code(400);
+        } catch(\Stripe\Exception\SignatureVerificationException $e) {
+            // Invalid signature
+            //http_response_code(400);
+        }
+        // Handle the event
+        //echo 'Received unknown event type ' . $event->type;
+        //http_response_code(200);
+
+        return $ret;
+    }
+    function getWebHookEvent($stripeKeyId,$endpointSecret){
+        $ret=[];
+        try {
+            // $endpointSecret is your Stripe CLI webhook secret key.
+            if (isset($stripeKeyId) && !empty($stripeKeyId))
+                $this->_keyInit($stripeKeyId);
+            $this->_stripe = new \Stripe\StripeClient($this->_strkey);
+            if (isset($endpointSecret) && !empty($endpointSecret)){
+
+                $payload = @file_get_contents('php://input');
+                $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+                $event = null;
+
+                try {
+                    $event = \Stripe\Webhook::constructEvent(
+                      $payload, $sig_header, $endpointSecret
+                    );
+                    $ret=$this->getWebHookData($payload);
+                    $ret=array_merge($ret,$this->_eventGet ($event));
+                } catch(\UnexpectedValueException $e) {
+                    // Invalid payload
+                   //http_response_code(400);
+                } catch(\Stripe\Exception\SignatureVerificationException $e) {
+                    // Invalid signature
+                    //http_response_code(400);
+                }
+                // Handle the event
+                echo 'Received unknown event type ' . $event->type;
+                //http_response_code(200);
+            }
+        } catch (\Throwable $e) {
+            $ret="ERROR : ".$e->getMessage();
+        }
+        return $ret;
+    }
+
+    private function _eventGet ($event,$stripeSessionId=""){
+        $ret=[];
+        if ($event->type=="charge.succeeded"){
+
+            $getEvent=true;
+            if ($stripeSessionId!=""){
+                $myPaySess=$this->_stripe->checkout->sessions->all(['limit' => 1,'payment_intent'=>$event->data->object->payment_intent]);
+                $getEvent=($myPaySess->data[0]->id==$stripeSessionId);
+            }
+
+            if ($getEvent){
+                $dec=substr($event->data->object->amount_captured, 0, -2).",".substr($event->data->object->amount_captured,-2);
+                $litems=$this->_stripe->checkout->sessions->allLineItems($stripeSessionId,[])->data[0];
+                $pdec=substr($litems->amount_total, 0, -2).",".substr($litems->amount_total,-2);
+                $item=[
+                    "id"=>"", $litems->price->id,
+                    "description"=>$litems->description, 
+                    "metadata"=>"", /*$pmdt,*/
+                    "price"=>[
+                        "amount"=>$pdec,
+                        "id"=>$litems->price->id,
+                        "metadata"=>""/*$pmmdt*/
+                    ]
+                ];
+                $ret=[
+                    "session"=>$myPaySess->data[0]->id,
+                    "intent"=>$event->data->object->payment_intent,
+                    "charge"=>$event->data->object->id,
+                    "event"=>["date"=>date('Y/m/d', $event->created),"time"=>date('H:i:s', $event->created)],
+                    "customer"=>["name"=>$myPaySess->data[0]->customer_details->name,"email"=>$myPaySess->data[0]->customer_details->email,"phone"=>$myPaySess->data[0]->customer_details->phone],
+                    "email"=>$event->data->object->receipt_email,
+                    "total"=>$dec,
+                    "currency"=>$event->data->object->currency,
+                    "paid"=>true,
+                    "receipt"=>$event->data->object->receipt_url,
+                    "metadata"=>"",
+                    "reference"=>$myPaySess->data[0]->client_reference_id,
+                    "product"=>$item,
+                    "custom_fields"=>""
+                ];
+            }
         }
         return $ret;
     }

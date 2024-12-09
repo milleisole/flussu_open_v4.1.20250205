@@ -74,12 +74,12 @@
  * 
  */
 
-namespace App\Flussu\Flussuserver;
-use App\Flussu\General;
-use App\Flussu\Flussuserver\Handler;
-use App\Flussu\Flussuserver\NC\HandlerSessNC;
-use App\Flussu\Beans;
-use App\Flussu\Beans\Databroker;
+namespace Flussu\Flussuserver;
+use Flussu\General;
+use Flussu\Flussuserver\Handler;
+use Flussu\Flussuserver\NC\HandlerSessNC;
+use Flussu\Beans;
+use Flussu\Beans\Databroker;
 
 use Exception;
 use stdClass;
@@ -205,7 +205,7 @@ class Session {
                 if ($rSet!= null && is_array($rSet) && count($rSet)==1){
                     $this->_wfId=$rSet[0]["c200_wid"];
                     $this->_MemSeStat->workflowId=$this->_wfId;
-                    $HndNc=new \App\Flussu\Flussuserver\NC\HandlerNC();
+                    $HndNc=new \Flussu\Flussuserver\NC\HandlerNC();
                     $rec=$HndNc->getFlussuNameDefLangs($this->_wfId);
                     if (isset($rec) && is_array($rec)){
                         $this->_MemSeStat->title=$rec[0]["name"];

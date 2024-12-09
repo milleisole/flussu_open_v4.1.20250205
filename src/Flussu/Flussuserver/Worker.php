@@ -74,13 +74,13 @@
  * 
  */
 
-namespace App\Flussu\Flussuserver;
+namespace Flussu\Flussuserver;
 
 use Api\MultiWfController;
 use Orhanerday\OpenAi\OpenAi;
 use \Throwable;
-use App\Flussu\Flussuserver\Handler;
-use App\Flussu\General;
+use Flussu\Flussuserver\Handler;
+use Flussu\General;
 use Api\PdfController;
 use Api\OpenAiController;
 
@@ -970,7 +970,7 @@ class Worker {
 
             $theCode='
 // init external code
-use \App\Flussu\Flussuserver\Environment;
+use Flussu\Flussuserver\Environment;
 $wofoEnv=new Environment($this->_WofoS);
 $Flussu = new \stdClass; 
 $Flussu->Wid="'.$this->_WofoS->getWholeWID().'";

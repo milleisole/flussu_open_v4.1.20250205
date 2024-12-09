@@ -47,9 +47,9 @@
  * 
  */
 
-namespace App\Flussu\Flussuserver\NC;
-use App\Flussu\General;
-use App\Flussu\Beans\Databroker;
+namespace Flussu\Flussuserver\NC;
+use Flussu\General;
+use Flussu\Beans\Databroker;
 use Api\MultiWfController;
 
 class HandlerBaseNC {
@@ -144,7 +144,7 @@ class HandlerBaseNC {
                 $WofoId=General::demouf($WID);
             } else if(strlen($WID)<30 && strpos($WID, '[M.') === 0 && strpos($WID, ']')===strlen($WID)-1){
                 // MultiWorkflow
-                $mwf=new \Flussu\Api\MultiWfController();
+                $mwf=new \Flussu\Controller\MultiWfController();
                 //$mid=str_replace("]","",substr($WID,3));
                 $dt=$mwf->getData($WID);
                 if (isset($dt["wf_id"])){

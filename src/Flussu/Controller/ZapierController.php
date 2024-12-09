@@ -20,16 +20,16 @@
  * UPDATED DATE:     31.01.2024 - Aldus - Flussu v2.9.5
  *                   Better response to Zapier CALL
  * -------------------------------------------------------*/
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
 use Auth;
 //use Session;
 
-use App\Flussu\General;
-use App\Flussu\Flussuserver\Request;
-use App\Flussu\Flussuserver\NC\HandlerNC;
-use App\Flussu\Flussuserver\Session;
-use App\Flussu\Flussuserver\Worker;
+use Flussu\General;
+use Flussu\Flussuserver\Request;
+use Flussu\Flussuserver\NC\HandlerNC;
+use Flussu\Flussuserver\Session;
+use Flussu\Flussuserver\Worker;
 
 use Log;
 
@@ -73,7 +73,7 @@ class ZapierController
         header('Access-Control-Expose-Headers: Content-Security-Policy, Location');
 
         $uid=0;
-        $theFlussuUser=new \App\Flussu\Persons\User();
+        $theFlussuUser=new \Flussu\Persons\User();
         
         // TEMPORANEO
         if ($usrName=="pippuzzo" && ($usrPass=="giannuzzo123" || $usrPass=="giannuzzo"))
@@ -89,7 +89,7 @@ class ZapierController
 
         if (strpos($apiPage,"zap?list")!==false){
             $db= new HandlerNC();
-            $res=$db->getFlofo(false,$theFlussuUser->getId());
+            $res=$db->getFlussu(false,$theFlussuUser->getId());
             $retArr=[];
             $i=1;
             foreach($res as $wf){

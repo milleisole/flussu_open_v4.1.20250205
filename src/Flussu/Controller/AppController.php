@@ -18,13 +18,13 @@
  * UPDATED DATE:     23.11.2023 - Aldus - Flussu v2.3
  *                   APP class handler
  * -------------------------------------------------------*/
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
 use Auth;
 use Session;
 
-use App\Flussu\General;
-use App\Flussu\Flussuserver\NC\HandlerAppNC;
+use Flussu\General;
+use Flussu\Flussuserver\NC\HandlerAppNC;
 
 class AppController 
 {

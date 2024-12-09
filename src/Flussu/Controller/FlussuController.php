@@ -18,20 +18,24 @@
  * UPDATED DATE:     04.08.2022 - Aldus - Flussu v2.2
  *                   API calls handler
  * -------------------------------------------------------*/
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
 use Auth;
 use Session;
 
-use App\Flussu\General;
-use App\Flussu\Api\V20\Flow;
-use App\Flussu\Api\V20\Stat;
-use App\Flussu\Api\V20\Sess;
-use App\Flussu\Api\V20\Conn;
-use App\Flussu\Api\V20\Engine;
-use App\Flussu\Flussuserver\Request;
+use Flussu\General;
+use Flussu\Api\V20\Flow;
+use Flussu\Api\V20\Stat;
+use Flussu\Api\V20\Sess;
+use Flussu\Api\V20\Conn;
+use Flussu\Api\V20\Engine;
+use Flussu\Flussuserver\Request;
+use Flussu\Flussuserver\Handler;
+use Flussu\Flussuserver\NC\HandlerNC;
 
 use Log;
+
+use function PHPSTORM_META\map;
 
 class FlussuController 
 {
@@ -46,7 +50,7 @@ class FlussuController
 
         $uid=0;
         $res="";
-        $theFlussuUser=new \App\Flussu\Persons\User();
+        $theFlussuUser=new \Flussu\Persons\User();
         if (is_array(explode("?",$apiPage)))
             $apiPage=explode("?",$apiPage)[0];
 
@@ -115,7 +119,7 @@ class FlussuController
                 //echo "UID=".$uid;
 
                 if ($uid>0){
-                    $theFlussuUser=new \App\Flussu\Persons\User();
+                    $theFlussuUser=new \Flussu\Persons\User();
                     $theFlussuUser->load($uid);
                 }
 
@@ -161,5 +165,67 @@ class FlussuController
         }
 
         error_reporting(E_ALL); 
+    }
+
+    public function webhook($theCallString){
+        $res=null;
+        /* first we need o know if called is just the workflow or workflow/block
+            /wh/WorkFlow (can ba e WID or WF_AUID)
+            Ex:/wh/w8567576576a OR /wh/123456-123456-123456-123456
+            /wh/WorkFlow/Block (can be Block_UUID or NAME)
+            Ex:/wh/w8567567746a/12345-12345-12345-12345 OR /wh/123456-123456-123456-123456/BLOCKNAME
+            The session id (if any) must be passed as a parameter            
+        */
+        
+        $parts=explode("/",$theCallString);
+        $anyIdent="[".$parts[2]."]";
+        $hnd=new HandlerNC();
+        $wid=$hnd->getFlussuWID($anyIdent);
+        $WID=$anyIdent;
+        $wid=$wid["wid"];
+        $bid="";
+        $caller=$_SERVER["HTTP_USER_AGENT"];
+
+        if ($wid>0){
+            if (count($parts)>2 && $parts[3]!=null){
+                $blockIdent=$parts[3];
+                $bid=$hnd->getBlockUuidFromDescription($wid,$blockIdent);
+                if (empty($bid)){
+                    $bid=$hnd->getBlockIdFromUUID($blockIdent);
+                } else {
+                    $bid=$hnd->getBlockIdFromUUID($bid);
+                }
+            }
+            $sid="";
+            $prefix="";
+            $vars=[];
+            foreach($_GET as $key => $value)
+                $vars[$key] = $value;
+            foreach($_POST as $key => $value)
+                $vars[$key] = $value;
+            if (array_key_exists("SID",$vars)){
+                $sid=$vars["SID"];
+                unset($vars["SID"]);
+            }
+
+            $payload = @file_get_contents('php://input');
+            // STRIPE WEBHOOK
+            if (stripos($caller,"stripe")!==false){
+                $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+                $sc=new StripeController();
+                $vars=$sc->getWebHookData($payload);
+                //$vars=$sc->getWebHookEvent($_ENV["mille_strkey"],"whsec_b6ad35adb3bd146cd4c50b6095c38bf462b49e693e93dbad3a55933fa6882b6a");
+                $prefix="stripe_";
+            }
+            $terms=[];
+            foreach ($vars as $key => $value){
+                $terms["$".$prefix.$key]= preg_replace('~^[\'"]?(.*?)[\'"]?$~', '$1', $value); 
+            }
+            $terms["$"."web_caller"]=$caller;
+            $terms["$"."webhook"]=true;
+            $eng=new Engine();
+            $res=$eng->execWorker($wid,$sid,$bid,$terms);
+        }
+        return $res;
     }
 }

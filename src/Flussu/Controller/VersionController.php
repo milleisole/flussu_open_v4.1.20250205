@@ -43,11 +43,11 @@
  * It provides methods to check the current database version and perform necessary updates.
  */
 
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
-use App\Flussu\General;
-use App\Flussu\Beans\Databroker;
-use App\Flussu\Flussuserver\Request;
+use Flussu\General;
+use Flussu\Beans\Databroker;
+use Flussu\Flussuserver\Request;
 
  class VersionController {
 

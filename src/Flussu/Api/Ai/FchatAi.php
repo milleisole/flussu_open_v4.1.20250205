@@ -16,7 +16,7 @@
  * --------------------------------------------------------------------*
  * TBD - INCOMPLETE
  * --------------------------------------------------------------------*/
-namespace App\Flussu\Api\Ai;
+namespace Flussu\Api\Ai;
 use GuzzleHttp\Client;
 use OpenAI;
 class FchatAi

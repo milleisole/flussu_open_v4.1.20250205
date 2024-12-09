@@ -18,7 +18,7 @@
  * UPDATED DATE:     04.08.2022 - Aldus - Flussu v2.2
  *                   Vat-Id checks routines
  * -------------------------------------------------------*/
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
 use Auth;
 use Session;

@@ -24,10 +24,10 @@
  *                   It needs "openai.apikey" on /Config.php
  *                   if use openai.model as the base model
  * -------------------------------------------------------*/
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
-use App\Flussu\General;
-use App\Flussu\Api\Ai\FopenAi;
+use Flussu\General;
+use Flussu\Api\Ai\FopenAi;
 use StopWords\StopWords;
 use Amaccis\Stemmer\Stemmer;
 use Amaccis\Stemmer\Enum\CharacterEncodingEnum;

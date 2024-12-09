@@ -19,8 +19,8 @@
  *                   NOTIFICATIONS CLASS HANDLER
  * -------------------------------------------------------*/
 namespace Flussu\Api;
-use \App\Flussu\General;
-use \App\Flussu\Flussuserver\NC\HandlerNC;
+use Flussu\General;
+use Flussu\Flussuserver\NC\HandlerNC;
 
 require_once '../autoloader.php';
 header('Connection: keep-alive');

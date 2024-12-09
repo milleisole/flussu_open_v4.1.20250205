@@ -68,9 +68,9 @@
  * 
  */
 
-namespace App\Flussu\Flussuserver\NC;
-use App\Flussu\General;
-use App\Flussu\Persons;
+namespace Flussu\Flussuserver\NC;
+use Flussu\General;
+use Flussu\Persons;
 use Api\OpenAiController;
 
 use stdClass;
@@ -740,7 +740,7 @@ class HandlerNC extends HandlerBaseNC {
     }
 
     function translateLabels($from, $tolng, $toLang, $wofoid, $sessTransId){
-        $this->_open_ai = new \Flussu\Api\OpenAiController();
+        $this->_open_ai = new \Flussu\Controller\OpenAiController();
         //$trCmd="Translate to ".$toLang.":";
 
         //Check existing languages
@@ -1662,10 +1662,12 @@ class HandlerNC extends HandlerBaseNC {
     }
 
     function getBlockUuidFromDescription($WoFoId,$desc){
-        $SQL="select c20_uuid as uuid from t20_block where c20_flofoid=? and c20_desc like ?";
-        $this->execSql($SQL,array($WoFoId,"%".$desc."%"));
-        if (isset($this->getData()[0]["uuid"]))
-            return $this->getData()[0]["uuid"];
+        if (!is_null($desc)){
+            $SQL="select c20_uuid as uuid from t20_block where c20_flofoid=? and c20_desc like ?";
+            $this->execSql($SQL,array($WoFoId,"%".$desc."%"));
+            if (isset($this->getData()[0]["uuid"]))
+                return $this->getData()[0]["uuid"];
+        }
         return "";
     }
 

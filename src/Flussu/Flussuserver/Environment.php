@@ -61,15 +61,15 @@
  * 
  */
 
-namespace App\Flussu\Flussuserver;
+namespace Flussu\Flussuserver;
 require_once(__DIR__ . "/Gibberish.php");
 require_once(__DIR__ . "/Command.php");
 
-use \App\Flussu\Flussuserver\Session;
-use \App\Flussu\Flussuserver\Command;
-use \Api\Controllers\StripeController;
+use Flussu\Flussuserver\Session;
+use Flussu\Flussuserver\Command;
+use FlussuApi\Controller\StripeController;
 use \Goutte\Client;
-use App\Flussu\General;
+use Flussu\General;
 
 class Environment {
     private $_version="3.0.4";
@@ -451,7 +451,7 @@ class Environment {
         return $ret;
     }
     private function _getStripeChargeInfo($stripeChargeId,$keyName){
-        $stcn=new \Flussu\Api\StripeController();
+        $stcn=new \Flussu\Controller\StripeController();
         $res=$stcn->getChargeInfo($stripeChargeId,$keyName);
         /* ---------------------------------------
                     RETURN -NULL- OR:
@@ -475,7 +475,7 @@ class Environment {
     }
 
     private function _getStripeSessInfo($stripeSessId,$keyName){
-        $stcn=new \Flussu\Api\StripeController();
+        $stcn=new \Flussu\Controller\StripeController();
         $res=$stcn->getStripePaymentResult($keyName,$stripeSessId);
         /* ---------------------------------------
                     RETURN -NULL- OR:

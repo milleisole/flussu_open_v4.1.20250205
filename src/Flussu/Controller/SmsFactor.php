@@ -20,7 +20,7 @@
  * --------------------------------------------------------------------*
  * CLASS-NAME:       SMS sender provider for SmsFactor API
  * --------------------------------------------------------------------*/
-namespace Flussu\Api;
+namespace Flussu\Controller;
 
 use Auth;
 use Session;

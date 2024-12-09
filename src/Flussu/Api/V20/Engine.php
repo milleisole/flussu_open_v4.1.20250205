@@ -60,24 +60,25 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
-namespace App\Flussu\Api\V20;
+namespace Flussu\Api\V20;
 
-use App\Flussu\Flussuserver\Request;
+use Flussu\Flussuserver\Request;
 
-use App\Flussu\General;
-use App\Flussu\Beans;
-//use App\Flussu\Persons\User;
-use App\Flussu\Flussuserver\Worker;
-use App\Flussu\Flussuserver\Command;
-use App\Flussu\Flussuserver\Handler;
-use App\Flussu\Flussuserver\NC\HandlerNC;
-use App\Flussu\Flussuserver\Session;
+use Flussu\General;
+use Flussu\Beans;
+//use Flussu\Persons\User;
+use Flussu\Flussuserver\Worker;
+use Flussu\Flussuserver\Command;
+use Flussu\Flussuserver\Handler;
+use Flussu\Flussuserver\NC\HandlerNC;
+use Flussu\Flussuserver\Session;
 
 class Engine {
     public function exec(Request $Req, $file_rawdata=null){
         $wSess=null;
         $terms=null;
         $widd=null;
+        $bid="";
 
         header('Access-Control-Allow-Origin: *'); 
         header('Access-Control-Allow-Methods: *');
@@ -120,229 +121,235 @@ class Engine {
                     "def_lang"=>$rec[0]["def_lang"]
                 ];
             }
-        } elseif ($cmd=="set" && $wid!=""){
+        } else {
+            $TRM=General::getGetOrPost("TRM");
+            $ARB="";
+            if (strpos($TRM,"arbitrary\":")!==false){
+                $ARB=substr($TRM,strpos($TRM,"arbitrary\":")-2);
+                $TRM=str_replace($ARB,"",$TRM);
+            }  
+            $terms=json_decode($TRM,true);
+            if ($terms==null & substr($TRM,0,2)=="R:"){
+                // è un RESTART
+                $restart=true;
+                $restRows=str_replace(",","",substr($TRM,2));
+            }
+            if ($ARB!="")
+                $terms=json_decode($ARB,true);
+            if (!is_array($terms))
+                $terms=[];
+            
+            foreach ($_GET as $key => $value){
+                if (strpos($key,"$")===0)
+                    $terms[$key]=$value;
+                if (strpos($key,"£")===0){
+                    $terms["$".substr($key,2)]= preg_replace('~^[\'"]?(.*?)[\'"]?$~', '$1', $value); 
+                }
+            }
+            $frmBid=General::getGetOrPost("BID");
+
+            
+            $res=$this->execWorker($wid,$sid,$frmBid,$terms,$cmd);
+        }
+        return $res; 
+    }
+
+    public function execWorker($wid, $sid, $bid, $terms,$cmd=""){
+        $res=null;
+
+        if ($sid==""){
+            // startup
+            $LNG=trim(strtoupper(General::getGetOrPost("LNG")));
+            $APP=General::getGetOrPost("APP");
+            if (empty($LNG))
+                $LNG="IT";
+            
+            $wSess=new Session(null); 
+            if (is_numeric($wid)){
+                $w_id=$wid;
+            } else 
+                $w_id=HandlerNC::WID2Wofoid($wid,$wSess);
+
+            $IP=General::getCallerIPAddress();
+            $UA=General::getCallerUserAgent();
+            $userId=0;
+            $wSess->createNew($w_id,$IP,$LNG,$UA,$userId,$APP,$wid);
+            $sid=$wSess->getId();
+
+        } else {
+            //ripetizone
+            $wSess=new Session($sid);
+            if ($wSess->isExpired())
+                die(json_encode(["error"=>"This session has expired - E89"]));
+            else {
+                $widd=$wSess->getWid();
+                if ($wid=="")
+                    $wid=HandlerNC::Wofoid2WID($widd);
+                $w_id=HandlerNC::WID2Wofoid($wid,$wSess);
+
+                // muove su altro workflow?
+                if (!is_null($w_id) &&!is_null($widd) && $w_id>0 && $widd>0 && $widd!=$w_id) {
+                    if (!empty($sid))
+                        $frmBid=General::montanara($bid,str_replace("-","",$sid));
+                    if (!empty($frmBid)){
+                        $wSess->moveTo($wid, "", $frmBid);
+                        $bid=$frmBid;
+                    }
+                    $w_id=$widd;
+                }
+            } 
+        }
+        if ($cmd=="set"){
             //recupera il JSON con nome/valore
             $settings=json_decode(General::getGetOrPost("SET"),true);
             $LNG=General::getGetOrPost("LNG");
             $APP=General::getGetOrPost("APP");
-        } else {
-            if ($sid!=""){
-                //ripetizone
-                $wSess=new Session($sid);
-                if ($wSess->isExpired())
-                    die(json_encode(["error"=>"This session has expired - E89"]));
-                else {
-                    $widd=$wSess->getWid();
-                    if ($wid=="")
-                        $wid=HandlerNC::Wofoid2WID($widd);
-                    $w_id=HandlerNC::WID2Wofoid($wid,$wSess);
-
-                    // muove su altro workflow?
-                    if (!is_null($w_id) &&!is_null($widd) && $w_id>0 && $widd>0 && $widd!=$w_id) {
-                        if (!empty($sid))
-                            $frmBid=General::montanara(General::getGetOrPost("BID"),str_replace("-","",$sid));
-                        if (!empty($frmBid))
-                            $wSess->moveTo($wid, "", $frmBid);
-                        $w_id=$widd;
-                    }
-                } 
-                /*
-                if ($widd==null || ($w_id!=null && ($widd!=$w_id))) {
-                    // lo script ha cambiato workflow!
-                    $sid="";
-                    die(json_encode(["sid"=>"","bid"=>"","elms"=>array("SESS"=>"EXP")]));
-                //} else {
-                //    if ($widd!=$wid) $wid=$widd;
-                }*/
-            }
-            if ($wid!="" && $sid==""){
-                // startup
-                $LNG=trim(strtoupper(General::getGetOrPost("LNG")));
-                $APP=General::getGetOrPost("APP");
-                if (empty($LNG))
-                    $LNG="IT";
-                
-                $wSess=new Session(null); 
-                $w_id=HandlerNC::WID2Wofoid($wid,$wSess);
-
-                $IP=General::getCallerIPAddress();
-                $UA=General::getCallerUserAgent();
-                $userId=0;
-                $wSess->createNew($w_id,$IP,$LNG,$UA,$userId,$APP,$wid);
-                $sid=$wSess->getId();
-
-            }
-            if (is_null($wSess))
-                die(json_encode(["error"=>"Session is NULL - 800A"]));
-            else if ($wSess->isWorkflowInError())
-                die(json_encode(["error"=>"Workflow load on error - E00"]));
-            else if ($wSess->isExpired())
-                die(json_encode(["error"=>"This session has expired - E89"]));
-            else if (!$wSess->isWorkflowActive())
-                die(json_encode(["error"=>"This workflow is inactive - E99"]));
-            else {
-
-                $isTimedCall=General::getGetOrPost("TCV");
-                if ($isTimedCall==true){
-                    $wSess->setTimedCalled(true);
-                }
-
-                // --> START FROM A BLOCK ID <--
-                //$bid=$wSess->getBlockId();
-                $wwork= new Worker($wSess);
-                $frmBid=General::getGetOrPost("BID");
-                if (!empty($sid)){
-                    $frmBid2=General::montanara($frmBid,substr(str_replace("-","",$sid),5,5));
-                    if (!empty($frmBid2))
-                        $frmBid=$frmBid2;
-                }
-                if (empty($frmBid))
-                    $frmBid=$wSess->getBlockId();
-                $restart=false;
-                $restRows=0;
-                $TRM=General::getGetOrPost("TRM");
-                $ARB="";
-                if (strpos($TRM,"arbitrary\":")!==false){
-                    $ARB=substr($TRM,strpos($TRM,"arbitrary\":")-2);
-                    $TRM=str_replace($ARB,"",$TRM);
-                }  
-                $terms=json_decode($TRM,true);
-                if ($terms==null & substr($TRM,0,2)=="R:"){
-                    // è un RESTART
-                    $restart=true;
-                    $restRows=str_replace(",","",substr($TRM,2));
-                }
-                if ($ARB!="")
-                    $terms=json_decode($ARB,true);
-                if (!is_array($terms))
-                    $terms=[];
-                
-                foreach ($_GET as $key => $value){
-                    if (strpos($key,"$")===0)
-                        $terms[$key]=$value;
-                    if (strpos($key,"£")===0){
-                        $terms["$".substr($key,2)]= preg_replace('~^[\'"]?(.*?)[\'"]?$~', '$1', $value); 
-                    }
-                }
-                
-                // -----------------------------------------
-                //  VERIFICA E GESTIONE FILE ATTACH
-                //  se c'é un file, viene caricato e salvato
-                //  l'oggeto di ritorno contiene i dati
-                //  la sessione ha registrato l'URL nella
-                //  var [nomevar]_uri 
-                // -----------------------------------------
-                $wcmd= new Command();
-                $attachedFile=$wcmd->fileCheckExtract($wSess,$wwork,$frmBid,$terms);                                                                                                                                                                                                                                                                                                                                                                                                                                              
-                $terms=$attachedFile->Terms;
-                // ------------------------------------------
-
-                $hres=$wwork->execNextBlock($frmBid,$terms,$restart);
-                $frmBid=$wwork->getBlockId();
-                if (!isset($frmBid)){
-                    // SEMBRA SIA L'ULTIMO BLOCCO!
-                    $res=[
-                        "sid"=>$sid,
-                        "bid"=>"none",
-                        "elms"=>array("END$" => array("finiu","stop"))
-                    ];
-                    return($res);
-                }
-                // APPLICARE HTMLSANITIZE PRIMA DI INVIARE!
-                $frmElms=$wwork->getExecElements($restart,$restRows);
-                //$frmElms["0RD_0"]="";
-                if ($restart){
-                    $frmElms=array_merge($frmElms, array("TITLE$0"=>array($wSess->getWfTitle(),"")));
-                }
-                $rightOrder="";
-                try{
-                    foreach ($frmElms as $Key => $aElm){
-                        $key=$Key;
-                        $fe=explode("$",$Key);
-                        if (is_array($fe) && count($fe)>1)
-                            $key=$fe[0];
-                        $Elm=$aElm[0];
-                        $Css=$aElm[1];
-                        if (is_string($Css) && strpos($Css,"{")===1){
-                            $Css=json_decode($Css,true);
-                        }
-                        if (isset($Css) && is_null($Css) || empty($Css)){
-                            $Css=[];
-                            $Css["display_info"]=["type"=>"unk"]; //["display_info"]["type"]="unk";
-                        }
-                    switch ($key){
-                            case "ITB":
-
-                                break;
-                            case "L":
-                                $frmElms[$Key]=array(Command::htmlSanitize($Elm,$wSess->getVarValue("$"."isTelegram")),$Css);
-                                //break;
-                            case "ITM":
-                            case "ITT":
-                                $aVal="[val]:";
-                                if (count($aElm)>2)
-                                    $aVal=$aElm[2];
-                                //$Elm=json_encode($Elm, JSON_HEX_QUOT || JSON_HEX_APOS ); 
-                                //$aVal=json_encode($aVal, JSON_HEX_QUOT || JSON_HEX_APOS ); 
-                                $frmElms[$Key]=array($Elm,$Css,$aVal);
-                                $frmElms[$Key]=array(Command::htmlSanitize($Elm,$wSess->getVarValue("$"."isTelegram")),$Css,$aVal);
-                                break;
-                            case "ITS":
-                                $aVal="[val]:";
-                                if (count($aElm)>2);
-                                    $aVal=$aElm[2];
-                                break;
-                            case "M":
-                                if (strpos($Elm,'flussu_qrc')===false){
-                                    if (isset($Css) && is_array($Css))
-                                        $Css["display_info"]["type"]="unk";
-                                    $ext = strtolower(pathinfo($Elm, PATHINFO_EXTENSION));
-                                    switch ($ext){
-                                        case "jpg":
-                                        case "jpeg":
-                                        case "gif":
-                                        case "svg":
-                                        case "png":
-                                            if (isset($Css) && is_array($Css))
-                                                $Css["display_info"]["type"]="image";
-                                            //$frmElms[$Key]= "<img $Css src='$Elm'><br>";
-                                            break;
-                                        case "mp4":
-                                        case "avi":
-                                        case "mpg":
-                                        case "mpeg":
-                                            if (isset($Css) && is_array($Css))
-                                                $Css["display_info"]["type"]="movie";
-                                            //$frmElms[$Key]="<video $Css controls><source src='$Elm' type='video/$ext'>Your browser does not support the video tag.</video>";
-                                            break;
-                                        default:
-                                        if (isset($Css) && is_array($Css))
-                                            $Css["display_info"]["type"]="file";
-                                        //$frmElms[$Key]="<a $Css target='_blank' href='$Elm'>download</a>";
-                                    }
-                                    //$Elm=Command::htmlSanitize($Elm);
-                                } else {
-                                    if (isset($Css) && is_array($Css))
-                                        $Css["display_info"]["type"]="qrcode";
-                                    //$frmElms[$Key]=$Elm;
-                                }
-                                $frmElms[$Key]=array($Elm,$Css);
-                        }
-                        //if (strpos($Key,"0RD_")===false && strpos($Key,"TITLE")===false)
-                        //    $rightOrder.=$Key.",";
-                    }
-                } catch (\Throwable $e){
-                    General::Log("INTERNAL ERROR! Wid:".$wid." - Bid:".$frmBid." (".$frmBid.") - Sid:".$sid."\n - - ".json_encode($e->getMessage()),true);
-                    return "Internal exec exception: [1] - ".var_export($e,true);
-                }
-                //$frmElms["0RD_0"]=$rightOrder;
-                $res=[
-                    "sid"=>$sid,
-                    "bid"=>$frmBid,
-                    "elms"=>$frmElms
-                ];
-            }
         }
-        return($res); 
+        
+        if (is_null($wSess))
+            die(json_encode(["error"=>"Session is NULL - 800A"]));
+        else if ($wSess->isWorkflowInError())
+            die(json_encode(["error"=>"Workflow load on error - E00"]));
+        else if ($wSess->isExpired())
+            die(json_encode(["error"=>"This session has expired - E89"]));
+        else if (!$wSess->isWorkflowActive())
+            die(json_encode(["error"=>"This workflow is inactive - E99"]));
+        else {
+            $isTimedCall=General::getGetOrPost("TCV");
+            if ($isTimedCall==true){
+                $wSess->setTimedCalled(true);
+            }
+
+            $wwork= new Worker($wSess);
+
+            // -----------------------------------------
+            //  VERIFICA E GESTIONE FILE ATTACH
+            //  se c'é un file, viene caricato e salvato
+            //  l'oggeto di ritorno contiene i dati
+            //  la sessione ha registrato l'URL nella
+            //  var [nomevar]_uri 
+            // -----------------------------------------
+            $wcmd= new Command();
+            $attachedFile=$wcmd->fileCheckExtract($wSess,$wwork,$bid,$terms);                                                                                                                                                                                                                                                                                                                                                                                                                                              
+            $terms=$attachedFile->Terms;
+            // ------------------------------------------
+
+            if (!empty($sid)){
+                $frmBid2=General::montanara($bid,substr(str_replace("-","",$sid),5,5));
+                if (!empty($frmBid2))
+                    $bid=$frmBid2;
+            }
+            if (empty($bid))
+                $bid=$wSess->getBlockId();
+            $restart=false;
+            $restRows=0;
+
+            $hres=$wwork->execNextBlock($bid,$terms,$restart);
+            $frmBid=$wwork->getBlockId();
+            // APPLICARE HTMLSANITIZE PRIMA DI INVIARE!
+            $frmElms=$wwork->getExecElements($restart,$restRows);
+            //$frmElms["0RD_0"]="";
+            if ($restart){
+                $frmElms=array_merge($frmElms, array("TITLE$0"=>array($wSess->getWfTitle(),"")));
+            }
+            $rightOrder="";
+            try{
+                foreach ($frmElms as $Key => $aElm){
+                    $key=$Key;
+                    $fe=explode("$",$Key);
+                    if (is_array($fe) && count($fe)>1)
+                        $key=$fe[0];
+                    $Elm=$aElm[0];
+                    $Css=$aElm[1];
+                    if (is_string($Css) && strpos($Css,"{")===1){
+                        $Css=json_decode($Css,true);
+                    }
+                    if (isset($Css) && is_null($Css) || empty($Css)){
+                        $Css=[];
+                        $Css["display_info"]=["type"=>"unk"]; //["display_info"]["type"]="unk";
+                    }
+                switch ($key){
+                        case "ITB":
+
+                            break;
+                        case "L":
+                            $frmElms[$Key]=array(Command::htmlSanitize($Elm,$wSess->getVarValue("$"."isTelegram")),$Css);
+                            //break;
+                        case "ITM":
+                        case "ITT":
+                            $aVal="[val]:";
+                            if (count($aElm)>2)
+                                $aVal=$aElm[2];
+                            //$Elm=json_encode($Elm, JSON_HEX_QUOT || JSON_HEX_APOS ); 
+                            //$aVal=json_encode($aVal, JSON_HEX_QUOT || JSON_HEX_APOS ); 
+                            $frmElms[$Key]=array($Elm,$Css,$aVal);
+                            $frmElms[$Key]=array(Command::htmlSanitize($Elm,$wSess->getVarValue("$"."isTelegram")),$Css,$aVal);
+                            break;
+                        case "ITS":
+                            $aVal="[val]:";
+                            if (count($aElm)>2);
+                                $aVal=$aElm[2];
+                            break;
+                        case "M":
+                            if (strpos($Elm,'flussu_qrc')===false){
+                                if (isset($Css) && is_array($Css))
+                                    $Css["display_info"]["type"]="unk";
+                                $ext = strtolower(pathinfo($Elm, PATHINFO_EXTENSION));
+                                switch ($ext){
+                                    case "jpg":
+                                    case "jpeg":
+                                    case "gif":
+                                    case "svg":
+                                    case "png":
+                                        if (isset($Css) && is_array($Css))
+                                            $Css["display_info"]["type"]="image";
+                                        //$frmElms[$Key]= "<img $Css src='$Elm'><br>";
+                                        break;
+                                    case "mp4":
+                                    case "avi":
+                                    case "mpg":
+                                    case "mpeg":
+                                        if (isset($Css) && is_array($Css))
+                                            $Css["display_info"]["type"]="movie";
+                                        //$frmElms[$Key]="<video $Css controls><source src='$Elm' type='video/$ext'>Your browser does not support the video tag.</video>";
+                                        break;
+                                    default:
+                                    if (isset($Css) && is_array($Css))
+                                        $Css["display_info"]["type"]="file";
+                                    //$frmElms[$Key]="<a $Css target='_blank' href='$Elm'>download</a>";
+                                }
+                                //$Elm=Command::htmlSanitize($Elm);
+                            } else {
+                                if (isset($Css) && is_array($Css))
+                                    $Css["display_info"]["type"]="qrcode";
+                                //$frmElms[$Key]=$Elm;
+                            }
+                            $frmElms[$Key]=array($Elm,$Css);
+                    }
+                    //if (strpos($Key,"0RD_")===false && strpos($Key,"TITLE")===false)
+                    //    $rightOrder.=$Key.",";
+                }
+            } catch (\Throwable $e){
+                General::Log("INTERNAL ERROR! Wid:".$wid." - Bid:".$frmBid." (".$frmBid.") - Sid:".$sid."\n - - ".json_encode($e->getMessage()),true);
+                return "Internal exec exception: [1] - ".var_export($e,true);
+            }
+            //$frmElms["0RD_0"]=$rightOrder;
+            if (!isset($frmBid)){
+                // SEMBRA SIA L'ULTIMO BLOCCO!
+                $res=[
+                    $frmElms["END$"] => array("finiu","stop")
+                ];
+                return $res;
+            }
+            $res=[
+                "sid"=>$sid,
+                "bid"=>$frmBid,
+                "elms"=>$frmElms
+            ];
+        }
+
+
+        return $res;
     }
+
 }
