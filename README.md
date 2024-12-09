@@ -6,19 +6,18 @@ What you need to put it on work:
   
   b. Php 8 from >=8.1 (avoid 8.0.*)
   
-  c. Python 3
+  c. Composer (or windows version)
   
-  d. Composer (or windows version)
+  d. Apache2  (or IIS)
   
-  e. Apache2  (or IIS)
-  
-  f. Mariadb (v.>=11)
+  e. Mariadb (v.>=11)
   
   non mandatory:
 
      *. DomPdf (if you need to PDF/PRINT something)
 
      *. Tesseract OCR (if you want to use the OCR functions)
+     Python 3 (if you want to use OCR features)
 
 How to install:
 
