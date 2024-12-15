@@ -50,4 +50,5 @@ update the database:
 
 10. http(s)://yourwebsite.com/api.php/checkversion
 
-
+# Docs & Database
+take a look at the /Docs folder
