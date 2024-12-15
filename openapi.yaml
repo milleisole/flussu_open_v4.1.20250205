@@ -1,0 +1,101 @@
+openapi: 3.0.0
+info:
+  title: 'Flussu API'
+  description: 'This is the API documentation for My API'
+  version: 2.0.0
+servers:
+  -
+    url: 'http://localhost:8080'
+    description: 'Local server'
+paths:
+  /flussueng:
+    post:
+      tags:
+        - Workflow
+      summary: 'Executes a workflow based on provided parameters'
+      description: 'This endpoint handles the execution of a workflow. The WID parameter (workflowID) is obviosly mandatory. The SID parameter is optional, if not provided a new workflow session is created. Otherwise, it continues the existing session with the given parameters.'
+      parameters:
+        -
+          name: WID
+          in: query
+          description: 'Workflow identifier. Can be numeric or a string. If numeric, it is internally converted to a valid WID.'
+          required: false
+          schema:
+            type: string
+        -
+          name: SID
+          in: query
+          description: 'The current session ID. If empty, a new workflow session is created.'
+          required: false
+          schema:
+            type: string
+        -
+          name: CMD
+          in: query
+          description: "Command to execute (e.g., 'info', 'set')."
+          required: false
+          schema:
+            type: string
+        -
+          name: TRM
+          in: query
+          description: 'Additional parameters, often in JSON format, to customize the workflow execution.'
+          required: false
+          schema:
+            type: string
+        -
+          name: BID
+          in: query
+          description: 'Identifier of the workflow block to execute. If not provided, the current block is used.'
+          required: false
+          schema:
+            type: string
+        -
+          name: LNG
+          in: query
+          description: "Workflow language (e.g., 'IT', 'EN')."
+          required: false
+          schema:
+            type: string
+        -
+          name: APP
+          in: query
+          description: 'Identifier of the requesting application.'
+          required: false
+          schema:
+            type: string
+        -
+          name: SET
+          in: query
+          description: 'Additional settings in JSON format.'
+          required: false
+          schema:
+            type: string
+      requestBody:
+        description: 'Optional data, including files. If present, send as multipart/form-data.'
+        required: false
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                file_rawdata:
+                  description: 'Optional file to upload with the request.'
+                  type: string
+                  format: binary
+              type: object
+      responses:
+        '200':
+          description: 'Execution completed successfully.'
+          content:
+            application/json:
+              schema:
+                properties:
+                  sid: { description: 'Current session ID.', type: string }
+                  bid: { description: 'Current block ID.', type: string }
+                  elms: { description: 'Flow elements (UI or data) to be presented.', type: object }
+                type: object
+        '400':
+          description: 'Invalid request or parameters.'
+        '500':
+          description: 'Internal server error during execution.'
+

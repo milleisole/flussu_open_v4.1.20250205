@@ -214,7 +214,6 @@ class FlussuController
                 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
                 $sc=new StripeController();
                 $vars=$sc->getWebHookData($payload);
-                //$vars=$sc->getWebHookEvent($_ENV["mille_strkey"],"whsec_b6ad35adb3bd146cd4c50b6095c38bf462b49e693e93dbad3a55933fa6882b6a");
                 $prefix="stripe_";
             }
             $terms=[];

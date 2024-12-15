@@ -73,7 +73,108 @@ use Flussu\Flussuserver\Handler;
 use Flussu\Flussuserver\NC\HandlerNC;
 use Flussu\Flussuserver\Session;
 
+use OpenApi\Annotations as OA;
+
+ /** 
+ * @OA\Post(
+ *     path="/flussueng",
+ *     summary="Executes a workflow based on provided parameters",
+ *     description="This endpoint handles the execution of a workflow. The WID parameter (workflowID) is obviosly mandatory. The SID parameter is optional, if not provided a new workflow session is created. Otherwise, it continues the existing session with the given parameters.",
+ *     tags={"Workflow"},
+ *     @OA\Parameter(
+ *         name="WID",
+ *         in="query",
+ *         description="Workflow identifier. Can be numeric or a string. If numeric, it is internally converted to a valid WID.",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Parameter(
+ *         name="SID",
+ *         in="query",
+ *         description="The current session ID. If empty, a new workflow session is created.",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Parameter(
+ *         name="CMD",
+ *         in="query",
+ *         description="Command to execute (e.g., 'info', 'set').",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Parameter(
+ *         name="TRM",
+ *         in="query",
+ *         description="Additional parameters, often in JSON format, to customize the workflow execution.",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Parameter(
+ *         name="BID",
+ *         in="query",
+ *         description="Identifier of the workflow block to execute. If not provided, the current block is used.",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Parameter(
+ *         name="LNG",
+ *         in="query",
+ *         description="Workflow language (e.g., 'IT', 'EN').",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Parameter(
+ *         name="APP",
+ *         in="query",
+ *         description="Identifier of the requesting application.",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\Parameter(
+ *         name="SET",
+ *         in="query",
+ *         description="Additional settings in JSON format.",
+ *         required=false,
+ *         @OA\Schema(type="string")
+ *     ),
+ *     @OA\RequestBody(
+ *         description="Optional data, including files. If present, send as multipart/form-data.",
+ *         required=false,
+ *         @OA\MediaType(
+ *             mediaType="multipart/form-data",
+ *             @OA\Schema(
+ *                 @OA\Property(
+ *                     property="file_rawdata",
+ *                     type="string",
+ *                     format="binary",
+ *                     description="Optional file to upload with the request."
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Execution completed successfully.",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="sid", type="string", description="Current session ID."),
+ *             @OA\Property(property="bid", type="string", description="Current block ID."),
+ *             @OA\Property(property="elms", type="object", description="Flow elements (UI or data) to be presented.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=400,
+ *         description="Invalid request or parameters."
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Internal server error during execution."
+ *     )
+ * )
+ */
+
 class Engine {
+
     public function exec(Request $Req, $file_rawdata=null){
         $wSess=null;
         $terms=null;
@@ -347,8 +448,6 @@ class Engine {
                 "elms"=>$frmElms
             ];
         }
-
-
         return $res;
     }
 

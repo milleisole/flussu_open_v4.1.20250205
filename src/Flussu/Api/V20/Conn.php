@@ -80,8 +80,7 @@ class Conn {
     public function exec(Request $Req, User $theUser){
         $mustBeLogged=false;
         $authLevel=0;
-        //require_once "../../includes/session.inc.php";
-
+        
         $db= new HandlerNC();
         $wcmd= new Command();
 
