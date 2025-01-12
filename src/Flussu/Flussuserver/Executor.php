@@ -59,15 +59,10 @@
  */
 
 
-namespace App\Flussu\Flussuserver;
+namespace Flussu\Flussuserver;
 
-use Api\PdfController;
-use Api\OpenAiController;
-use Api\MultiWfController;
-use Api\Controllers\StripeController;
-use App\Flussu\General;
-use App\Flussu\Flussuserver\Handler;
-use App\Flussu\Flussuserver\NC\HandlerNC;
+use Flussu\General;
+use Flussu\Flussuserver\NC\HandlerNC;
 
 class Executor{
     private $_xcelm=array();
@@ -196,11 +191,11 @@ class Executor{
                     case "sendEmail":
                         $Sess->statusCallExt(true);
                         try{
-                            $Sess->recLog("send Email ".$this->arr_print($innerParams));
+                            $Sess->recLog("send Email ".json_encode($innerParams));
                             $result=$this->_sendEmail($Sess,$innerParams, $block["block_id"]);
                             //array_push($res,$result);
-                        } catch (\Exception $e){
-                            $Sess->recLog(" SendMail - execution EXCEPTION:". $this->arr_print($e));
+                        } catch (\Throwable $e){
+                            $Sess->recLog(" SendMail - execution EXCEPTION:". json_encode($e));
                             $Sess->statusError(true);
                         }
                         $Sess->statusCallExt(false);
@@ -223,8 +218,8 @@ class Executor{
                             $reslt=$this->_sendSms($Sess,$innerParams);
                             if (!empty($retVarName))
                                 $Sess->assignVars("\$".$retVarName,$reslt);
-                        } catch (\Exception $e){
-                            $Sess->recLog(" SendSms - execution EXCEPTION:".$this->arr_print($e));
+                        } catch (\Throwable $e){
+                            $Sess->recLog(" SendSms - execution EXCEPTION:".json_encode($e));
                             $Sess->statusError(true);
                             if (!empty($retVarName))
                                 $Sess->assignVars("\$".$retVarName,"ERROR");
@@ -245,8 +240,8 @@ class Executor{
                             $reslt=$this->_httpSend($Sess,$innerParams[0],$data);
                             if (!empty($retVarName))
                                 $Sess->assignVars("\$".$retVarName,$reslt);
-                        } catch (\Exception $e){
-                            $Sess->recLog(" httpSend - execution EXCEPTION:".$this->arr_print($e));
+                            } catch (\Throwable $e){
+                            $Sess->recLog(" httpSend - execution EXCEPTION:".json_encode($e));
                             $Sess->statusError(true);
                             if (!empty($retVarName))
                                 $Sess->assignVars("\$".$retVarName,"ERROR");
@@ -263,8 +258,8 @@ class Executor{
                             $reslt=$this->_doZAP($Sess,$innerParams[0],$data);
                             if (!empty($innerParams[1]))
                                 $Sess->assignVars("\$".$innerParams[1],$reslt);
-                        } catch (\Exception $e){
-                            $Sess->recLog(" call Zapier - execution EXCEPTION:".$this->arr_print($e));
+                        } catch (\Throwable $e){
+                            $Sess->recLog(" call Zapier - execution EXCEPTION:".json_encode($e));
                             if (!empty($innerParams[1]))
                                 $Sess->assignVars("\$".$innerParams[1],"ERROR");
                             $Sess->statusError(true);
@@ -281,36 +276,36 @@ class Executor{
                         try{
                             $Sess->recLog("call SubWorkflow ".$this->arr_print($innerParams));
                             $this->_callSubwf($innerParams, $block["block_id"]);
-                        } catch (\Exception $e){
-                            $Sess->recLog(" callSubwf - execution EXCEPTION:".$this->arr_print($e));
+                        } catch (\Throwable $e){
+                            $Sess->recLog(" callSubwf - execution EXCEPTION:".json_encode($e));
                             $Sess->statusError(true);
                         }
                         $Sess->statusCallExt(false);
                         break;
                     case "openAi":
                         // V2.8 - Query openAI
-                        $ctrl=new \Flussu\Api\OpenAiController();
+                        $ctrl=new \Flussu\Controller\OpenAiController();
                         $reslt=$ctrl->genQueryOpenAi($innerParams[0],0);
                         $Sess->assignVars($innerParams[1],$reslt["resp"]);
                         break;
                     case "explAi":
                         // V2.8 - Try to explain as openAI
-                        $ctrl=new \Flussu\Api\OpenAiController();
+                        $ctrl=new \Flussu\Controller\OpenAiController();
                         $reslt=$ctrl->genQueryOpenAi($innerParams[0],1);
                         $Sess->assignVars($innerParams[1],$reslt["resp"]);
                         break;
                     case "bNlpAi":
-                        $ctrl=new \Flussu\Api\OpenAiController();
+                        $ctrl=new \Flussu\Controller\OpenAiController();
                         $reslt=$ctrl->basicNlpIe($innerParams[0]);
                         $Sess->assignVars($innerParams[1],$reslt);
                         break;
                     case "openAi-stsess":
-                        $ctrl=new \Flussu\Api\OpenAiController();
+                        $ctrl=new \Flussu\Controller\OpenAiController();
                         $reslt=$ctrl->createChatSession($innerParams[0]);
                         $Sess->assignVars("$"."_openAiChatSessionId",$reslt);
                         break;
                     case "openAi-chat":
-                        $ctrl=new \Flussu\Api\OpenAiController();
+                        $ctrl=new \Flussu\Controller\OpenAiController();
                         $csid=$Sess->getVarValue("$"."_openAiChatSessionId");
                         if (empty($csid)){
                             $csid=$ctrl->createChatSession("");
@@ -321,7 +316,7 @@ class Executor{
                         break;
                     case "newMRec":
                         // V2.8 - New MultiRecWorkflow
-                        $mwc=new \Flussu\Api\MultiWfController();
+                        $mwc=new \Flussu\Controller\MultiWfController();
                         $reslt=$mwc->registerNew($innerParams[0],$innerParams[1],$innerParams[2],$innerParams[3]);
                         $reslt="[".str_replace("_","",$reslt)."]";
                         $Sess->assignVars($innerParams[4],$reslt);
@@ -332,26 +327,26 @@ class Executor{
                         break;
                     case "print2Pdf":
                         // V2.8 - Print in PDF without header/footer
-                        $pdfPrint=new \Flussu\Api\PdfController();
+                        $pdfPrint=new \Flussu\Controller\PdfController();
                         $tmpFile=$pdfPrint->printToTempFilename($innerParams[0],$innerParams[1]);
                         $Sess->assignVars($innerParams[2],$tmpFile);
                         break;
                     case "print2PdfwHF":
                         // V2.8 - Print in PDF with header/footer
-                        $pdfPrint=new \Flussu\Api\PdfController();
+                        $pdfPrint=new \Flussu\Controller\PdfController();
                         $tmpFile=$pdfPrint->printToTempFilename($innerParams[0],$innerParams[1],$innerParams[2],$innerParams[3]);
                         $Sess->assignVars($innerParams[4],$tmpFile);
                         break;
                     case "printRawHtml2Pdf":
                         // V2.9.5 - Print a RAW HTML on a sheet as PDF
-                        $pdfPrint=new \Flussu\Api\PdfController();
+                        $pdfPrint=new \Flussu\Controller\PdfController();
                         //$tmpFile=$pdfPrint->pippo($innerParams[0]);
                         $tmpFile=$pdfPrint->printHtmlPageToTempFilename($innerParams[0]);
                         //
                         $Sess->assignVars($innerParams[1],$tmpFile);
                         break;
                     case "getStripePaymentLink":
-                        $stcn=new \Flussu\Api\StripeController();
+                        $stcn=new \Flussu\Controller\StripeController();
                         //   0             1          2        3           4        5        6                7
                         //$stripeKeyId,$paymentId,$prodName,$prodPrice,$prodImg,$successUri,$cancelUri,$varStripeRetUriName
                         $res=$stcn->createStripeLink($innerParams[0],$innerParams[1],$innerParams[2],$innerParams[3],$innerParams[4],$innerParams[5],$innerParams[6]);
@@ -633,6 +628,7 @@ class Executor{
         $wem=new Command();
         $res=$wem->sendSMS($sender,$phoneNum,$message);
         $Sess->recLog("SMS sent to $phoneNum: $message");
+        General::log("SMS sent to $phoneNum: $message");
         $Sess->recLog($this->arr_print($res));
         return $res;
     }

@@ -45,10 +45,9 @@
  * 
  */
 
-namespace App\Flussu;
-use App\Flussu\Flussuserver\Handler;
-use App\Flussu\Flussuserver\NC\HandlerNC;
-use App\Flussu\Flussuserver\NC\HandlerBaseNC;
+namespace Flussu;
+use Flussu\Flussuserver\Handler;
+use Flussu\Flussuserver\NC\HandlerNC;
 class General {
     static $DocRoot="";
     static $DEBUG=true;
@@ -63,7 +62,7 @@ class General {
     private static $_genKey="Aldo08Fede05";
     private static $_myHandler=null;
     private static $_myHandlerNC=null;
-
+    
     static function initLog(){
         $_SESSION["Log"]=date("d/m H:i:s")." Start Log:\r\n";
         self::$sTime=hrtime(true);
@@ -93,7 +92,8 @@ class General {
         return self::$_CacheResults;
     }
 
-    static function Log($log_msg,$forced=false)
+
+    static function Log_nocaller($log_msg,$forced=false)
     {
         $debug=isset($_ENV["debug_log"])?$_ENV["debug_log"]:false;
         if ($debug || $forced) {
@@ -104,47 +104,102 @@ class General {
                 if (!file_exists($log_dir))
                     mkdir($log_dir, 0777, true);
                 $log_filename = $log_dir.'/log_' . date('d-M-Y') . '.log';
-                file_put_contents($log_filename, date("m.d.y H:n:s")." ".$log_msg."\n", FILE_APPEND);
+                if (!file_exists($log_filename)){
+                    try{
+                        $oldlog= $log_dir.'log_' . date('d-M-Y', strtotime('-1 month')). '.log';
+                        unlink($oldlog);
+                    } catch (\Throwable $e) {
+                        // do nothing.
+                        $e->getMessage();
+                    }
+                }
+                $now = \DateTime::createFromFormat('U.u', microtime(true));
+                file_put_contents($log_filename, $now->format("m.d.y H:i:s.u").$log_msg."\n", FILE_APPEND);
             } catch (\Throwable $e) {
-                file_put_contents($log_filename, date("m.d.y H:n:s")." ERRORE!: ".json_encode($e)."\n", FILE_APPEND);
+                file_put_contents($log_filename, $now->format("m.d.y H:i:s.u")." ERRORE!: ".json_encode($e)."\n", FILE_APPEND);
             }
         }
-    } 
+    }
+    static function Log($log_msg,$forced=false)
+    {
+        $debug=isset($_ENV["debug_log"])?$_ENV["debug_log"]:false;
+        if ($debug || $forced) {
+            $caller=self::getCaller(debug_backtrace());
+            $caller=str_replace($log_msg,"[message]",$caller);
+            self::Log_nocaller(" #".$caller."# ".$log_msg,$forced=false);
+        }
+    }
 
     static function Persist($objId,$objImg,$refType="gen",$refId="gen")
     {
         if (self::$UseCache){
             $fname=hash('sha256', $objId);
             $cache_dir=$_SERVER['DOCUMENT_ROOT']."/../Cache/";
-            try{
-                if (!file_exists($cache_dir.$refType."_".$refId."/"))
-                    mkdir($cache_dir.$refType."_".$refId."/", 0777, true);
-                $cacheContent=json_encode(["timestamp"=>time(),"image"=>self::_smartEncrypt($objImg)]);
-                file_put_contents($cache_dir.$refType."_".$refId."/".$fname.".php", $cacheContent, FILE_APPEND);
-                self::Log("Persist -> ".$objId);  
-            } catch (\Throwable $e) {
-                self::Log("GENERAL:PERSIST ERROR: ".json_encode($e));
+            $dpath=str_replace("//","/",$cache_dir.$refType."_".$refId);
+            $cfname=str_replace("//","/",$dpath."/".$fname.".php");
+            if (!file_exists($cfname)){
+                try{
+                    if (!file_exists($dpath."/"))
+                        mkdir($dpath."/", 0775, true);
+                    $cacheContent=json_encode(["timestamp"=>time(),"image"=>self::_smartEncrypt($objImg)]);
+                    file_put_contents($cfname, $cacheContent, FILE_APPEND);
+                    self::Log_nocaller(" #".self::getCaller(debug_backtrace())."# - Persist -> ".$objId);  
+                } catch (\Throwable $e) {
+                    self::Log("GENERAL:PERSIST ERROR: ".json_encode($e));
+                }
             }
         }
     } 
+
+    static function getCaller($v){
+        //$v=debug_backtrace();
+        $caller="[call from:???]";
+        try{
+            foreach ($v as $k=>$val){
+                if (isset ($val["file"]) && stripos($val["file"],"general.php")===false && stripos($val["class"],"general")===false){
+                    $exp=explode("/",$val["file"]);
+                    if (is_object($val["args"][0]))
+                        $args="[object]";
+                    else
+                        $args=implode(",",$val["args"]);
+                    $caller=end($exp)."->".$val["function"]."(".$args.")";
+                    break;
+                }
+            }
+        } catch (\Throwable $e) {
+            $caller="[CALLER GET ERROR:".$e->getMessage()."]";
+        }
+        return $caller;
+    } 
+
     static function Deserialize($objId,$refType="gen",$refId="gen")
     {
         $fname=hash('sha256', $objId);
         $cache_dir=$_SERVER['DOCUMENT_ROOT']."/../Cache/";
+        $fpath=str_replace("//","/",$cache_dir."/".$refType."_".$refId);
         if (self::$UseCache){
             try{
-                if (!file_exists($cache_dir."/".$refType."_".$refId."/"))
+                if (!file_exists($fpath."/"))
                     return null;
-                $cacheContent=file_get_contents($cache_dir."/".$refType."_".$refId."/".$fname.".php");
+                $fname=str_replace("//","/",$fpath."/".$fname.".php");
+                
+                // ------------------------------------------------------------
+                // GESTIONE ERRORE FILE INESISTENTE
+                // ------------------------------------------------------------
+                // Mettendo @ davanti file get contents, si evita di avere l'errore di "file inesistente".
+                // Si può quindi controllare il risultato: se FALSO, allora il file non eisste.
+                $cacheContent=@file_get_contents($fname);
                 if ($cacheContent===false)
                     return null;
-                self::Log("Deserialize <- ".$objId);   
+                // ------------------------------------------------------------
+
+                self::Log_nocaller(" #".self::getCaller(debug_backtrace())."# - Deserialize <- ".$objId);   
                 return self::_smartDecrypt(json_decode($cacheContent)->image);
             } catch (\Throwable $e) {
-                self::Log("GENERAL:PERSIST ERROR: ".json_encode($e));
+                self::Log("GENERAL:DESERIALIZE ERROR: ".json_encode($e));
             }
         }
-    } 
+    }
 
     static private function _smartEncrypt($value){
         return strrev(bin2hex($value));
@@ -162,8 +217,9 @@ class General {
     static function GetCache($id,$refType,$refId) {
         if (self::$_CacheResults){ 
             $ret=self::Deserialize($id,$refType,$refId);
-            if ($ret!==false)
+            if ($ret!==false && !is_numeric($ret) && !is_null($ret))
                 return json_decode($ret,true);
+            return $ret;
             //return json_decode($_SESSION[$id],true);
         }
         return null;
@@ -171,12 +227,31 @@ class General {
     static function DelCache($refType,$refId){
         self::$cache_dir=$_SERVER['DOCUMENT_ROOT']."/../Cache/";
         try{
-            self::Log("Remove ".$refType.":".$refId);   
-            return rmdir(self::$cache_dir.$refType."_".$refId."/");
+            if(self::deleteDirectory(self::$cache_dir.$refType."_".$refId."/"))
+                self::Log("Removed ".$refType.":".$refId);   
+            else
+                self::Log("NOT REMOVED!!! ".$refType.":".$refId);   
+
+            //return rmdir(self::$cache_dir.$refType."_".$refId."/");
         } catch (\Throwable $e) {
             self::Log("GENERAL:DELETE CACHE ERROR: ".json_encode($e));
         }
         return false;
+    }
+
+    static function deleteDirectory($dir) {
+        if (!file_exists($dir)) 
+            return true;
+        if (!is_dir($dir)) 
+            return unlink($dir);
+    
+        foreach (scandir($dir) as $item) {
+            if ($item == '.' || $item == '..')
+                continue;
+            if (!self::deleteDirectory($dir . DIRECTORY_SEPARATOR . $item))
+                return false;
+        }
+        return rmdir($dir);
     }
 
     static function getCallerIPAddress() {  

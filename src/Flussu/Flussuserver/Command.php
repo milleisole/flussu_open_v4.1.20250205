@@ -22,7 +22,7 @@
 
  * -------------------------------------------------------*
  * CLASS-NAME:       FlussuCommand.class
- * CLASS PATH:       /app/Flussu/Flussuserver
+ * CLASS PATH:       /Flussu/Flussuserver
  * FOR ALDUS BEAN:   Databroker.bean
  * -------------------------------------------------------*
  * CREATED DATE:     1.0 28.12:2020 - Aldus
@@ -51,13 +51,11 @@
  * 
  */
 
-namespace App\Flussu\Flussuserver;
-use Api\JomobileSms;
-use Api\SmsFactor;
-use App\Flussu\General;
-use App\Flussu\Documents\Fileuploader;
+namespace Flussu\Flussuserver;
+use Flussu\General;
+use Flussu\Documents\Fileuploader;
 use PHPMailer\PHPMailer\PHPMailer;
-use App\Flussu\Flussuserver\NC\HandlerNC;
+use Flussu\Flussuserver\NC\HandlerNC;
 
 class Command {
     private $_path;
@@ -77,6 +75,8 @@ class Command {
 
         $email_encrypt  = $_ENV["smtp_encrypt"];
         $mail = new PHPMailer(true);
+        General::log("Sending e-mail to:".$email. " - subj:".$subject);
+
         try {
             $mail->SMTPDebug = 0;
             $mail->isSMTP();     
@@ -182,9 +182,11 @@ class Command {
                     $result['message'] = "Mailer error: {$mail->ErrorInfo}";
                 }
             }
+            General::log("Email send result:".json_encode($result,JSON_PRETTY_PRINT));
         } catch (\Exception $e) {
             $result['success'] = false;
-            $result['message'] = "Failed exception {$e}\r\nMailer error: {$mail->ErrorInfo}";
+            $result['message'] = "Failed exception ".$e->getMessage()."\r\nMailer error: {$mail->ErrorInfo}";
+            General::log("Email send ERROR:".$e->getMessage()."\r\nMailer error: ".$mail->ErrorInfo);
         }
         return $result;
     }
@@ -689,14 +691,14 @@ class Command {
             $key=$_ENV["sms_".$prv."_key"];
             switch (trim(strtoupper($prv))){
                 case "SFC":
-                    $provider=new SmsFactor($key);
+                    $provider=new \Flussu\Controller\SmsFactor($key);
                     if (!($this->startsWith($phoneNum,"0039") || $this->startsWith($phoneNum,"+39"))){
                         $phoneNum="+39".$phoneNum;
                     }
                     $result=$provider->sendSms($senderName,$phoneNum,$message);
                     break;
                 case "J_M":
-                    $provider=new JomobileSms($key);
+                    $provider=new \Flussu\Controller\JomobileSms($key);
                     $result=$provider->sendSms($senderName,$phoneNum,$message);
                     break;
                 default:

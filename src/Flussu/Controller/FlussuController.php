@@ -17,20 +17,18 @@
  * CLASS-NAME:       Flussu API Controller
  * UPDATED DATE:     04.08.2022 - Aldus - Flussu v2.2
  *                   API calls handler
+ *                   26/12/2024 - Aldus - Flussu v4.0 
+ *                   Some refactor and cache management
  * -------------------------------------------------------*/
 namespace Flussu\Controller;
 
-use Auth;
-use Session;
-
 use Flussu\General;
-use Flussu\Api\V20\Flow;
-use Flussu\Api\V20\Stat;
-use Flussu\Api\V20\Sess;
-use Flussu\Api\V20\Conn;
-use Flussu\Api\V20\Engine;
+use Flussu\Api\V40\Flow;
+use Flussu\Api\V40\Stat;
+use Flussu\Api\V40\Sess;
+use Flussu\Api\V40\Conn;
+use Flussu\Api\V40\Engine;
 use Flussu\Flussuserver\Request;
-use Flussu\Flussuserver\Handler;
 use Flussu\Flussuserver\NC\HandlerNC;
 
 use Log;
@@ -187,7 +185,7 @@ class FlussuController
         $caller=$_SERVER["HTTP_USER_AGENT"];
 
         if ($wid>0){
-            if (count($parts)>2 && $parts[3]!=null){
+            if (count($parts)>2 && (isset($parts[3]) && $parts[3]!=null)){
                 $blockIdent=$parts[3];
                 $bid=$hnd->getBlockUuidFromDescription($wid,$blockIdent);
                 if (empty($bid)){
@@ -218,7 +216,8 @@ class FlussuController
             }
             $terms=[];
             foreach ($vars as $key => $value){
-                $terms["$".$prefix.$key]= preg_replace('~^[\'"]?(.*?)[\'"]?$~', '$1', $value); 
+                if (!is_null($value))
+                    $terms["$".$prefix.$key]= preg_replace('~^[\'"]?(.*?)[\'"]?$~', '$1', $value); 
             }
             $terms["$"."web_caller"]=$caller;
             $terms["$"."webhook"]=true;

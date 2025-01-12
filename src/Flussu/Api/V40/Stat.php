@@ -39,20 +39,18 @@
  * are handled correctly and efficiently.
  * 
  * @package App\Flussu\Statistics
- * @version 3.0.0
+ * @version 4.0.0
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
-namespace App\Flussu\Api\V20;
+namespace Flussu\Api\V40;
 
-use App\Flussu\Flussuserver\Request;
+use Flussu\Flussuserver\Request;
 
-use App\Flussu\General;
-use App\Flussu\Beans;
-use App\Flussu\Persons\User;
-use App\Flussu\Flussuserver\Command;
-use App\Flussu\Flussuserver\NC\HandlerNC;
-use App\Flussu\Flussuserver\Statistic;
+use Flussu\General;
+use Flussu\Persons\User;
+use Flussu\Flussuserver\NC\HandlerNC;
+use Flussu\Flussuserver\Statistic;
 
 class Stat {
     public function extCall(Request $Req, $rawdata=null){

@@ -26,5 +26,5 @@ are responsible for handling external HTTP requests and interacting with an inst
     It might track metrics such as request count, response time, or any other relevant data for monitoring and performance 
     analysis purposes.
 
-Each of these classes likely collaborates with the "App/Flussu/Flussuserver" classes to handle the request, perform the necessary 
+Each of these classes likely collaborates with the "src/Flussu/Flussuserver" classes to handle the request, perform the necessary 
 work, and generate a response back to the client.

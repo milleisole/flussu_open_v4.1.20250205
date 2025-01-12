@@ -27,8 +27,8 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
  * -------------------------------------------------------*/
-namespace App\Flussu\Flussuserver;
-use App\Flussu\General;
+namespace Flussu\Flussuserver;
+use Flussu\General;
 
 class Request implements \ArrayAccess {
     private $container = array();

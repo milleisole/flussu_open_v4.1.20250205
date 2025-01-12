@@ -1,0 +1,28 @@
+{
+  "services": {
+    "google":{
+        "type": "service_account",
+        "project_id": "nome-progetto",
+        "private_key_id": "...",
+        "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
+        "client_email": "account-service@nome-progetto.iam.gserviceaccount.com",
+        "client_id": "...",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/account-service%40nome-progetto.iam.gserviceaccount.com"
+    },
+    "microsoft":{
+        "tenant_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "client_id": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        "client_secret": "questa_è_una_secret_generata_da_azure_ad",
+        "resource": "https://graph.microsoft.com"
+    },
+    "aws":{
+      "aws_access_key_id": "AKIAXXXXXXXXEXAMPLE",
+      "aws_secret_access_key": "xxxxxx/xxxxxxxxxxxxxx/xxxxxxxxxxxxxxxEXAMPLE",
+      "region": "us-east-1"
+    }
+  }
+}
+  

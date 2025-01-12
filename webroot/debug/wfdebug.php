@@ -6,9 +6,16 @@ include "_layout.php";
  * UPDATED DATE:     25.05:2024 - Aldus - Flussu v3.0
  * -------------------------------------------------------*/
 
-require __DIR__ . '/../../autoloader.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
-use App\Flussu\General;
+use \Flussu\General;
+use \Flussu\Persons\User;
+use \Flussu\Flussuserver\Session;
+use Flussu\Flussuserver\Command;
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv->load( );
+
 $mustBeLogged = true;
 $authLevel = 1;
 $widd=null;
@@ -25,7 +32,7 @@ if ($sep->wid!=""){
     $origwid=$wid;
     $uid=General::getUserFromDateTimedApiKey($auk);
     if ($uid>0){
-        $theFlussuUser=new \App\Flussu\Persons\User();
+        $theFlussuUser=new User();
         $theFlussuUser->load($uid);
         $userId=$theFlussuUser->getId();
         $wid=$sep->wid;
@@ -45,7 +52,7 @@ if ($LNG=="")
     $LNG="IT";
 if ($sid!=""){
     //ripetizone
-    $wSess=new \App\Flussu\Flussuserver\Session($sid);
+    $wSess=new Session($sid);
     if (!$wSess->isExpired())
         $widd=$wSess->getWid();
     if ($widd==null) {
@@ -58,8 +65,8 @@ if ($sid!=""){
 if ($wid!="" && $sid=="" && $userId>0){
     // startup
     $isNew=true;
-    $wSess=new \App\Flussu\Flussuserver\Session(null);
-    $w_id=\App\Flussu\Flussuserver\NC\HandlerNC::WID2Wofoid($wid,$wSess);
+    $wSess=new Session(null);
+    $w_id=\Flussu\Flussuserver\NC\HandlerNC::WID2Wofoid($wid,$wSess);
 
     $IP=General::getCallerIPAddress();
     $UA=General::getCallerUserAgent();
@@ -97,7 +104,7 @@ if (is_null($wSess)){
             $LNG=$wSess->getLang();
         $bid=$wSess->getBlockId();
 
-        $wwork= new \App\Flussu\Flussuserver\Worker($wSess);
+        $wwork= new \Flussu\Flussuserver\Worker($wSess);
         $frmBid="";
         if (!$isNew)
             $frmBid=General::getPost("bid");
@@ -109,7 +116,7 @@ if (is_null($wSess)){
         //  la sessione ha registrato l'URL nella
         //  var [nomevar]_uri 
         // -----------------------------------------
-        $wcmd= new \App\Flussu\Flussuserver\Command();
+        $wcmd= new \Flussu\Flussuserver\Command();
         $attachedFile=$wcmd->fileCheckExtract($wSess,$wwork,$frmBid,$_POST,$_FILES);
         // ------------------------------------------
         try {
@@ -248,17 +255,22 @@ if (is_null($wSess)){
                     <input type='hidden' name='bid' value='$frmBid'>
         ";
 
-        foreach ($frmElms as $Key => $Elm){
+        foreach ($frmElms as $Key => $Elmm){
+            $Elm=$Elmm;
             $fe=explode("$",$Key);
             $fem="";
             if (is_array($fe) && count($fe)>1){
                 $Key=$fe[0];
                 $fem=$fe[1];
             }
+            $stInfo=json_decode(str_replace(['}"','"{','\"'],['}','{','"'],str_replace(":{}}",':""}',$Elmm[1])),true);
+            if (is_null($stInfo))
+                $stInfo=["class"=>"","display_info"=>""];
+            //$Elm[1]=json_decode($Elmm[1],true);
             switch ($Key){
                 case "L":
-                    $se=\App\Flussu\Flussuserver\Command::htmlSanitize($Elm[0]);
-                    echo "<div class='".$Elm[1]["class"]."'>$se</div>";
+                    $se=Command::htmlSanitize($Elm[0]);
+                    echo "<div class='".$stInfo["class"]."'>$se</div>";
                     break;
                 case "M":
                     if (strpos($Elm[0],'flussu_qrc')===false){
@@ -269,44 +281,44 @@ if (is_null($wSess)){
                             case "gif":
                             case "svg":
                             case "png":
-                                echo "<img class='".$Elm[1]["class"]."' src='$Elm[0]'><br>";
+                                echo "<img class='".$stInfo["class"]."' src='$Elm[0]'><br>";
                                 break;
                             case "mp4":
                             case "avi":
                             case "mpg":
                             case "mpeg":
-                                echo "<video class='".$Elm[1]["class"]."' controls>";
+                                echo "<video class='".$stInfo["class"]."' controls>";
                                 echo "<source src='$Elm[0]' type='video/$ext'>";
                                 echo "Your browser does not support the video tag.";
                                 echo "</video>";
                             break;
                             default:
-                                echo "<a target='_blank' class='".$Elm[1]["class"]."' href='$Elm[0]'>download </a>";
+                                echo "<a target='_blank' class='".$stInfo["class"]."' href='$Elm[0]'>download </a>";
                         }
                     } else {
                         echo "<img src='$Elm[0]'><br>";
                     }
                     break;
                 case "A":
-                    echo "<a class='".$Elm[1]["class"]."'  href='$Elm[0]'>Link</a>";
+                    echo "<a class='".$stInfo["class"]."'  href='$Elm[0]'>Link</a>";
                     break;
                 case "ITT":
-                    $se=\App\Flussu\Flussuserver\Command::htmlSanitize($Elm[0]);
+                    $se=Flussu\Flussuserver\Command::htmlSanitize($Elm[0]);
                     if (!empty($se)){
-                        echo "<div><label class='".$Elm[1]["class"]."' for='\$$fem'>$se</label></div>";
+                        echo "<div><label class='".$stInfo["class"]."' for='\$$fem'>$se</label></div>";
                     }
-                    echo "<div style='padding-left:8px;margin-left:8px;'><input class='".$Elm[1]["class"]."' type='text' name='\$$fem' value=''></div>";
+                    echo "<div style='padding-left:8px;margin-left:8px;'><input class='".$stInfo["class"]."' type='text' name='\$$fem' value=''></div>";
                     break;
                 case "ITB":
-                    echo "<div style='padding-left:108px;margin-left:108px;'><input class='".$Elm[1]["class"]."' type='submit' name='\$ex!$fem' value='$Elm[0]'></div>";
+                    echo "<div style='padding-left:108px;margin-left:108px;'><input class='".$stInfo["class"]."' type='submit' name='\$ex!$fem' value='$Elm[0]'></div>";
                     break;
                 case "ITM":
                     $id_elm="img_".$fem.$bid;
                     echo "<!-- file input -->";
                     echo "  <div style='border:solid 1px silver;padding:5px;margin:5px;'>";
-                    echo "      <!--input img--><p id='P$bid' class='".$Elm[1]["class"]."'>$Elm[0]</p>";
+                    echo "      <!--input img--><p id='P$bid' class='".$stInfo["class"]."'>$Elm[0]</p>";
                     echo "      <div>";
-                    echo "          <input id=\"img_$fem\" name=\"$$fem\" type='file' accpt=\"image/*\" class=\"I$bid $Elm[1]\" onchange=\"getPhoto(this,'$id_elm',true);\" ></input><br>";
+                    echo "          <input id=\"img_$fem\" name=\"$$fem\" type='file' accpt=\"image/*\" class=\"I$bid ".$stInfo['class']."\" onchange=\"getPhoto(this,'$id_elm',true);\" ></input><br>";
                     echo "          <figure id='F$bid' class='about-picture' style='display:none;width:75%;height:60%;align-items:center;'>";
                     echo "              <img class='M$bid' id='$id_elm' src='' style='max-width:100%;max-height:100%'>";
                     echo "          </figure>";

@@ -26,12 +26,12 @@
 
  * -------------------------------------------------------*
  * CLASS-NAME:       FlussuHandlerNonCached.class
- * CLASS PATH:       /app/Flussu/Flussuserver
+ * CLASS PATH:       /Flussu/Flussuserver
  * FOR ALDUS BEAN:   Databroker.bean
  * -------------------------------------------------------*
  * CREATED DATE:     (04.11.2020) 25.01:2021 - Aldus
- * VERSION REL.:     3.0.6 20241118 
- * UPDATE DATE:      27.11:2024 
+ * VERSION REL.:     4.0.0 20241226 
+ * UPDATE DATE:      26.12:2024 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
  *   21.02.24 - Aggiunte funzionalità per Timedcall.
@@ -45,6 +45,7 @@
  *   17.11.24 - BUG updated getUserFlofos.
  *   18.11.24 - Estese le funzionalità per le wfAuid .
  *   22.11.24 - BUG workflow creation: solved
+ *   26.12.24 - some refactoring
  * -------------------------------------------------------*/
 
 /**
@@ -68,10 +69,10 @@
  * 
  */
 
-namespace App\Flussu\Flussuserver\NC;
-use App\Flussu\General;
-use App\Flussu\Persons;
-use Api\OpenAiController;
+namespace Flussu\Flussuserver\NC;
+use Flussu\General;
+use Flussu\Persons;
+use Flussu\Flussuserver\NC\HandlerBaseNC;
 
 use stdClass;
 
@@ -740,7 +741,7 @@ class HandlerNC extends HandlerBaseNC {
     }
 
     function translateLabels($from, $tolng, $toLang, $wofoid, $sessTransId){
-        $this->_open_ai = new \Flussu\Api\OpenAiController();
+        $this->_open_ai = new \Flussu\Controller\OpenAiController();
         //$trCmd="Translate to ".$toLang.":";
 
         //Check existing languages
@@ -1111,7 +1112,7 @@ class HandlerNC extends HandlerBaseNC {
 
                         // ------------------------------------------------------------
                         // Prima il backup (max ultimi 10 save)
-                        // il backup viene fermato in caso di import, perch� gi� effettuato in fase di import
+                        // il backup viene fermato in caso di import, perche' gia' effettuato in fase di import
                         // ------------------------------------------------------------
                         if (!$doNotBackup)
                             $p_res=$this->_backupFlofo($id);
@@ -1272,7 +1273,7 @@ class HandlerNC extends HandlerBaseNC {
                             // ------------------------------------------------------------
                             $res=$this->deleteFlofo($WID,true);
 
-                            $SQL="insert into t10_workflow (c10_id,c10_wf_auid,c10_userid,c10_description,c10_name,c10_supp_langs,c10_def_lang,c10_active,c10_svc1,c10_svc2,c10_svc3,c10_validfrom, c10_validuntil,c10_modified) values (?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)";
+                            $SQL="insert into t10_workflow (c10_id,c10_wf_auid,c10_userid,c10_description,c10_name,c10_supp_langs,c10_def_lang,c10_active,c10_svc1,c10_svc2,c10_svc3,c10_validfrom, c10_validuntil,c10_modified) values (?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)";
                             $params=array($id,$uuid,$userid,$workflowData->description,$workflowData->name,$workflowData->supp_langs,$workflowData->lang,$workflowData->is_active,$svc1,$svc2,$svc3,'1899/12/31 23:59:59','2100/01/01 00:00:00');
                             $p_res=$this->execSql($SQL,$params);
                             if (!$p_res){
@@ -1662,10 +1663,12 @@ class HandlerNC extends HandlerBaseNC {
     }
 
     function getBlockUuidFromDescription($WoFoId,$desc){
-        $SQL="select c20_uuid as uuid from t20_block where c20_flofoid=? and c20_desc like ?";
-        $this->execSql($SQL,array($WoFoId,"%".$desc."%"));
-        if (isset($this->getData()[0]["uuid"]))
-            return $this->getData()[0]["uuid"];
+        if (!is_null($desc)){
+            $SQL="select c20_uuid as uuid from t20_block where c20_flofoid=? and c20_desc like ?";
+            $this->execSql($SQL,array($WoFoId,"%".$desc."%"));
+            if (isset($this->getData()[0]["uuid"]))
+                return $this->getData()[0]["uuid"];
+        }
         return "";
     }
 
@@ -1736,7 +1739,7 @@ class HandlerNC extends HandlerBaseNC {
         $ELSQ=$this->_getFlofoElementSql($getJustFlowExec,true,$forEditingPurpose,true);
 
         $SQL2="";
-        $SQL="select b1.c20_uuid as block_id, ifnull(b1.c20_type,'') as type, b1.c20_exec as exec, ";
+        $SQL="select b1.c20_uuid as block_id, ifnull(b1.c20_type,'') as type, b1.c20_exec as exec, ifnull(b1.c20_desc,'') as description, ";
         if ($BlkUuid<>""){
             $SQL2=" b1.c20_uuid=? and ";
             $params=array($BlkUuid,$WoFoId); 
@@ -1745,10 +1748,10 @@ class HandlerNC extends HandlerBaseNC {
         if (!$getJustFlowExec){
             $SQL.="b1.c20_start as is_start ";
             if ($forEditingPurpose){
-                $SQL.=",b1.c20_note as note, ifnull(b1.c20_desc,'') as description, b1.c20_xpos as x_pos, b1.c20_ypos as y_pos, b1.c20_modified as last_mod ";
+                $SQL.=",b1.c20_note as note, b1.c20_xpos as x_pos, b1.c20_ypos as y_pos, b1.c20_modified as last_mod ";
             }
         } else {
-            $SQL.="ifnull(b1.c20_desc,'') as description, b1.c20_start as is_start ";
+            $SQL.="b1.c20_start as is_start ";
         }
         if (!empty(trim($ELSQ[0])))
             $SQL.=" ,".$ELSQ[0];
@@ -1767,10 +1770,10 @@ class HandlerNC extends HandlerBaseNC {
             $retBlk["block_id"]=$blk[0]["block_id"];
             $retBlk["type"]=$blk[0]["type"];
             $retBlk["exec"]=$blk[0]["exec"];
+            $retBlk["description"]=$blk[0]["description"];
             if (!$getJustFlowExec)
                 $retBlk["is_start"]=$blk[0]["is_start"];
             if ($forEditingPurpose){
-                $retBlk["description"]=$blk[0]["description"];
                 $retBlk["x_pos"]=$blk[0]["x_pos"];
                 $retBlk["y_pos"]=$blk[0]["y_pos"];
                 $retBlk["last_mod"]=$blk[0]["last_mod"];
@@ -1784,7 +1787,9 @@ class HandlerNC extends HandlerBaseNC {
                     $theElem["d_type"]=$this->_elmTypeDesc($elm["c_type"]);
                     $theElem["e_order"]=strval($elm["e_order"]);
                     $theElem["exit_num"]=strval($elm["exit_num"]);
-                    $theElem["css"]=strval($elm["css"]);
+                    //$theElem["css"]=strval($elm["css"]);
+                    // INVESTIGATE CSS BUG
+                    $theElem["css"]=strval(json_encode(json_decode(str_replace(['}"','"{','\"'],['}','{','"'],str_replace(":{}}",':""}',$elm["css"])),true)));
                     $theElem["note"]="";
                     $theElem["langs"]=[];
                     $langs=$this->getFlofoElementText($elm["elem_id"],$LNG);

@@ -22,7 +22,7 @@ namespace Flussu\Api;
 use Flussu\General;
 use Flussu\Flussuserver\NC\HandlerNC;
 
-require_once '../autoloader.php';
+//require_once '../autoloader.php';
 header('Connection: keep-alive');
 header('Cache-Control: no-cache');
 

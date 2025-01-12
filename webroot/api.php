@@ -20,17 +20,16 @@
  * 
  * --------------------------------------------------------------------*/
 
-require_once __DIR__ . '/../autoloader.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
-use Flussu\Api\FlussuController;
-use Flussu\Api\ZapierController;
-use Flussu\Api\VersionController;
-use App\Flussu\Flussuserver\Request;
-use Orhanerday\OpenAi\OpenAi;
-use App\Flussu\General;
+use Flussu\Controller\FlussuController;
+use Flussu\Controller\ZapierController;
+use Flussu\Controller\VersionController;
+use Flussu\Flussuserver\Request;
+use Flussu\General;
 
 // VERSION
-$FlussuVersion="4.0.0.20241128";
+$FlussuVersion="4.0.0.20241209";
 $FVP=explode(".",$FlussuVersion);
 $v=$FVP[0];
 $m=$FVP[1];
@@ -38,6 +37,13 @@ $r=$FVP[2];
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load( );
+
+if (!function_exists('config')) {
+    function config($key, $default = null)
+    {
+        return Flussu\Config::get($key, $default);
+    }
+} 
 
 if (isset($argv) && is_array($argv)){
     echo ("Flussu Server v".$_ENV['major'].".".$_ENV['minor'].".".$_ENV['release']."\n");
@@ -87,16 +93,34 @@ if (strpos($_SERVER["SCRIPT_URL"],"license") || strpos($_SERVER["QUERY_STRING"],
         "notify.php"scrit, will handle the whole process and send back the notifications if any. 
     */
     if (isset($_GET["SID"])){
-        include '../notify/notify.php';
+        include 'notify.php';
     } else {
         header('HTTP/1.0 403 Forbidden');
         die(\json_encode(["error"=>"403","message"=>"Unauthorized action"]));
     }
+} else if (stripos($_SERVER["SCRIPT_URL"],"/wh/")===0){
+    /*
+    It's a WEB HOOK call, so we need to handle it here.
+    The first part must be a Workflow-id
+    If there is a second part, it must be a block id
+    */
+    try{
+        $fc=new FlussuController();
+        General::log("Webhook call: ".$_SERVER["SCRIPT_URL"]);
+        $res=$fc->webhook($_SERVER["SCRIPT_URL"]);
+        die($res);
+    } catch(\Throwable $e){ 
+        header('HTTP/1.0 500 Error');
+        General::log("Webhook call error: ".json_encode( $e->getMessage()),true);
+        die(\json_encode(["error"=>"500","message"=>"Webhook call error"]));
+    }
 } else {
     $apiPage=basename($_SERVER['REQUEST_URI']);
     if (strtolower(substr($apiPage,0,3))=="zap"){
+        General::log("Extcall Zapier Controller: ".$apiPage." - ".$_SERVER["REQUEST_URI"]);
         $fc=new ZapierController();
     } else {
+        General::log("Extcall Flussu Controller: ".$apiPage." - ".$_SERVER["REQUEST_URI"]);
         $fc=new FlussuController();
     }
     $req=new Request();
