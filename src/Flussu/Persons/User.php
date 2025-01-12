@@ -16,10 +16,10 @@
  * --------------------------------------------------------------------*
  * TBD - INCOMPLETE
  * --------------------------------------------------------------------*/
- namespace Flussu\Persons;
-use Flussu\Beans;
-use Flussu;
-use Flussu\General;
+ namespace App\Flussu\Persons;
+use App\Flussu\Beans;
+use App\Flussu;
+use App\Flussu\General;
 class User {
     protected $mId=0;
     protected $mActive=0;
@@ -33,7 +33,7 @@ class User {
 
     public function __construct (){
         General::addRowLog("[Costr User]");
-        $this->_UBean=new \Flussu\Beans\User(General::$DEBUG);
+        $this->_UBean=new \App\Flussu\Beans\User(General::$DEBUG);
         $this->mPsChgDt= date('Y-m-d', strtotime("-1 week", date('now')));
         $this->clear();
     }
@@ -46,7 +46,7 @@ class User {
     public function getChangePassDt(){return $this->mPsChgDt;}
 
     public function hasARule(){
-        $UsrRul=new UsrRule(General::$DEBUG);
+        $UsrRul=new \App\Flussu\Beans\UsrRule(General::$DEBUG);
         $UsrRul->selectUser($this->mId);
         return $UsrRul->getc15_ruleid()>0;
     }
@@ -353,7 +353,7 @@ class User {
     
     static function existEmail($emailAddress){
         if (trim($emailAddress)!=""){
-            $theBean=new \Flussu\Beans\User(General::$DEBUG);
+            $theBean=new \App\Flussu\Beans\User(General::$DEBUG);
             $row=$theBean->selectDataUsingEmail($emailAddress);
             if (is_array($row))
                 return true;
@@ -374,7 +374,7 @@ class User {
 
     static function existUsername($userName){
         if (trim($userName)!=""){
-            $theBean=new \Flussu\Beans\User(General::$DEBUG);
+            $theBean=new \App\Flussu\Beans\User(General::$DEBUG);
             $theBean->load($userName);
             return $theBean->getc80_id()>0;
         }

@@ -45,10 +45,10 @@
  * 
  */
 
-namespace Flussu;
-use Flussu\Flussuserver\Handler;
-use Flussu\Flussuserver\NC\HandlerNC;
-use Flussu\Flussuserver\NC\HandlerBaseNC;
+namespace App\Flussu;
+use App\Flussu\Flussuserver\Handler;
+use App\Flussu\Flussuserver\NC\HandlerNC;
+use App\Flussu\Flussuserver\NC\HandlerBaseNC;
 class General {
     static $DocRoot="";
     static $DEBUG=true;

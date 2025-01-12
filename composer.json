@@ -25,8 +25,7 @@
         "symfony/browser-kit": "^5.4",
         "symfony/panther": "^1.1",
         "vlucas/phpdotenv": "^5.6",
-        "web64/php-nlp-client": "^0.40.5",
-        "zircote/swagger-php": "^3.0"
+        "web64/php-nlp-client": "^0.40.5"
     },
     "autoload": {
         "classmap": [

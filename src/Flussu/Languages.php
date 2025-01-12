@@ -22,7 +22,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
  * -------------------------------------------------------*/
-namespace Flussu;
+namespace App\Flussu;
 class Languages
 {
     function txt4Lang(){

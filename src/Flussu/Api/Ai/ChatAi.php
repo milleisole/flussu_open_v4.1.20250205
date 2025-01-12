@@ -17,7 +17,7 @@
  * TBD - INCOMPLETE
  * --------------------------------------------------------------------*/
 
-namespace Flussu\Api\Ai;
+namespace App\Flussu\Api\Ai;
 use GuzzleHttp\Client;
 
 class ChatAi

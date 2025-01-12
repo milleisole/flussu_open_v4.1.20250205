@@ -24,10 +24,10 @@
  *                   05.01.2023 - Aldus - Flussu v2.7 (max db speed)
  *                   10.11.2024 - Aldus - addedd last error get
  * -------------------------------------------------------*/
-namespace Flussu\Beans;
+namespace App\Flussu\Beans;
 
 use PDO;
-use Flussu\General;
+use App\Flussu\General;
 
 class Databroker extends Dbh
 {

@@ -19,10 +19,10 @@
  *                           | class path can be called from
  *                           | other app paths
  * -------------------------------------------------------*/
-namespace Flussu\Beans;
+namespace App\Flussu\Beans;
 
 use PDO;
-use Flussu\General;
+use App\Flussu\General;
 
 class Dbh {
   private $_db_host="";

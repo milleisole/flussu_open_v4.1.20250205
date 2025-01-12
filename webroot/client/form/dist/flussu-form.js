@@ -455,11 +455,6 @@ function addLangButton(item, index) {
 }
 
 function getWorkflowInfo() {
-    if (!flussuId){
-        const params = new URLSearchParams(window.location.search);
-        flussuId = params.get('WID');
-    }
-    
     if (!displayTit){
         $("#" + titElemId).removeClass("flussu-title");
         $("#" + titElemId).removeClass("d-flex").addClass("d-none").hide();

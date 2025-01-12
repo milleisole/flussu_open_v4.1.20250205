@@ -28,7 +28,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases:
  * -------------------------------------------------------*/
-namespace Flussu\Flussuserver;
+namespace App\Flussu\Flussuserver;
 include_once(__DIR__ . "/GibberishFiles/lib/GibberishDetector.class.php");
 
 class Gibberish {

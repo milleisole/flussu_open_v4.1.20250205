@@ -49,10 +49,10 @@
  * 
  */
 
-namespace Flussu\Documents;
+namespace App\Flussu\Documents;
 
-use Flussu\General;
-use Flussu\Documents\Res_img;
+use App\Flussu\General;
+use App\Flussu\Documents\Res_img;
 
 class Fileuploader {
 

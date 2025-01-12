@@ -47,9 +47,9 @@
  * 
  */
 
-namespace Flussu\Flussuserver\NC;
+namespace App\Flussu\Flussuserver\NC;
 use \stdClass;
-use Flussu\General;
+use App\Flussu\General;
 
 class HandlerAppNC extends HandlerBaseNC {
 

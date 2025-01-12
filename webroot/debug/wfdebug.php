@@ -8,7 +8,7 @@ include "_layout.php";
 
 require __DIR__ . '/../../autoloader.php';
 
-use Flussu\General;
+use App\Flussu\General;
 $mustBeLogged = true;
 $authLevel = 1;
 $widd=null;
@@ -25,7 +25,7 @@ if ($sep->wid!=""){
     $origwid=$wid;
     $uid=General::getUserFromDateTimedApiKey($auk);
     if ($uid>0){
-        $theFlussuUser=new \Flussu\Persons\User();
+        $theFlussuUser=new \App\Flussu\Persons\User();
         $theFlussuUser->load($uid);
         $userId=$theFlussuUser->getId();
         $wid=$sep->wid;
@@ -45,7 +45,7 @@ if ($LNG=="")
     $LNG="IT";
 if ($sid!=""){
     //ripetizone
-    $wSess=new \Flussu\Flussuserver\Session($sid);
+    $wSess=new \App\Flussu\Flussuserver\Session($sid);
     if (!$wSess->isExpired())
         $widd=$wSess->getWid();
     if ($widd==null) {
@@ -58,8 +58,8 @@ if ($sid!=""){
 if ($wid!="" && $sid=="" && $userId>0){
     // startup
     $isNew=true;
-    $wSess=new \Flussu\Flussuserver\Session(null);
-    $w_id=\Flussu\Flussuserver\NC\HandlerNC::WID2Wofoid($wid,$wSess);
+    $wSess=new \App\Flussu\Flussuserver\Session(null);
+    $w_id=\App\Flussu\Flussuserver\NC\HandlerNC::WID2Wofoid($wid,$wSess);
 
     $IP=General::getCallerIPAddress();
     $UA=General::getCallerUserAgent();
@@ -97,7 +97,7 @@ if (is_null($wSess)){
             $LNG=$wSess->getLang();
         $bid=$wSess->getBlockId();
 
-        $wwork= new \Flussu\Flussuserver\Worker($wSess);
+        $wwork= new \App\Flussu\Flussuserver\Worker($wSess);
         $frmBid="";
         if (!$isNew)
             $frmBid=General::getPost("bid");
@@ -109,7 +109,7 @@ if (is_null($wSess)){
         //  la sessione ha registrato l'URL nella
         //  var [nomevar]_uri 
         // -----------------------------------------
-        $wcmd= new \Flussu\Flussuserver\Command();
+        $wcmd= new \App\Flussu\Flussuserver\Command();
         $attachedFile=$wcmd->fileCheckExtract($wSess,$wwork,$frmBid,$_POST,$_FILES);
         // ------------------------------------------
         try {
@@ -257,7 +257,7 @@ if (is_null($wSess)){
             }
             switch ($Key){
                 case "L":
-                    $se=Flussu\Flussuserver\Command::htmlSanitize($Elm[0]);
+                    $se=\App\Flussu\Flussuserver\Command::htmlSanitize($Elm[0]);
                     echo "<div class='".$Elm[1]["class"]."'>$se</div>";
                     break;
                 case "M":
@@ -291,7 +291,7 @@ if (is_null($wSess)){
                     echo "<a class='".$Elm[1]["class"]."'  href='$Elm[0]'>Link</a>";
                     break;
                 case "ITT":
-                    $se=Flussu\Flussuserver\Command::htmlSanitize($Elm[0]);
+                    $se=\App\Flussu\Flussuserver\Command::htmlSanitize($Elm[0]);
                     if (!empty($se)){
                         echo "<div><label class='".$Elm[1]["class"]."' for='\$$fem'>$se</label></div>";
                     }

@@ -32,13 +32,13 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
  * -------------------------------------------------------*/
-namespace Flussu\Flussuserver;
+namespace App\Flussu\Flussuserver;
 
 require __DIR__ . '/../../../autoloader.php';
 
-use Flussu\Flussuserver\NC\HandlerNC;
-use Flussu\Flussuserver\Session;
-use Flussu\General;
+use App\Flussu\Flussuserver\NC\HandlerNC;
+use App\Flussu\Flussuserver\Session;
+use App\Flussu\General;
 use Api\VersionController;
 
 /* -----------------------------------------------------------------------------------

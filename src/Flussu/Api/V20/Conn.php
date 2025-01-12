@@ -42,15 +42,15 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
- namespace Flussu\Api\V20;
+ namespace App\Flussu\Api\V20;
 
-use Flussu\Flussuserver\Request;
+use App\Flussu\Flussuserver\Request;
 
-use Flussu\General;
-use Flussu\Beans;
-use Flussu\Persons\User;
-use Flussu\Flussuserver\Command;
-use Flussu\Flussuserver\NC\HandlerNC;
+use App\Flussu\General;
+use App\Flussu\Beans;
+use App\Flussu\Persons\User;
+use App\Flussu\Flussuserver\Command;
+use App\Flussu\Flussuserver\NC\HandlerNC;
 
 class Conn {
     /**
@@ -70,8 +70,8 @@ class Conn {
      * determines whether the user needs to be logged in and the required authorization level based
      * on the command to be executed.
      * 
-     * @param Flussu\Flussuserver\Request $Req The HTTP request object, containing parameters and the request body.
-     * @param Flussu\Persons\User $theUser The user object representing the current user.
+     * @param App\Flussu\Flussuserver\Request $Req The HTTP request object, containing parameters and the request body.
+     * @param App\Flussu\Persons\User $theUser The user object representing the current user.
      * 
      * @return void The method does not return a value but sends a JSON response to the client.
      * 
@@ -80,7 +80,8 @@ class Conn {
     public function exec(Request $Req, User $theUser){
         $mustBeLogged=false;
         $authLevel=0;
-        
+        //require_once "../../includes/session.inc.php";
+
         $db= new HandlerNC();
         $wcmd= new Command();
 
