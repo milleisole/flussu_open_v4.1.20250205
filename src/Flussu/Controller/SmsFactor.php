@@ -1,7 +1,7 @@
 <?php
 /**
  * --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 /** 
  * --------------------------------------------------------------------*
  * CLASS-NAME:       SMS sender provider for SmsFactor API
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * --------------------------------------------------------------------*/
 namespace Flussu\Controller;
 

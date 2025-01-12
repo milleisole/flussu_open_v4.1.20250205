@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,13 +28,10 @@
  * CLASS-INTENT:     Work/executor
  * -------------------------------------------------------*
  * CREATED DATE:     25.05:2024 - Aldus - Flussu v3.0
- * VERSION REL.:     3.0.5 20241115 
- * UPDATED DATE:     15.11:2024 - Aldus 
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
- * NEW: modifying received json from external server API - 24-09-2024
- * NEW: can add labels and button dinamically - 24-09-2024
- * NEW: can create a stripe payment link - 24-09-2024
  * NEW: add Workflow Absolute Unique ID handling - 15-11-2024
  * -------------------------------------------------------*/
 

@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,8 @@
  * 
  * CLASS-NAME:       Flussu OpenAi Controller - v2.8
  * UPDATED DATE:     17.08.2023 - Aldus - Flussu v2.9
- *                   changed open-ai library, forked existent
- *                   and extended to handle chats.
- * UPDATED DATE:     07.08.2023 - Aldus - Flussu v2.7
- *                   It needs "openai.apikey" on /Config.php
- *                   if use openai.model as the base model
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 namespace Flussu\Controller;
 
@@ -139,7 +136,7 @@ class OpenAiController
                         $resp["resp"].=nl2br(htmlspecialchars(trim($arResp->choices[$i]->text)))."\r\n";
                 }
             } else {
-                $resp["elms"]=$this->explain($query);
+                //$resp["elms"]=$this->explain($query);
             }
         } catch (\Throwable $e){
             $resp["resp"]="";

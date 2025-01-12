@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,19 +30,10 @@
  * FOR ALDUS BEAN:   Databroker.bean
  * -------------------------------------------------------*
  * CREATED DATE:     (04.11.2020) 25.01:2021 - Aldus
- * VERSION REL.:     4.0.0 20241226 
- * UPDATE DATE:      26.12:2024 
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
- *   21.02.24 - Aggiunte funzionalità per Timedcall.
- *   10.11.24 - Aggiunte funzionalità relative ad un identif.
- *              univoco assoluto (WfAUId) per ogni Workflow 
- *              che verrà ereditato anche in caso di import.
- *   15.11.24 - Modificata l'interfaccia del WID dato un 
- *              identificativo qualsiasi.
- *   15.11.24 - BUG updated getUserFlofos, ritorna wfauid che 
- *                  non è compreso nella vista v20_prj_wf_all
- *   17.11.24 - BUG updated getUserFlofos.
  *   18.11.24 - Estese le funzionalità per le wfAuid .
  *   22.11.24 - BUG workflow creation: solved
  *   26.12.24 - some refactoring

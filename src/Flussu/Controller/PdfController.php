@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,8 @@
  * --------------------------------------------------------------------*
  * CLASS-NAME:       Flussu API Controller
  * UPDATED DATE:     04.08.2022 - Aldus - Flussu v2.8
- *                   Controller to handle a PDF printed paper
- * UPDATED DATE:     26.01.2024 - Flussu v2.9.5
- *                   Changed PDF footer
- *                 * 06.02.2024 - printRawHtml2Pdf
- *                 * 13.10.2024 - Flussu v3.0.2
- *                   Changed "temp_dir" > "tempdir" env data get
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 namespace Flussu\Controller;
 

@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,8 @@
  * CLASS DIR:        D:\xampp\htdocs\aldus/classes/beans
  * FOR MYSQL TABLE:  Undefined
  * FOR MYSQL DB:     aldus
- * LAST RELEASE:     02.01:2023 - Aldus - Flussu v2.7
- *                   addedd transact multiple queries exec support
- *                   05.01.2023 - Aldus - Flussu v2.7 (max db speed)
- *                   10.11.2024 - Aldus - addedd last error get
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 namespace Flussu\Beans;
 

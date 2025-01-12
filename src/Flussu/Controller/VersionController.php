@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v3.0.5 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,10 @@
  * -------------------------------------------------------*
  * CREATED DATE:     (09.03.2023) - Aldus
  * FOR ALDUS BEAN:   Databroker.bean
- * UPDATED DATE:     15.11:2024 - Aldus - DB V.10 (wfAUId/blkExec) 
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
- * 26.10:2024 - Added table t203 for notify asyncronous needs
- * 14.11:2024 - Added _Absolute Unique ID_ to table t10
- * 15.11:2024 - Added _A U ID_ substitution on sub's call
- *              exec blocks
  * -------------------------------------------------------*/
 
  /*

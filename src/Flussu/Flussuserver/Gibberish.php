@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@
  * CLASS PATH:       /Flussu/Flussuserver
  * -------------------------------------------------------*
  * CREATED DATE:     25.01:2021 - Adapted/Aldus
- * UPDATED DATE:     19.02:2021 - Aldus - Flussu v1.0
- * VERSION DATE:     3.0 19.02:2024 
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases:
  * -------------------------------------------------------*/

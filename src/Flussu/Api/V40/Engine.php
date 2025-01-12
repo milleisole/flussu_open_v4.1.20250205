@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,25 +18,8 @@
  * CLASS PATH:    Flussu\Api\V40\FlussuHandler
  * -------------------------------------------------------*
  * UPDATE:  25.01.2021 - Aldus - Flussu v2.0
- * UPDATE:  08.07.2022 - Aldus - Flussu v2.1
- * UPDATE:  04.08.2022 - Aldus - Flussu v2.2
-            Server complete separation + SUBS
- * UPDATE:  01.09:2022 - Aldus - Flussu v2.2.1 R1 
- *          a)Flussu stdclass on script - b)script_referer
- *          (on JavaScript)£varName=value on url -> $varName=value on sess
- *          d) expired or malformed sent SID
- * UPDATE:  22.09:2022 - Aldus - Flussu v2.2.3 R1 
- *          a) ubugged wrong workflow identification
- * UPDATE:  28.09:2022 - Aldus - Flussu v2.2.3 R3 
- *          $varName=value on url/get -> $varName=value on sess
- * UPDATE:  29.09:2022 - Aldus - Flussu v2.2.3 R3-bug 
- *          BUG: does not get right var values...
- * RELEASE: 04.11.2022 - Aldus - Flussu v2.2.3 R6 
- *                    some bug solved (SID recall/isStarting)
- * RELEASE: 09.11.2022 - Aldus - Flussu v2.2.4 RC2
- *                    complete rewrite of Session Obj+various bugs solved
- * RELEASE: 24.09:2024 - Aldus 
- *          NEW: can add labels and button dinamically
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 /**
  * The Engine class is responsible for handling the core execution flow of the Flussu API within the Flussu server.

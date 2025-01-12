@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * --------------------------------------------------------------------*
- * CLASS-NAME:       Flussu Revolut API Controller
+ * CLASS-NAME:       Flussu Revolut API Controller - TBD - EXPERIMENTAL
  * UPDATED DATE:     07.12.2024 - Aldus - Flussu v4.0.0
- *                   Interface class to Revolut connector
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 
 namespace Flussu\Controller;

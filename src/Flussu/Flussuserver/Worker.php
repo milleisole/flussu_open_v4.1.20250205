@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,16 +30,10 @@
  * USE ALDUS BEAN:   Databroker.bean
  * -------------------------------------------------------*
  * CREATED DATE:     04.07:2020 - Aldus - Flussu v1.3
- * VERSION REL.:     3.0.6 20241118
- * UPDATED DATE:     26.10:2024 - Aldus - Flussu v3.0.6
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
- * 06.05:2024 BUG: $res[] bug on _postprocess() - solved  
- * 24-09-2024 NEW: can add labels and button dinamically
- * 19.10:2024 BUG: if NMB can't find, it continue from next
- * 25-10-2024 NEW: can force an array for selections
- * 26-10-2024 BUG: manual forced select data bug solved 
- * 18-11-2024 ---: extended wfauid handling 
  * 27-11-2020 NEW: introducing [[FUNCTIONS]] block
  *            BUG: fixed a "error read blockid on array" on row 264
  * -------------------------------------------------------*/

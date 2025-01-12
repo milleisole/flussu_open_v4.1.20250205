@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,8 @@
  * --------------------------------------------------------------------*
  * CLASS-NAME:       Flussu API Interface
  * UPDATED DATE:     04.08.2022 - Aldus - Flussu v2.2
- *                   SESSION AND NOTIFY DATA
- * UPDATED DATE:     26.10:2024 - Aldus - Flussu v3.0.4
- *                   ASYNC/ON DB NOTIFICATIONS
- * UPDATED DATE:     18.11:2024 - Aldus - Flussu v3.0.6
- *                   solved bugs on notifications
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 
  /**

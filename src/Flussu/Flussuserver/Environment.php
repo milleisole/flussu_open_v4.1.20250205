@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,17 +28,12 @@
  * CLASS PATH:       /Flussu/Flussuserver
  * -------------------------------------------------------*
  * CREATED DATE:   25.01.2021 - Aldus
- * VERSION DATE:   3.0 19.02:2024 
- * UPDATED DATE:   03.06:24 - Option to handle more than the default
- *                            API KEY for Stripe
- * UPDATED DATE:   03.11:2024 - Aldus
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
- * NEW: can add labels and button dinamically - 24-09-2024
- * NEW: can create a stripe payment link - 24-09-2024
- * NEW: added "message" to api call status error - 21-10-2024
  * NEW: added "shorturl" api call - 03-11-2024
  * -------------------------------------------------------*/
 

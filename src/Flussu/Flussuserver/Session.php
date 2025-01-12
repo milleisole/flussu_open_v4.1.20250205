@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v3.0.2 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,21 +27,12 @@
  * USE ALDUS BEAN:   Session Handler
  * -------------------------------------------------------*
  * CREATED DATE:     10.01.2021 - Aldus
- * VERSION REL.:     3.0.6 20241118
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
  *  09.05:2024  Bug gestione nvalori numerici o string se
  *              iniziano per 0 o per + (tipo '+39123')
- *  16.10:2024  Serie di modifiche per fare funzionare
- *              le notifiche. Alla morte della sessione 
- *              non venivano registrate le modifiche delle 
- *              variabili nella sessione WEB...
- *  21.10:2024  Aggiunta la gestione delle notifiche su DB
- *              che permette l'esecuzione asincrona.
- *  18.11:2024  Risolti i bug sulle notifica
- *  27.11:2020  Aggiunta la gestione delle funzioni condivise
- *              su tutto il workflow e l'eliminazione delle
- *              variabili che iniziano per $___ per esecuzione.
  * --------------------------------------------------------*/
 
 /*

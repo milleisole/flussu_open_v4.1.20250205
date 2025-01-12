@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,8 @@
  * --------------------------------------------------------------------*
  * CLASS-NAME:       Flussu Stripe API Controller
  * UPDATED DATE:     22.04.2024 - Aldus - Flussu v3.0.0
- *                   Interface class to Stripe connector
- *                   06.05:2024 - Aldus - Flussu v3.0.0
- *                   Get Stripe's Custom codes/datas
- *                   v2
- * UPDATE  03.06:24 - Get "CH_" and/or "PI_"      
- *                  - get more than one default API KEY    
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 namespace Flussu\Controller;
 

@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v3.0.6 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,8 @@
  * --------------------------------------------------------------------*
  * CLASS-NAME:    FlussuSrv API Interface
  * UPDATED DATE:  25.Feb.2021 - Aldus - Flussu v2.0
- * UPDATED DATE:  26.Jun:2022 - Aldus - FlussuSrv v2.0.2
- *                Blog/editor integration
- * UPDATED DATE:  23.Nov:2023 - Aldus - FlussuSrv pre v3.0
- *                App-data handling
- * UPDATED DATE:  10.Dec:2023 - Aldus - Some minor updates
- * UPDATED DATE:  10.nov.2024 - Aldus - FlussuSrv v3.0.5
- *                Added WfAUId handling
- * ex.:https://srvdev.flu.lt/flow?C=G&WFAUID=0d72f3e7-9f56-11ef-a70a-005056035b78
- * UPDATED DATE:  18.nov.2024 - Aldus - FlussuSrv v3.0.6
- *                Added more WfAUId handling and some minor updates
+ * VERSION REL.:     4.1.0 20250113 
+ * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 
  /**
