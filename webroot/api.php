@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.0.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ use Flussu\Flussuserver\Request;
 use Flussu\General;
 
 // VERSION
-$FlussuVersion="4.0.0.20241209";
+$FlussuVersion="4.1.0.20240113";
 $FVP=explode(".",$FlussuVersion);
 $v=$FVP[0];
 $m=$FVP[1];
