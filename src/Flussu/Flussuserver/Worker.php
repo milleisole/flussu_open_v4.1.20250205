@@ -76,13 +76,9 @@
 
 namespace Flussu\Flussuserver;
 
-use Api\MultiWfController;
-use Orhanerday\OpenAi\OpenAi;
 use \Throwable;
 use Flussu\Flussuserver\Handler;
 use Flussu\General;
-use Api\PdfController;
-use Api\OpenAiController;
 
 class Worker {
   
@@ -978,7 +974,7 @@ $Flussu->wid="'.$block["flussu_id"].'";
 $Flussu->WfAuid="'.$this->_WofoS->getWfAuid().'";
 $Flussu->Sid="'.$this->_WofoS->getId().'";
 $Flussu->Bid="'.$this->_WofoS->getBlockId().'";
-$Flussu->BlockTitle="'.($block["is_start"]?"START BLOCK":$block["Description"]).'";
+$Flussu->BlockTitle="'.($block["is_start"]?"START BLOCK":$block["description"]).'";
 $Flussu->Referer=urldecode("'.$theReferer.'");
 
 // workflow vars
@@ -1019,6 +1015,7 @@ try {
             $this->_secureALooper+=$this->_secureALooper;
             if ($this->_secureALooper>500){
                 $this->_WofoS->recLog("Loop of death stopped: BID=".$block["block_id"]);
+                General::Log("MORTAL LOOP ERROR: BID=".$block["block_id"]);
                 die("stopped on loop");
             }
 
@@ -1040,6 +1037,7 @@ try {
                         $errMsg=$this->_sanitizeErrMsg($this->arr_print($e));
                     $this->_WofoS->recLog("  - execution EXCEPTION:".$errMsg);
                     $findErr=true;
+                    General::Log("Block code exec ERROR #1:".$this->arr_print($e));
                     $this->_WofoS->statusError(true);
                 } catch(\Throwable $e){
                     if (strpos($e->getFile(),"eval()")!==false)
@@ -1048,18 +1046,24 @@ try {
                         $errMsg=$this->_sanitizeErrMsg($this->arr_print($e));
                     $this->_WofoS->recLog("  - exec EXCEPTION:".$errMsg);
                     $findErr=true;
+                    General::Log("Block code exec ERROR #2:".$errMsg);
                     $this->_WofoS->statusError(true);
                 }
                 ini_set('display_errors', $old);
                 if ($findErr==false && error_get_last()){
                     $errMsg=$this->getErrMessage($theCode,$block["description"],null);
-                    $this->_WofoS->recLog("  - exec EXCEPTION:".$errMsg);
-                    error_clear_last();
-                    $this->_WofoS->statusError(true);
+                    if ($errMsg!=""){
+                        $this->_WofoS->recLog("  - exec EXCEPTION:".$errMsg);
+                        error_clear_last();
+                        $this->_WofoS->statusError(booVal: true);
+                        General::Log("Block code exec ERROR #3:".$errMsg);
+                    }
                 }
             } else {
                 $this->_WofoS->statusError(true);
                 $this->_WofoS->recLog("  - block code EXCEPTION:".$this->_sanitizeErrMsg($err));
+                General::Log("Block code exec ERROR #4:".$err);
+
             }
 
             $this->_WofoS->statusExec(false);
@@ -1099,7 +1103,7 @@ try {
                                 $exec=false;
                             if ($exec){
                                 try{
-                                    $vval=@eval("try{return $vname;} catch (\Throwable $"."e){return $"."e;}");
+                                    $vval=@eval("try{return $vname;} catch (\Throwable "."$"."e){return "."$"."e;}");
                                     if ($vval instanceof Throwable)
                                     {
                                         //è un errore
@@ -1206,38 +1210,45 @@ try {
   * Returns:
   *   The return value is the result of the last expression in the block.
   */
-    private function getErrMessage($theCode,$blockDesc,$origError){
+    private function getErrMessage($theCode,$blockDesc,$origError=null){
         $e=error_get_last();
         $msg="Error on block '$blockDesc':";
         $ln=0;
         $tp="N/A";
-        if (is_null($e)){
-            $msg.=$origError->getMessage();
-            $ln=$origError->getLine();
-            $tp="[php]";
-        } else {
-            $msg.=$e["message"];
-            $ln=$e["line"];
-            $tp=$e["type"];
-        }
-        $errMsg=$msg."\r\nType:".$tp." - Line:".$ln.":\r\n";
-        $rrr="#NN\t - \t#RR";
-        $xxx=explode("\n",$theCode);
-        $lll=$ln-1;
-        if ($lll>0){
-            if ($lll<count($xxx))
-                $errMsg=$errMsg."\r\n".str_Replace("#NN",$lll+1,str_Replace("#RR",$xxx[$lll],$rrr));
-            //else
-            //    $errMsg=$errMsg.str_Replace("#NN",$lll,str_Replace("#RR",$xxx[$lll-1],$rrr));
-        } else {
-            if ($lll>=0)
-                $errMsg=$errMsg.str_Replace("#NN",$lll+2,str_Replace("#RR",$xxx[$lll],$rrr));
-        }
-        if ($lll+1<count($xxx))
-            $errMsg=$errMsg."\r\n".str_Replace("#NN",$lll+2,str_Replace("#RR",$xxx[$lll+1],$rrr));
+        $errMsg="";
+        if (!is_null($e) || !is_null($origError)){
+            if (!is_null($origError)){
+                $msg.=$origError->getMessage();
+                $ln=$origError->getLine();
+                $tp="[php]";
+            } else {
+                $mmm=json_decode(json_encode(error_get_last()))->message;
+                if (stripos($mmm,"file_get_contents")!==false && stripos($mmm,"../Cache")!==false){
+                    return "";
+                }
+                $msg.=$mmm;
+                $ln=$e["line"];
+                $tp=$e["type"];
+            }
+            $errMsg=$msg."\r\nType:".$tp." - Line:".$ln.":\r\n";
+            $rrr="#NN\t - \t#RR";
+            $xxx=explode("\n",$theCode);
+            $lll=$ln-1;
+            if ($lll>0){
+                if ($lll<count($xxx))
+                    $errMsg=$errMsg."\r\n".str_Replace("#NN",$lll+1,str_Replace("#RR",$xxx[$lll],$rrr));
+                //else
+                //    $errMsg=$errMsg.str_Replace("#NN",$lll,str_Replace("#RR",$xxx[$lll-1],$rrr));
+            } else {
+                if ($lll>=0)
+                    $errMsg=$errMsg.str_Replace("#NN",$lll+2,str_Replace("#RR",$xxx[$lll],$rrr));
+            }
+            if ($lll+1<count($xxx))
+                $errMsg=$errMsg."\r\n".str_Replace("#NN",$lll+2,str_Replace("#RR",$xxx[$lll+1],$rrr));
 
-        //$errMsg=$errMsg."\r\nCODE: ".explode("\n",$theCode)[error_get_last()["line"]-2];
-        $errMsg=$this->_sanitizeErrMsg($errMsg);
+            //$errMsg=$errMsg."\r\nCODE: ".explode("\n",$theCode)[error_get_last()["line"]-2];
+            $errMsg=$this->_sanitizeErrMsg($errMsg);
+        }
         return $errMsg;
     }
 
@@ -1300,7 +1311,6 @@ try {
             '$_GET',
             '$_SESSION',
             '$_SERVER',
-            'base64_decode',
             'call_user_func_array',
             'DOCUMENT_ROOT',
             'directory',

@@ -20,13 +20,12 @@
  * 
  * --------------------------------------------------------------------*/
 
-require_once __DIR__ . '/../autoloader.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Flussu\Controller\FlussuController;
 use Flussu\Controller\ZapierController;
 use Flussu\Controller\VersionController;
 use Flussu\Flussuserver\Request;
-use Orhanerday\OpenAi\OpenAi;
 use Flussu\General;
 
 // VERSION
@@ -38,6 +37,13 @@ $r=$FVP[2];
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load( );
+
+if (!function_exists('config')) {
+    function config($key, $default = null)
+    {
+        return Flussu\Config::get($key, $default);
+    }
+} 
 
 if (isset($argv) && is_array($argv)){
     echo ("Flussu Server v".$_ENV['major'].".".$_ENV['minor'].".".$_ENV['release']."\n");
@@ -100,19 +106,21 @@ if (strpos($_SERVER["SCRIPT_URL"],"license") || strpos($_SERVER["QUERY_STRING"],
     */
     try{
         $fc=new FlussuController();
+        General::log("Webhook call: ".$_SERVER["SCRIPT_URL"]);
         $res=$fc->webhook($_SERVER["SCRIPT_URL"]);
         die($res);
-    } catch(\Throwable $e){ {
+    } catch(\Throwable $e){ 
         header('HTTP/1.0 500 Error');
         General::log("Webhook call error: ".json_encode( $e->getMessage()),true);
         die(\json_encode(["error"=>"500","message"=>"Webhook call error"]));
     }
-}
 } else {
     $apiPage=basename($_SERVER['REQUEST_URI']);
     if (strtolower(substr($apiPage,0,3))=="zap"){
+        General::log("Extcall Zapier Controller: ".$apiPage." - ".$_SERVER["REQUEST_URI"]);
         $fc=new ZapierController();
     } else {
+        General::log("Extcall Flussu Controller: ".$apiPage." - ".$_SERVER["REQUEST_URI"]);
         $fc=new FlussuController();
     }
     $req=new Request();

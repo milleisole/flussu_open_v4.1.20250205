@@ -17,6 +17,8 @@
  * CLASS-NAME:       Flussu API Interface
  * UPDATED DATE:     25.01.2021 - Aldus - Flussu v2.0
  *                   Blog/editor integration
+ *                   26.12.2024 - Aldus - Flussu v4.0
+ *                   Non-Cached database access update
  * -------------------------------------------------------*/
 /**
  * Conn.php
@@ -37,17 +39,16 @@
  *      Execute the command by providing the OTP. The server executes the command associated with the OTP and 
  *      returns the execution result.
  * 
- * @package App\Flussu\Api\V20
- * @version 3.0.0
+ * @package App\Flussu\Api\V40
+ * @version 4.0.0
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
- namespace Flussu\Api\V20;
+ namespace Flussu\Api\V40;
 
 use Flussu\Flussuserver\Request;
 
 use Flussu\General;
-use Flussu\Beans;
 use Flussu\Persons\User;
 use Flussu\Flussuserver\Command;
 use Flussu\Flussuserver\NC\HandlerNC;
@@ -70,12 +71,12 @@ class Conn {
      * determines whether the user needs to be logged in and the required authorization level based
      * on the command to be executed.
      * 
-     * @param Flussu\Flussuserver\Request $Req The HTTP request object, containing parameters and the request body.
-     * @param Flussu\Persons\User $theUser The user object representing the current user.
+     * @param \Flussu\Flussuserver\Request $Req The HTTP request object, containing parameters and the request body.
+     * @param \Flussu\Persons\User $theUser The user object representing the current user.
      * 
      * @return void The method does not return a value but sends a JSON response to the client.
      * 
-     * @throws Exception If there are issues with command execution or if the required parameters are not provided.
+     * @throws \Exception If there are issues with command execution or if the required parameters are not provided.
      */
     public function exec(Request $Req, User $theUser){
         $mustBeLogged=false;
@@ -141,8 +142,8 @@ class Conn {
      * password, and the command for which the OTP is being generated. The method will handle the authentication
      * and OTP generation process.
      * 
-     * @param Handler $db The database handler object used for database operations.
-     * @param stdClass $command An object containing the user ID (`userid`), password (`password`), and the command (`command`) for which the OTP is generated.
+     * @param \Flussu\Flussuserver\NC\HandlerNC $db The database handler object used for database operations.
+     * @param \stdClass $command An object containing the user ID (`userid`), password (`password`), and the command (`command`) for which the OTP is generated.
      * 
      * @return array An associative array with either the generated OTP (`key`) on success, or an error message (`result`) on failure.
      */
@@ -186,7 +187,7 @@ class Conn {
      * associated with this OTP if the OTP is valid. This command can then be executed using the
      * appropriate execution method.
      * 
-     * @param Handler $db The database handler object used for database operations.
+     * @param \Flussu\Flussuserver\NC\HandlerNC $db The database handler object used for database operations.
      * @param string $otp The One Time Password provided by the user for command execution.
      * 
      * @return mixed The command associated with the OTP if successful, or an error message if the OTP is invalid or expired.

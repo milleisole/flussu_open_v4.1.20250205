@@ -39,18 +39,16 @@
  * are handled correctly and efficiently.
  * 
  * @package App\Flussu\Statistics
- * @version 3.0.0
+ * @version 4.0.0
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
-namespace Flussu\Api\V20;
+namespace Flussu\Api\V40;
 
 use Flussu\Flussuserver\Request;
 
 use Flussu\General;
-use Flussu\Beans;
 use Flussu\Persons\User;
-use Flussu\Flussuserver\Command;
 use Flussu\Flussuserver\NC\HandlerNC;
 use Flussu\Flussuserver\Statistic;
 

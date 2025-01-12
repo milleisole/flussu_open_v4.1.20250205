@@ -25,7 +25,7 @@
 
  * -------------------------------------------------------*
  * CLASS-NAME:     FlussuEnvironment.class
- * CLASS PATH:       /app/Flussu/Flussuserver
+ * CLASS PATH:       /Flussu/Flussuserver
  * -------------------------------------------------------*
  * CREATED DATE:   25.01.2021 - Aldus
  * VERSION DATE:   3.0 19.02:2024 

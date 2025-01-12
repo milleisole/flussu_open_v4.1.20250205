@@ -39,9 +39,6 @@
  * Releases/Updates:
  * -------------------------------------------------------*/
 namespace Flussu\Flussuserver;
-use Flussu\General;
-use Flussu\Beans;
-use Flussu\Beans\Databroker;
 use Flussu\Languages;
 use Flussu\Flussuserver\NC\HandlerNC;
 

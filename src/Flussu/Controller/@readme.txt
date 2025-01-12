@@ -4,4 +4,4 @@ EX. SMS classe is used to sen SMS, PDF print pdfs, Stripe execute requests to ha
 
 MultiWF is a multiple workflow starter.
 
-Flussucontroller is an orchestrator. It take a look ath teh request and execute the right API class
+Flussucontroller is an orchestrator. It take a look at the request and execute the right API class

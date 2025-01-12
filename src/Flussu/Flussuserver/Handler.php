@@ -26,14 +26,15 @@
 
  * -------------------------------------------------------*
  * CLASS-NAME:       FlussuHandler.class
- * CLASS PATH:       /app/Flussu/Flussuserver
+ * CLASS PATH:       /Flussu/Flussuserver
  * FOR ALDUS BEAN:   Databroker.bean
  * -------------------------------------------------------*
  * CREATED DATE:     (28.11.2024) - Aldus
- * VERSION REL.:     4.0.0 20241128 
- * UPDATE DATE:      28.11:2024 
+ * VERSION REL.:     4.0.0 20241226 
+ * UPDATE DATE:      26.12:2024 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
+ *                   Some refactor and cache management
  * -------------------------------------------------------*/
 
 namespace Flussu\Flussuserver;
@@ -57,11 +58,11 @@ class Handler {
     }
     function __clone(){$this->_UBean = clone $this->_UBean;}
     function getFlussuName($WID):mixed                              {
-        General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
+        //General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
         return $this->_HNC->getFlussuName($WID);
     }
     function getFlussuNameFirstBlock($wofoId):array                  {
-        General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
+        //General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
         $id="GFNFB".$wofoId;
         $res=General::GetCache($id,"wid",$wofoId);
         if (is_null($res)){
@@ -74,18 +75,18 @@ class Handler {
         return $res;
     }
     function getFlussuNameDefLangs($wofoId):array                    {
-        General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
+        //General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
         return $this->_HNC->getFlussuNameDefLangs($wofoId);}
     function getSuppLang($wofoId):array                             {
-        General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
+        //General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
         return $this->_HNC->getSuppLang($wofoId);
     }
     function getFlussuWID($wid_identifier_any):array                 {
-        General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
+        //General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
         return $this->_HNC->getFlussuWID($wid_identifier_any);
     }
     function getFlussu($getJustFlowExec, $forUserid, $wofoId=0, $allElements=false): mixed{
-        General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
+        //General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
         return $this->_HNC->getFlussu($getJustFlowExec, $forUserid, $wofoId, $allElements);
     }
     function getFlussuBlock($getJustFlowExec,$wofoId,$blockUuid): mixed {
@@ -126,15 +127,15 @@ class Handler {
         return $res;
     }
     function getBlockUuidFromDescription($WoFoId,$desc):mixed {
-        General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
+        //General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
         return $this->_HNC->getBlockUuidFromDescription($WoFoId,$desc);
     }
     function getWorkflowByUUID($WofoId, $WID, $wfAUId, $LNG="", $getJustFlowExec=false, $forEditingPurpose=false):array {
-        General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
+        //General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
         return $this->_HNC->getWorkflowByUUID($WofoId, $WID, $wfAUId, $LNG, $getJustFlowExec, $forEditingPurpose);
     }
     function getWorkflow($WofoId, $WID, $LNG="", $getJustFlowExec=false, $forEditingPurpose=false):array {
-        General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
+        //General::Log(debug_backtrace()[1]["function"]." > ".__FUNCTION__." ".json_encode(func_get_args()));
         return $this->_HNC->getWorkflow($WofoId, $WID, $LNG, $getJustFlowExec, $forEditingPurpose);
     }
     function buildFlussuBlock($WoFoId, $BlkUuid, $LNG="", $getJustFlowExec=false, $forEditingPurpose=false):array|null {

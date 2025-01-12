@@ -20,7 +20,7 @@
 
  * -------------------------------------------------------*
  * CLASS-NAME:       FlussuGibberish.class
- * CLASS PATH:       /app/Flussu/Flussuserver
+ * CLASS PATH:       /Flussu/Flussuserver
  * -------------------------------------------------------*
  * CREATED DATE:     25.01:2021 - Adapted/Aldus
  * UPDATED DATE:     19.02:2021 - Aldus - Flussu v1.0

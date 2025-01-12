@@ -22,7 +22,7 @@
 
  * -------------------------------------------------------*
  * CLASS-NAME:       FlussuCommand.class
- * CLASS PATH:       /app/Flussu/Flussuserver
+ * CLASS PATH:       /Flussu/Flussuserver
  * FOR ALDUS BEAN:   Databroker.bean
  * -------------------------------------------------------*
  * CREATED DATE:     1.0 28.12:2020 - Aldus
@@ -52,8 +52,6 @@
  */
 
 namespace Flussu\Flussuserver;
-use Api\JomobileSms;
-use Api\SmsFactor;
 use Flussu\General;
 use Flussu\Documents\Fileuploader;
 use PHPMailer\PHPMailer\PHPMailer;
@@ -77,6 +75,8 @@ class Command {
 
         $email_encrypt  = $_ENV["smtp_encrypt"];
         $mail = new PHPMailer(true);
+        General::log("Sending e-mail to:".$email. " - subj:".$subject);
+
         try {
             $mail->SMTPDebug = 0;
             $mail->isSMTP();     
@@ -182,9 +182,11 @@ class Command {
                     $result['message'] = "Mailer error: {$mail->ErrorInfo}";
                 }
             }
+            General::log("Email send result:".json_encode($result,JSON_PRETTY_PRINT));
         } catch (\Exception $e) {
             $result['success'] = false;
-            $result['message'] = "Failed exception {$e}\r\nMailer error: {$mail->ErrorInfo}";
+            $result['message'] = "Failed exception ".$e->getMessage()."\r\nMailer error: {$mail->ErrorInfo}";
+            General::log("Email send ERROR:".$e->getMessage()."\r\nMailer error: ".$mail->ErrorInfo);
         }
         return $result;
     }

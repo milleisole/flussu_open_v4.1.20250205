@@ -15,7 +15,7 @@
  * limitations under the License.
  * --------------------------------------------------------------------*
  * CLASS-NAME:    Flussu API Engine
- * CLASS PATH:    Flussu\Api\V20\FlussuHandler
+ * CLASS PATH:    Flussu\Api\V40\FlussuHandler
  * -------------------------------------------------------*
  * UPDATE:  25.01.2021 - Aldus - Flussu v2.0
  * UPDATE:  08.07.2022 - Aldus - Flussu v2.1
@@ -55,18 +55,16 @@
  * The class is designed to be the central point for managing the execution of API requests, ensuring that all
  * components work together seamlessly to provide a reliable and efficient API service.
  * 
- * @package App\Flussu\Api\V20
- * @version 3.0.0
+ * @package App\Flussu\Api\V40
+ * @version 4.0.0
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
-namespace Flussu\Api\V20;
+namespace Flussu\Api\V40;
 
 use Flussu\Flussuserver\Request;
 
 use Flussu\General;
-use Flussu\Beans;
-//use Flussu\Persons\User;
 use Flussu\Flussuserver\Worker;
 use Flussu\Flussuserver\Command;
 use Flussu\Flussuserver\Handler;

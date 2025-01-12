@@ -39,23 +39,20 @@
  * The class is designed to be a central point for managing session-related tasks, ensuring that all session
  * operations are handled correctly and efficiently.
  * 
- * @package App\Flussu\Api\V20
- * @version 3.0.0
+ * @package App\Flussu\Api\V40
+ * @version 4.0.0
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
-namespace Flussu\Api\V20;
+namespace Flussu\Api\V40;
 
 use Flussu\Flussuserver\Request;
 
 use Flussu\General;
-use Flussu\Beans;
 use Flussu\Persons\User;
-use Flussu\Flussuserver\Command;
 use Flussu\Flussuserver\Handler;
 use Flussu\Flussuserver\NC\HandlerNC;
 use Flussu\Flussuserver\Session;
-use Flussu\Flussuserver\Statistic;
 
 class Sess {
     /* not more needed

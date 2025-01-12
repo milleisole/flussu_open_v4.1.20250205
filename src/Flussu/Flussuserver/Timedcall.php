@@ -28,18 +28,18 @@
  * USE ALDUS BEAN:   Databroker.bean
  * -------------------------------------------------------*
  * CREATED DATE:     21.02:2024 - Aldus - Flussu v3.0
- * VERSION DATE:     3.0 21.02:2024 
+ * VERSION DATE:     4.0 26.12:2024 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -*
  * Releases/Updates:
+ *                  Some refactor and cache management
  * -------------------------------------------------------*/
 namespace Flussu\Flussuserver;
 
-require __DIR__ . '/../../../autoloader.php';
+//require __DIR__ . '/../../../autoloader.php';
 
 use Flussu\Flussuserver\NC\HandlerNC;
 use Flussu\Flussuserver\Session;
 use Flussu\General;
-use Api\VersionController;
 
 /* -----------------------------------------------------------------------------------
 Questa classe è richiamata ogni minuto dal sistema 
@@ -59,7 +59,7 @@ e salvare
 Creare il file cronjobs.5m.sh
   nano /home/[user]/cronjobs.5m.sh
 e scrivere (per ogni flussuserver presente nel server)
-  php /home/[user]/[flussuserverdir]/app/Flussu/Flussuserver/Timedcall.php
+  php /home/[user]/[flussuserverdir]/Flussu/Flussuserver/Timedcall.php
 e salvare
 
 rendere eseguibile il file
@@ -76,7 +76,7 @@ class Timedcall {
     private $_WofoD;
     public function __construct (){
         $this->_WofoD = new HandlerNC();
-        $vc=new VersionController();
+        $vc=new \Flussu\Controller\VersionController();
         $vcbv=$vc->getDbVersion();
         echo "\033[01;42m\033[01;97m       Flussu Server       \033[0m\r\n";
         echo " sv:\033[01;32mv".$_ENV["minor"].".".$_ENV["major"].".".$_ENV["release"]."  \033[0m\r\n";

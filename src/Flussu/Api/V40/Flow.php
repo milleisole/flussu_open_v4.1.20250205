@@ -46,17 +46,16 @@
  * The class is designed to be the central point for managing the execution of API requests, ensuring that all
  * components work together seamlessly to provide a reliable and efficient API service.
  * 
- * @package App\Flussu\Api\V20
- * @version 3.0.0
+ * @package App\Flussu\Api\V40
+ * @version 4.0.0
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
-namespace Flussu\Api\V20;
+namespace Flussu\Api\V40;
 
 use Flussu\Flussuserver\Request;
 
 use Flussu\General;
-use Flussu\Beans;
 use Flussu\Persons\User;
 use Flussu\Flussuserver\Command;
 use Flussu\Flussuserver\Handler;
@@ -440,19 +439,16 @@ class Flow {
                     case 5:
                         $_debug["EXEC"].="5\r\n";
                         // cambia proprietario con email=$pUE
-                        if (!General::isEmailAddress($pUE)){
+                        if (!General::isEmailAddress($pUE))
                             $result=json_encode(array("result"=>"ERROR","message"=>"Wrong email address."));
-                            break;
-                        } else {
+                        else {
                             if ($dbnc->isUserTheWorkflowMaster($theUser->getId(),$WofoId)){
-                                if ($dbnc->changeWorkflowProprietor($pUE,$WofoId)){
+                                if ($dbnc->changeWorkflowProprietor($pUE,$WofoId))
                                     $result=json_encode(array("result"=>"OK","message"=>"Done."));
-                                    break;
-                                } else
+                                else
                                     $result=json_encode(array("result"=>"ERROR","message"=>"Cannot change the proprietor of this Workflow."));
                             } else
                                 $result=json_encode(array("result"=>"ERROR","message"=>"This user cannot change this Workflow's properties."));
-                            break;
                         }
                         break;
                     case 6:
