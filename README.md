@@ -38,7 +38,7 @@ then use the following command at prompt:
 
 7. apt-get install chromium-chromedriver firefox-geckodriver 
    (non mandatory, it is needed if you want to use the scraping functions)
-8. composer install
+8. sh batchinstall.sh
 
 configure your installation:
 
