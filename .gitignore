@@ -7,5 +7,6 @@
 /Uploads/OCR-ri/*
 /Cache
 /Logs
+/config/services.json
 .env
 composer.lock
