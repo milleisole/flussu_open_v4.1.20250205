@@ -20,8 +20,7 @@
  * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 
-namespace Flussu\Controller;
-
+namespace Flussu\Controllers;
 use Auth;
 use Dompdf\Dompdf;
 use Dompdf\Options;

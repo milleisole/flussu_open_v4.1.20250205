@@ -732,7 +732,7 @@ class HandlerNC extends HandlerBaseNC {
     }
 
     function translateLabels($from, $tolng, $toLang, $wofoid, $sessTransId){
-        $this->_open_ai = new \Flussu\Controller\OpenAiController();
+        $this->_open_ai = new \Flussu\Controllers\OpenAiController();
         //$trCmd="Translate to ".$toLang.":";
 
         //Check existing languages
@@ -1107,7 +1107,10 @@ class HandlerNC extends HandlerBaseNC {
                         // ------------------------------------------------------------
                         if (!$doNotBackup)
                             $p_res=$this->_backupFlofo($id);
-
+                        
+                        // Rimuovi cache "WID"                       
+                        General::DelCache("wid",$id);
+                        
                         // ------------------------------------------------------------
                         // Poi l'update dei dati del workflow
                         // ------------------------------------------------------------

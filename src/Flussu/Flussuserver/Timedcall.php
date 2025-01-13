@@ -77,7 +77,7 @@ class Timedcall {
     private $_WofoD;
     public function __construct (){
         $this->_WofoD = new HandlerNC();
-        $vc=new \Flussu\Controller\VersionController();
+        $vc=new \Flussu\Controllers\VersionController();
         $vcbv=$vc->getDbVersion();
         echo "\033[01;42m\033[01;97m       Flussu Server       \033[0m\r\n";
         echo " sv:\033[01;32mv".$_ENV["minor"].".".$_ENV["major"].".".$_ENV["release"]."  \033[0m\r\n";

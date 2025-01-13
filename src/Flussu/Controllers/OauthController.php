@@ -20,8 +20,7 @@
  * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 
-namespace Flussu\Controller;
-
+namespace Flussu\Controllers;
 use GuzzleHttp\Client;
 use \FlussuSession;
 use Flussu\Flussuserver\Session;

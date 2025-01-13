@@ -446,7 +446,7 @@ class Environment {
         return $ret;
     }
     private function _getStripeChargeInfo($stripeChargeId,$keyName){
-        $stcn=new \Flussu\Controller\StripeController();
+        $stcn=new \Flussu\Controllers\StripeController();
         $res=$stcn->getChargeInfo($stripeChargeId,$keyName);
         /* ---------------------------------------
                     RETURN -NULL- OR:
@@ -470,7 +470,7 @@ class Environment {
     }
 
     private function _getStripeSessInfo($stripeSessId,$keyName){
-        $stcn=new \Flussu\Controller\StripeController();
+        $stcn=new \Flussu\Controllers\StripeController();
         $res=$stcn->getStripePaymentResult($keyName,$stripeSessId);
         /* ---------------------------------------
                     RETURN -NULL- OR:

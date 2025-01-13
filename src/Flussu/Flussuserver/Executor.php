@@ -281,28 +281,28 @@ class Executor{
                         break;
                     case "openAi":
                         // V2.8 - Query openAI
-                        $ctrl=new \Flussu\Controller\OpenAiController();
+                        $ctrl=new \Flussu\Controllers\OpenAiController();
                         $reslt=$ctrl->genQueryOpenAi($innerParams[0],0);
                         $Sess->assignVars($innerParams[1],$reslt["resp"]);
                         break;
                     case "explAi":
                         // V2.8 - Try to explain as openAI
-                        $ctrl=new \Flussu\Controller\OpenAiController();
+                        $ctrl=new \Flussu\Controllers\OpenAiController();
                         $reslt=$ctrl->genQueryOpenAi($innerParams[0],1);
                         $Sess->assignVars($innerParams[1],$reslt["resp"]);
                         break;
                     case "bNlpAi":
-                        $ctrl=new \Flussu\Controller\OpenAiController();
+                        $ctrl=new \Flussu\Controllers\OpenAiController();
                         $reslt=$ctrl->basicNlpIe($innerParams[0]);
                         $Sess->assignVars($innerParams[1],$reslt);
                         break;
                     case "openAi-stsess":
-                        $ctrl=new \Flussu\Controller\OpenAiController();
+                        $ctrl=new \Flussu\Controllers\OpenAiController();
                         $reslt=$ctrl->createChatSession($innerParams[0]);
                         $Sess->assignVars("$"."_openAiChatSessionId",$reslt);
                         break;
                     case "openAi-chat":
-                        $ctrl=new \Flussu\Controller\OpenAiController();
+                        $ctrl=new \Flussu\Controllers\OpenAiController();
                         $csid=$Sess->getVarValue("$"."_openAiChatSessionId");
                         if (empty($csid)){
                             $csid=$ctrl->createChatSession("");
@@ -313,7 +313,7 @@ class Executor{
                         break;
                     case "newMRec":
                         // V2.8 - New MultiRecWorkflow
-                        $mwc=new \Flussu\Controller\MultiWfController();
+                        $mwc=new \Flussu\Controllers\MultiWfController();
                         $reslt=$mwc->registerNew($innerParams[0],$innerParams[1],$innerParams[2],$innerParams[3]);
                         $reslt="[".str_replace("_","",$reslt)."]";
                         $Sess->assignVars($innerParams[4],$reslt);
@@ -324,26 +324,26 @@ class Executor{
                         break;
                     case "print2Pdf":
                         // V2.8 - Print in PDF without header/footer
-                        $pdfPrint=new \Flussu\Controller\PdfController();
+                        $pdfPrint=new \Flussu\Controllers\PdfController();
                         $tmpFile=$pdfPrint->printToTempFilename($innerParams[0],$innerParams[1]);
                         $Sess->assignVars($innerParams[2],$tmpFile);
                         break;
                     case "print2PdfwHF":
                         // V2.8 - Print in PDF with header/footer
-                        $pdfPrint=new \Flussu\Controller\PdfController();
+                        $pdfPrint=new \Flussu\Controllers\PdfController();
                         $tmpFile=$pdfPrint->printToTempFilename($innerParams[0],$innerParams[1],$innerParams[2],$innerParams[3]);
                         $Sess->assignVars($innerParams[4],$tmpFile);
                         break;
                     case "printRawHtml2Pdf":
                         // V2.9.5 - Print a RAW HTML on a sheet as PDF
-                        $pdfPrint=new \Flussu\Controller\PdfController();
+                        $pdfPrint=new \Flussu\Controllers\PdfController();
                         //$tmpFile=$pdfPrint->pippo($innerParams[0]);
                         $tmpFile=$pdfPrint->printHtmlPageToTempFilename($innerParams[0]);
                         //
                         $Sess->assignVars($innerParams[1],$tmpFile);
                         break;
                     case "getStripePaymentLink":
-                        $stcn=new \Flussu\Controller\StripeController();
+                        $stcn=new \Flussu\Controllers\StripeController();
                         //   0             1          2        3           4        5        6                7
                         //$stripeKeyId,$paymentId,$prodName,$prodPrice,$prodImg,$successUri,$cancelUri,$varStripeRetUriName
                         $res=$stcn->createStripeLink($innerParams[0],$innerParams[1],$innerParams[2],$innerParams[3],$innerParams[4],$innerParams[5],$innerParams[6]);

@@ -22,9 +22,9 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Flussu\Controller\FlussuController;
-use Flussu\Controller\ZapierController;
-use Flussu\Controller\VersionController;
+use Flussu\Controllers\FlussuController;
+use Flussu\Controllers\ZapierController;
+use Flussu\Controllers\VersionController;
 use Flussu\Flussuserver\Request;
 use Flussu\General;
 

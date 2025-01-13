@@ -19,8 +19,7 @@
  * VERSION REL.:     4.1.0 20250113 
  * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
-namespace Flussu\Controller;
-
+namespace Flussu\Controllers;
 use Flussu\General;
 use Flussu\Api\V40\Flow;
 use Flussu\Api\V40\Stat;

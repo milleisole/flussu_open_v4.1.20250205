@@ -24,8 +24,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * 
  * ------------------------------------------------------- */
-namespace Flussu\Controller;
-
+namespace Flussu\Controllers;
 use Auth;
 use Session;
 

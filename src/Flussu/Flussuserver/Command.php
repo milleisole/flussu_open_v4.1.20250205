@@ -692,14 +692,14 @@ class Command {
             $key=$_ENV["sms_".$prv."_key"];
             switch (trim(strtoupper($prv))){
                 case "SFC":
-                    $provider=new \Flussu\Controller\SmsFactor($key);
+                    $provider=new \Flussu\Controllers\SmsFactor($key);
                     if (!($this->startsWith($phoneNum,"0039") || $this->startsWith($phoneNum,"+39"))){
                         $phoneNum="+39".$phoneNum;
                     }
                     $result=$provider->sendSms($senderName,$phoneNum,$message);
                     break;
                 case "J_M":
-                    $provider=new \Flussu\Controller\JomobileSms($key);
+                    $provider=new \Flussu\Controllers\JomobileSms($key);
                     $result=$provider->sendSms($senderName,$phoneNum,$message);
                     break;
                 default:

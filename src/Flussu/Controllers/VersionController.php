@@ -40,8 +40,7 @@
  * It provides methods to check the current database version and perform necessary updates.
  */
 
-namespace Flussu\Controller;
-
+namespace Flussu\Controllers;
 use Flussu\General;
 use Flussu\Beans\Databroker;
 use Flussu\Flussuserver\Request;

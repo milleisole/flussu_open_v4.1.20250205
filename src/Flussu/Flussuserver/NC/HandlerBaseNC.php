@@ -143,7 +143,7 @@ class HandlerBaseNC {
                 $WofoId=General::demouf($WID);
             } else if(strlen($WID)<30 && strpos($WID, '[M.') === 0 && strpos($WID, ']')===strlen($WID)-1){
                 // MultiWorkflow
-                $mwf=new \Flussu\Controller\MultiWfController();
+                $mwf=new \Flussu\Controllers\MultiWfController();
                 //$mid=str_replace("]","",substr($WID,3));
                 $dt=$mwf->getData($WID);
                 if (isset($dt["wf_id"])){

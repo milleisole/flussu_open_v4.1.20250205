@@ -52,7 +52,7 @@ use Flussu\Persons\User;
 use Flussu\Flussuserver\Command;
 use Flussu\Flussuserver\Handler;
 use Flussu\Flussuserver\NC\HandlerNC;
-use Flussu\Controller\AppController;
+use Flussu\Controllers\AppController;
 class Flow {
     public function exec(Request $Req, User $theUser, $file_rawdata=null){
         
