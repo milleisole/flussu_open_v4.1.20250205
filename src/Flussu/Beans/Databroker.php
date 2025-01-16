@@ -22,226 +22,350 @@
  * VERSION REL.:     4.1.0 20250113 
  * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
+
+declare(strict_types=1);
+
 namespace Flussu\Beans;
 
 use PDO;
+use Throwable;
 use Flussu\General;
 
 class Databroker extends Dbh
 {
-    private $_opLog=""; // FOR DEBUG PURPOSES
+    /** @var string Log interno di debug */
+    private string $_opLog = "";
 
-    // ATTRIBUTES
-    //----------------------
-    private $searchData=null;
-    private $sendData;  
-    private $_lastError=null;
+    /** @var array|null Parametri di ricerca */
+    private ?array $searchData = null;
 
-    private $isDebug=false;
+    /** @var array|null Risultato di fetch dal DB */
+    private ?array $sendData = null;
 
-    // File CONSTRUCTOR
-    //----------------------
-    public function __construct (bool $debug)  {
-        $this->_opLog=date("D M d, Y H:i:s v")." Created new File.Bean;\r\n";
-        if ($debug==true) $this->isDebug=true;
-//        $this->clear();
+    /** @var mixed Ultimo errore catturato */
+    private $_lastError = null;
+
+    /** @var bool Flag di debug */
+    private bool $_debug = false;
+
+    /**
+     * Costruttore
+     *
+     * @param bool $debug
+     */
+    public function __construct(bool $debug = false)
+    {
+        $this->_opLog = date("D M d, Y H:i:s v") . " Created new Databroker;\r\n";
+        $this->_debug = $debug;
     }
 
-  // Data GETTERS
-  //----------------------
-    public function getsearchData()	{if (is_null($this->searchData)) return ""; else return $this->searchData;}
-    public function getfoundRows()      {
-        if (!isset($this->sendData) || is_null($this->sendData))
-            return array(); 
-        else 
-            return $this->sendData;
-    }
-    public function getisActive()       {return true;} // FUTURE IMPLEMENTATION
+    // -----------------------------------------------------------------
+    // GETTER
+    // -----------------------------------------------------------------
 
-  // Data SETTERS
-  //----------------------
-    public function setsearchData($val)    {
-        // Anti HACKERS
-        try{
+    /**
+     * Ritorna l'array di dati di ricerca (se presente).
+     *
+     * @return array
+     */
+    public function getSearchData(): array
+    {
+        return $this->searchData ?? [];
+    }
+
+    /**
+     * Ritorna i record trovati dopo una query di SELECT.
+     *
+     * @return array
+     */
+    public function getFoundRows(): array
+    {
+        return $this->sendData ?? [];
+    }
+
+    /**
+     * Indica se il bean è attivo. (placeholder)
+     *
+     * @return bool
+     */
+    public function getIsActive(): bool
+    {
+        return true;
+    }
+
+    // -----------------------------------------------------------------
+    // SETTER
+    // -----------------------------------------------------------------
+
+    /**
+     * Imposta i parametri di ricerca. Li converte in array se non lo fossero già.
+     *
+     * @param mixed $val
+     * @return bool
+     */
+    public function setSearchData($val): bool
+    {
+        try {
             if (!isset($val)) {
-                $this->searchData=null;
-            }
-            elseif (!is_array($val)) {
-                $this->searchData=array($val);
-                //echo ("set searchdata array\r\n");
-	        } else {
-                $this->searchData=$val;
-                //echo ("set searchdata a value:".$val."\r\n");
+                $this->searchData = null;
+            } elseif (!is_array($val)) {
+                $this->searchData = [$val];
+            } else {
+                $this->searchData = $val;
             }
             return true;
-        } catch (\Throwable $e){
-            $this->_lastError=$e;
+        } catch (Throwable $e) {
+            $this->_lastError = $e;
             return false;
         }
     }
 
-    public function loadData($sqlString, $transactional=false){
-        // Anti HACKERS
-        try{
+    // -----------------------------------------------------------------
+    // METODI PUBBLICI PER ESEGUIRE QUERY
+    // -----------------------------------------------------------------
+
+    /**
+     * Carica dati dal DB in base a una query SQL.
+     *
+     * @param string $sqlString
+     * @param bool   $transactional
+     * @return bool
+     */
+    public function loadData(string $sqlString, bool $transactional = false): bool
+    {
+        try {
             return $this->exec($sqlString, $transactional);
-        } catch (\Throwable $e){
-            $this->_lastError=$e;
-            // echo "suca";
-            //die ($e->getMessage());
-            //echo ("SQL:".$sqlString);
-            //echo ("MSG:".$e->getMessage());
+        } catch (Throwable $e) {
+            $this->_lastError = $e;
+            return false;
         }
-        return false;
     }
 
-    // Data SELECT METHOD
-    //----------------------
-    private function exec($sqlString, $transactional=false) {
-        $this->_opLog.=date("H:i:s v")." DataBroker EXEC SQL:\r\n\t$sqlString\r\n\t";
-//        $stmt = $this->connect(true)->prepare($sqlString);
-        $stmt = $this->connect($transactional)->prepare($sqlString);
-        if (isset($this->searchData)){//} && !is_null($this->searchData) && is_array($this->searchData)){
-            $rres=false;
-            try{$rres=$stmt->execute($this->searchData);}
-            catch(\Throwable $e){
-                //die ($sqlString."\r\n - - "."[DataBroker EXECUTE1 W/Parameters () ERROR:".implode($stmt->errorInfo())." ".$e->getMessage()."]");
-                $this->_lastError=$e;
-                $rres=false;
-            }
-            if(!$rres){
-                $this->_lastError=$stmt->errorInfo();
-                $lastErr2="W/Parameters () ERROR:".implode($stmt->errorInfo())."]";
-
-                //die ($sqlString."\r\n - - "."[DataBroker EXECUTE W/Parameters () ERROR:".implode($stmt->errorInfo())."]");
-                General::addRowLog("[DataBroker EXECUTE2 ".$lastErr2);
-                $this->_opLog.="EXECUTE3 ".$lastErr2.";\r\n";
-                if ($transactional) $this->rollBack();
-                return false;
-            }
-        } else {
-            $rres=false;
-            try{
-                $rres=$stmt->execute();
-            }
-            catch(\Throwable $e){
-                //die ($sqlString."\r\n - - "."[DataBroker EXECUTE1 W/Parameters () ERROR:".implode($stmt->errorInfo())." ".$e->getMessage()."]");
-                $this->_lastError=$e;
-                $rres=false;
-            }
-            if (!$rres) {
-                $this->_lastError=$stmt->errorInfo();
-                General::addRowLog("[DataBroker EXECUTE4 ERROR:".implode($stmt->errorInfo())."]");
-                $this->_opLog.="EXECUTE5 ERROR:".implode($stmt->errorInfo()).";\r\n";
-                if ($transactional) $this->rollBack();
-                return false;
-            }
-        }
-        $row = $stmt->fetchall();
-        if ($transactional)
-            $this->commit();
-        if (is_array($row)){
-          $this->sendData=$row;
-          return true;
-        } /*else {*/
-          $this->sendData=array();
-          return true;
-        /*}
-        return false;*/
+    /**
+     * Ottiene l'ultimo ID inserito (autoincrement).
+     *
+     * @return string|false
+     */
+    public function getLastId()
+    {
+        return $this->getLastInsertId();
     }
 
-    // Mult data INSERT
-    //----------------------
-    private $_mStmt;
-    private $tBbh;
-    public function prepareMultExecs(){
-        $this->tBbh=new Dbh();
-        $this->_opLog.=date("H:i:s v")." DataBroker START MULTIPLE TRANSACTIONAL INSERT\r\n\t";
+    // -----------------------------------------------------------------
+    // METODI TRANSAZIONALI "MULTI-ESECUZIONE"
+    // -----------------------------------------------------------------
+
+    /** @var PDO|null */
+    private ?PDO $_mStmt = null;
+
+    /** @var Dbh|null */
+    private ?Dbh $tBbh = null;
+
+    /**
+     * Inizia una transazione per inserimenti multipli.
+     */
+    public function prepareMultExecs(): void
+    {
+        $this->tBbh = new Dbh();
+        $this->_opLog .= date("H:i:s v") . " DataBroker START MULTIPLE TRANSACTIONAL INSERT\r\n\t";
         $this->_mStmt = $this->tBbh->connect(true);
     }
 
-    public function execMultExecs($sqlString,$paramsArr){
-        $res=true;
-        try{
-            $this->_opLog.=date("H:i:s v")." DataBroker EXEC SQL MULT INSERT\r\n\t";
-            $this->_mStmt=$this->_mStmt->prepare($sqlString);
-            foreach ($paramsArr as $parms){
-                try{$res=$this->_mStmt->execute($parms);}
-                catch(\Throwable $e){
-                    $this->_lastError=$this->_mStmt->errorInfo();
-                    General::addRowLog("[DataBroker MULT_EXECUTE W/Parameters () ERROR:".implode($this->_mStmt->errorInfo())."]");
-                }
-            }
-        }
-        catch(\Throwable $e){
-            $this->_lastError=$this->_mStmt->errorInfo();
-            General::addRowLog("[DataBroker MULT_EXECUTE W/Parameters () ERROR:".implode($this->_mStmt->errorInfo())."]");
+    /**
+     * Esegue le insert multiple in un batch.
+     *
+     * @param string $sqlString
+     * @param array  $paramsArr
+     * @return bool
+     */
+    public function execMultExecs(string $sqlString, array $paramsArr): bool
+    {
+        $res = true;
+        if (!$this->_mStmt) {
+            $this->_lastError = "Transazione multipla non inizializzata.";
             return false;
         }
-        return $res;
-    }
 
-    public function closeMultExecs(){
-        $this->_opLog.=date("H:i:s v")." DataBroker START MULTIPLE TRANSACTIONAL INSERT\r\n\t";
-        $this->commit($this->_mStmt,true);
-        $this->tBbh=null;
-    }
+        try {
+            $this->_opLog .= date("H:i:s v") . " DataBroker EXEC SQL MULT INSERT\r\n\t";
+            $stmt = $this->_mStmt->prepare($sqlString);
 
-    public function multDataInsert($sqlString,$paramsArr){
-        $res=true;
-        $this->_opLog.=date("H:i:s v")." DataBroker START MULT INSERT\r\n\t";
-        $stmt = $this->connect(true)->prepare($sqlString);
-        foreach ($paramsArr as $parms){
-            try{$res=$stmt->execute($parms);}
-            catch(\Throwable $e){
-                $this->_lastError=$stmt->errorInfo();
-                General::addRowLog("[DataBroker EXECUTE2 W/Parameters () ERROR:".implode($stmt->errorInfo())."]");
-                //$res=false;
-                //break;
-            }
-        }
-         $this->commit();
-    }
-
-    public function transExecs($sqlArr){
-        $res=true;
-        try{
-            $this->_mStmt = $this->connect(true);
-            $this->_opLog.=date("H:i:s v")." DataBroker EXEC SQL TRANS-EXEC\r\n\t";
-            $this->_mStmt->beginTransaction();
-            
-            foreach ($sqlArr as $sqlCmd){
-                $SQL=$sqlCmd["SQL"];
-                $PRM=$sqlCmd["PRM"];
-                $eStmt=$this->_mStmt->prepare($SQL);
-                //$this->_mStmt->prepare($SQL);
-                try{$res.="|".$eStmt->execute($PRM);}
-                catch(\Throwable $e){
-                    $this->_lastError=$this->_mStmt->errorInfo();
-                    General::addRowLog("[DataBroker EXEC SQL TRANS-EXEC W/Parameters () ERROR:".implode($this->_mStmt->errorInfo())."]");
+            foreach ($paramsArr as $params) {
+                try {
+                    $ok = $stmt->execute($params);
+                    if (!$ok) {
+                        $this->_lastError = $stmt->errorInfo();
+                        General::addRowLog("[DataBroker MULT_EXECUTE ERROR: " . implode($stmt->errorInfo()) . "]");
+                        $res = false;
+                    }
+                } catch (Throwable $e) {
+                    $this->_lastError = $e;
+                    General::addRowLog("[DataBroker MULT_EXECUTE EXCEPTION: {$e->getMessage()}]");
+                    $res = false;
                 }
             }
-            $res.=$this->_mStmt->commit();
-        }catch(\Throwable $e){
-            $this->_lastError=$this->_mStmt->errorInfo();
-            General::addRowLog("[DataBroker EXEC SQL TRANS-EXEC W/Parameters () ERROR:".implode($this->_mStmt->errorInfo())."]");
-            //$res=false;
-            //break;
+        } catch (Throwable $e) {
+            $this->_lastError = $e;
+            General::addRowLog("[DataBroker MULT_EXECUTE EXCEPTION: {$e->getMessage()}]");
+            $res = false;
         }
         return $res;
     }
 
-
-    function getLastId(){
-        return $this->getLastInsertId();
+    /**
+     * Chiude la transazione multipla, facendo il commit.
+     */
+    public function closeMultExecs(): void
+    {
+        if (!$this->_mStmt || !$this->tBbh) {
+            return;
+        }
+        $this->_opLog .= date("H:i:s v") . " DataBroker END MULTIPLE TRANSACTIONAL INSERT\r\n\t";
+        $this->commit($this->_mStmt, true);
+        $this->tBbh = null;
+        $this->_mStmt = null;
     }
-    // Data DEBUG LOG
-    //----------------------
-    public function getLog(){
+
+    /**
+     * Esegue un'inserzione multipla (tutto in uno, con beginTransaction e commit).
+     *
+     * @param string $sqlString
+     * @param array  $paramsArr
+     */
+    public function multDataInsert(string $sqlString, array $paramsArr): void
+    {
+        $this->_opLog .= date("H:i:s v") . " DataBroker START MULT INSERT\r\n\t";
+
+        // Avvio transazione
+        $pdo = $this->connect(true);
+        $stmt = $pdo->prepare($sqlString);
+
+        foreach ($paramsArr as $params) {
+            try {
+                $stmt->execute($params);
+            } catch (Throwable $e) {
+                $this->_lastError = $stmt->errorInfo();
+                General::addRowLog("[DataBroker EXECUTE MULT INSERT ERROR: " . implode($stmt->errorInfo()) . "]");
+            }
+        }
+
+        // Commit conclusivo
+        $this->commit();
+    }
+
+    /**
+     * Esegue una serie di comandi (SQL e parametri) in un'unica transazione.
+     *
+     * @param array $sqlArr Array di array associativi: [ ["SQL" => "...", "PRM" => [...]], ... ]
+     * @return bool|string  Restituisce il concatenato di booleani, oppure false in caso di errori.
+     */
+    public function transExecs(array $sqlArr)
+    {
+        $res = "";
+        try {
+            $this->_mStmt = $this->connect(true);
+            $this->_opLog .= date("H:i:s v") . " DataBroker EXEC SQL TRANS-EXEC\r\n\t";
+            $this->_mStmt->beginTransaction();
+
+            foreach ($sqlArr as $sqlCmd) {
+                $SQL = $sqlCmd["SQL"];
+                $PRM = $sqlCmd["PRM"];
+
+                $eStmt = $this->_mStmt->prepare($SQL);
+                try {
+                    $ok = $eStmt->execute($PRM);
+                    $res .= "|" . ($ok ? "true" : "false");
+                } catch (Throwable $e) {
+                    $this->_lastError = $this->_mStmt->errorInfo();
+                    General::addRowLog("[DataBroker TRANS-EXEC ERROR: " . implode($this->_mStmt->errorInfo()) . "]");
+                    $res .= "|false";
+                }
+            }
+
+            $this->_mStmt->commit();
+        } catch (Throwable $e) {
+            $this->_lastError = $this->_mStmt ? $this->_mStmt->errorInfo() : $e->getMessage();
+            General::addRowLog("[DataBroker TRANS-EXEC EXCEPTION: " . (is_array($this->_lastError) ? implode($this->_lastError) : $this->_lastError) . "]");
+            return false;
+        }
+
+        return $res;
+    }
+
+    // -----------------------------------------------------------------
+    // METODI PER LOG E ERRORI
+    // -----------------------------------------------------------------
+
+    /**
+     * Restituisce il log delle operazioni svolte.
+     *
+     * @return string
+     */
+    public function getLog(): string
+    {
         return $this->_opLog;
     }
-    // Operation DEBUG ERR
-    //----------------------
-    public function getError(){
+
+    /**
+     * Restituisce l'ultimo errore catturato.
+     *
+     * @return mixed
+     */
+    public function getError()
+    {
         return $this->_lastError;
+    }
+
+    // -----------------------------------------------------------------
+    // METODI PRIVATI DI SUPPORTO
+    // -----------------------------------------------------------------
+
+    /**
+     * Esegue una query SELECT/UPDATE/DELETE con o senza parametri (searchData), opzionalmente in transazione.
+     *
+     * @param string $sqlString
+     * @param bool   $transactional
+     * @return bool
+     */
+    private function exec(string $sqlString, bool $transactional = false): bool
+    {
+        $this->_opLog .= date("H:i:s v") . " DataBroker EXEC SQL:\r\n\t$sqlString\r\n\t";
+
+        // Apre la connessione con opzione transazionale se richiesto
+        $stmt = $this->connect($transactional)->prepare($sqlString);
+
+        $executeOk = false;
+
+        try {
+            // se searchData non è null, la usiamo come parametri
+            $executeOk = $stmt->execute($this->searchData ?? []);
+        } catch (Throwable $e) {
+            $this->_lastError = $e;
+            $this->_opLog .= "EXECUTE ERROR: " . $e->getMessage() . ";\r\n";
+            if ($transactional) {
+                $this->rollBack();
+            }
+            return false;
+        }
+
+        if (!$executeOk) {
+            $this->_lastError = $stmt->errorInfo();
+            $this->_opLog .= "EXECUTE ERROR: " . implode(" | ", $stmt->errorInfo()) . ";\r\n";
+            if ($transactional) {
+                $this->rollBack();
+            }
+            return false;
+        }
+
+        // Se arriva qui, l'esecuzione è andata a buon fine
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC); 
+        $this->sendData = is_array($rows) ? $rows : [];
+
+        // Se era transazionale, facciamo il commit
+        if ($transactional) {
+            $this->commit();
+        }
+
+        return true;
     }
 }

@@ -27,6 +27,7 @@ use Flussu\Controllers\ZapierController;
 use Flussu\Controllers\VersionController;
 use Flussu\Flussuserver\Request;
 use Flussu\General;
+use Flussu\Config;
 
 // VERSION
 $FlussuVersion="4.1.0.20240113";
@@ -36,14 +37,22 @@ $m=$FVP[1];
 $r=$FVP[2];
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-$dotenv->load( );
+$dotenv->load();
 
 if (!function_exists('config')) {
-    function config($key, $default = null)
+    /**
+     * Helper per accedere ai valori di configurazione tramite
+     * dot notation. Es.: config('services.google.private_key').
+     *
+     * @param string $key
+     * @return mixed
+     */
+    function config(string $key,$default=null)
     {
-        return Flussu\Config::get($key, $default);
+        // Ritorna il valore chiamando la classe Singleton
+        return Config::init()->get($key,$default);
     }
-} 
+}
 
 if (isset($argv) && is_array($argv)){
     echo ("Flussu Server v".$_ENV['major'].".".$_ENV['minor'].".".$_ENV['release']."\n");

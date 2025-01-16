@@ -16,6 +16,21 @@ use Flussu\Flussuserver\Command;
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load( );
 
+if (!function_exists('config')) {
+    /**
+     * Helper per accedere ai valori di configurazione tramite
+     * dot notation. Es.: config('services.google.private_key').
+     *
+     * @param string $key
+     * @return mixed
+     */
+    function config(string $key,$default=null)
+    {
+        // Ritorna il valore chiamando la classe Singleton
+        return Flussu\Config::init()->get($key,$default);
+    }
+}
+
 $mustBeLogged = true;
 $authLevel = 1;
 $widd=null;

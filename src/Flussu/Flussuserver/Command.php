@@ -66,11 +66,11 @@ class Command {
     }
     private function _sendEMail(Session $sess, $fromEmail, $fromName, $email, $subject, $tMessage, $hMessage, $replyTo, $attaches)
     {
-        $email_server   = $_ENV["smtp_host"];
-        $email_port     = $_ENV["smtp_port"];
-        $email_auth     = $_ENV["smtp_auth"]!=0;
-        $email_user     = $_ENV["smtp_user"];
-        $email_passwd   = $_ENV["smtp_pass"];
+        $email_server   = config("services.email.ovh.smtp_host");
+        $email_port     = config("services.email.ovh.smtp_port");
+        $email_auth     = config("services.email.ovh.smtp_auth",0)!=0;
+        $email_user     = config("services.email.ovh.smtp_user");
+        $email_passwd   = config("services.email.ovh.smtp_pass");
         if (General::isCurtatoned($email_passwd))
             $email_passwd=General::montanara($email_passwd,999);
 
@@ -683,29 +683,22 @@ class Command {
         return $fobj;
     }
 
-    public function sendSMS($senderName,$phoneNum,$message){
-        $prv = $_ENV["sms_default"];
-        return $this->sendProviderSMS($prv,$senderName,$phoneNum,$message);
+    public function sendSMS($senderName,$phoneNum,$message,$provider=null){
+        if (is_null($provider))
+            $provider = config("services.sms_provider.default");
+        return $this->sendProviderSMS($provider,$senderName,$phoneNum,$message);
     }
-    public function sendProviderSMS($prv,$senderName,$phoneNum,$message){
-            $provider=null;
-            $key=$_ENV["sms_".$prv."_key"];
-            switch (trim(strtoupper($prv))){
-                case "SFC":
-                    $provider=new \Flussu\Controllers\SmsFactor($key);
-                    if (!($this->startsWith($phoneNum,"0039") || $this->startsWith($phoneNum,"+39"))){
-                        $phoneNum="+39".$phoneNum;
-                    }
-                    $result=$provider->sendSms($senderName,$phoneNum,$message);
-                    break;
-                case "J_M":
-                    $provider=new \Flussu\Controllers\JomobileSms($key);
-                    $result=$provider->sendSms($senderName,$phoneNum,$message);
-                    break;
-                default:
-                    throw new \Exception("NoProvider","Provider [".$prv."] not found or not defined");
+    public function sendProviderSMS($provider,$senderName,$phoneNum,$message){
+            $providerClass = 'Flussu\\Controllers\\' . $provider;
+            if (!class_exists($providerClass)) {
+                throw new \Exception("NoProvider", "Provider [$provider] not found or not defined");
             }
-        return $result;
+            $prov = new $providerClass();
+            if (!($this->startsWith($phoneNum,"00")) && !$this->startsWith($phoneNum,"+")){
+                $phoneNum="+39".$phoneNum;
+            }
+            $result=$prov->sendSms($senderName,$phoneNum,$message);
+            return $result;
     }
     function startsWith($haystack, $needle) {
         return substr_compare($haystack, $needle, 0, strlen($needle)) === 0;

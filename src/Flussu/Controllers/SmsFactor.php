@@ -23,30 +23,11 @@
  * UPDATE DATE:      12.01:2025 
  * --------------------------------------------------------------------*/
 namespace Flussu\Controllers;
-use Auth;
-use Session;
-use Exception;
-
 /**
  * Provides functionality to send SMS messages using the SmsFactor API.
  */
-class SmsFactor 
+class SmsFactor extends AbsSmsSender
 {
-    /**
-     * The API key used for authenticating requests to the SmsFactor service.
-     * 
-     * @var string
-     */
-    private $_apiKey="";
-    //private $_myHandler=null;
-    /**
-     * Constructs a new instance of the SmsFactor service handler.
-     * 
-     * @param string $apiKey The API key for the SmsFactor service.
-     */
-    function __construct($apiKey) {
-        $this->_apiKey=$apiKey;
-    }
     /**
      * Sends an SMS message to a specified recipient.
      * 
@@ -64,49 +45,4 @@ class SmsFactor
         ];
         return $this->sendRequest("https://api.smsfactor.com/send", "GET", $opts);
     }
-
-    /**
-     * Sends a request to the SmsFactor API.
-     * 
-     * This method is used internally to send requests to the SmsFactor API. It handles the
-     * construction of the request, including setting the appropriate headers and formatting
-     * the request parameters.
-     * 
-     * @param string $url The URL to send the request to.
-     * @param string $method The HTTP method to use for the request (e.g., "GET", "POST").
-     * @param array $opts The options to include in the request. This includes the API token, recipient number, sender name, and text message.
-     * @return bool|string The response from the SmsFactor API or false on failure.
-     */
-    private function sendRequest(string $url, string $method, array $opts = [])
-    {
-        $Url = $url . '?' . http_build_query($opts);
-        $curl_info = [
-            CURLOPT_URL            => $Url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => $method,
-        ];
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, $curl_info);
-        $response = curl_exec($curl);
-
-        $info= curl_getinfo($curl);
-        if ($info['http_code']!=200){
-            return false;
-        }
-        curl_close($curl);
-
-        if (stripos($response,"XML")!==false){
-            $xml = simplexml_load_string($response);
-            $response = json_encode($xml);
-        }
-
-        return $response;
-    }
-
 }

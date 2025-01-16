@@ -57,14 +57,14 @@
  */
 
 namespace Flussu\Flussuserver;
+
+use Flussu\Controllers\FluLuUriShrinkController;
 require_once(__DIR__ . "/Gibberish.php");
 require_once(__DIR__ . "/Command.php");
 
-use Flussu\Flussuserver\Session;
 use Flussu\Flussuserver\Command;
-use FlussuApi\Controller\StripeController;
-use \Goutte\Client;
 use Flussu\General;
+use Flussu\HttpCaller;
 
 class Environment {
     private $_version="3.0.4";
@@ -159,9 +159,12 @@ class Environment {
     public function httpSend            ($URI,$dataArray=null,$retResVarName=null) {$this->_addToResArray("httpSend", array($URI, (is_null($dataArray))?"":json_encode($dataArray),(is_null($retResVarName))?"":$retResVarName));}
     public function getStripeChargeInfo ($stripeChargeId,$keyName=""){return $this->_getStripeChargeInfo($stripeChargeId,$keyName);}
     public function getStripeSessInfo   ($keyName,$stripeSessId){return $this->_getStripeSessInfo($stripeSessId,$keyName);}
-    public function getStripePaymentLink($keyName,$paymentId,$prodName,$prodPrice,$prodImg,$successUri,$cancelUri,$varStripeRetUriName){
-        $this->_addToResArray("getStripePaymentLink", array($keyName,$paymentId,$prodName,$prodPrice,$prodImg,$successUri,$cancelUri,$varStripeRetUriName));
+    
+    
+    public function getPaymentLink($provider, $configId, $keyType, $paymentId, $description,$amount,$imageUri,$successUri,$cancelUri,$varStripeRetUriName){
+        $this->_addToResArray("getPaymentLink", array($provider, $configId, $keyType, $paymentId, $description,$amount,$imageUri,$successUri,$cancelUri,$varStripeRetUriName));
     }
+
     public function log($logString)             {General::Log($logString,true);}
     public function logDebug($logString)          {General::Log($logString);}
     public function doZAP               ($URI,$retResVarName,$dataArray=null) {$this->_addToResArray("doZAP", array($URI,$retResVarName,(is_null($dataArray))?"":json_encode($dataArray)));}
@@ -294,51 +297,8 @@ class Environment {
     // v3.0.4
     // get shorter uri from HTTP API
     private function _getShortUri($longUri){
-        $svcuri=$_ENV["shorturl_svc"];
-        $svckey=$_ENV["shorturl_key"];
-        $completeUri="https://".$svcuri."/api?key=".$svckey."&uri=".urlencode($longUri);
-        $res= $this->getResultFromHttpApi($completeUri,$getOrPost="GET");
-        $ret=json_decode($res);
-        return $ret->short_url;
-    }
-
-    // v2.9.0
-    // get JSON from HTTP API
-    public function getResultFromHttpApi($completeUri,$getOrPost="GET"){
-        $resp="";
-        try{
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $completeUri);
-            curl_setopt($ch, CURLOPT_TIMEOUT,10);
-            //curl_setopt($ch, CURLOPT_NOBODY, true);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            $FLDS=explode("|",$getOrPost);
-            if (count($FLDS)>1){
-                curl_setopt( $ch, CURLOPT_CUSTOMREQUEST,$FLDS[0]);
-                if ($FLDS[0]=="POST")
-                    curl_setopt($ch, CURLOPT_POSTFIELDS,$FLDS[1]);
-            } else
-                curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, $getOrPost );
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
-            $response = curl_exec($ch);
-            curl_close($ch);
-            if (!empty($response))
-                $resp=$response;
-            else
-                $this->_addToResArray("WARNING", "Api Call returns a bad or empty response: [".$response."]");
-        } catch (\Throwable $e){$resp="ERR";}
-        return $resp;
-    }
-
-    public function callHttpApi($completeUri,$protocol="GET",$jsonData=null){
-        $resp="";
-        try{
-            $cmd=new Command();
-            $resp=$cmd->execRemoteCommandProtocol($completeUri,$protocol,$jsonData);
-        } catch (\Throwable $e){
-            $resp='{"status":"ERR","message":$e->getMessage()}';
-        }
-        return $resp;
+        $shirnker=new FluLuUriShrinkController();
+        return $shirnker->shrink($longUri);
     }
 
     public function isDisposableEmailAddress($emailAddr){
@@ -353,11 +313,9 @@ class Environment {
                         return 1;
                     if (in_array (trim($prts[0]).".".trim($prts[1]) , $badEmail2))
                         return 1;
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, 'https://api.mailcheck.ai/email/' . $emailAddr);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    $response = curl_exec($ch);
-                    curl_close($ch);
+
+                    $hc=new HttpCaller();
+                    $response =$hc->exec('https://api.mailcheck.ai/email/' . $emailAddr,"GET");
                     if (!empty($response)){
                         $resp=json_decode($response);
                         if ($resp->disposable)

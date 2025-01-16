@@ -20,39 +20,30 @@
  * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 namespace Flussu\Controllers;
-use Auth;
-use Dompdf\Dompdf;
-use Dompdf\Options;
-use Flussu\General;
-use Flussu\Flussuserver\Command;
-use Log;
-use Stripe;
+
 /**
  * Flussu Stripe API Controller
  * This class serves as an interface to the Stripe connector.
  * It provides methods to retrieve charge information from Stripe.
  */
-class StripeController 
+class StripeController extends AbsPayProviders
 {
-    private $_config;
-    private $_strkey;
     private $_stripe;
-    private $_stripeSess;
-    public function __construct (){
-        //$this->_keyInit($keyName);
-    }
 
-    private function _keyinit($keyName="stripe_key"){
-        $this->_strkey=$_ENV[$keyName];
-        \Stripe\Stripe::setApiKey($_ENV[$keyName]);
+    public function init($companyName,$keyType){
+        $this->_compName = $companyName;
+        $this->_keyType = $keyType;
+        $this->_apiKey="";
+        $this->_setKey("stripe");
+        return $this->_apiKey!="";
     }
 
     public function getChargeInfo($ch_Id, $keyName){
         $res=null;
         $stripe_payId="";
         if (isset($keyName) && !empty($keyName))
-            $this->_keyInit($keyName);
-        $this->_stripe = new \Stripe\StripeClient($this->_strkey);
+            return "you must INIT: no key found!";
+        $this->_stripe = new \Stripe\StripeClient($this->_apiKey);
         if (isset($this->_stripe) && !is_null($this->_stripe)){
             $item=null;
             $ref="";
@@ -181,7 +172,8 @@ class StripeController
         }
         return $res;
     }
-    function createStripeLink($stripeKeyId,$paymentId,$prodName,$prodPrice,$prodImg,$successUri,$cancelUri){
+
+    function createPayLink($paymentId,$prodName,$prodPrice,$prodImg,$successUri,$cancelUri){
         $res=["link"=> "", "id"=>"","stripeSession"=>null];
         try {
             $parts=explode(".",$prodPrice);
@@ -216,9 +208,7 @@ class StripeController
             if (isset($prodImg) && !empty($prodImg))
                 $params['line_items'][0]['price_data']['product_data']['images'][] = $prodImg;
 
-            if (isset($stripeKeyId) && !empty($stripeKeyId))
-                $this->_keyInit($stripeKeyId);
-            $this->_stripe = new \Stripe\StripeClient($this->_strkey);
+            $this->_stripe = new \Stripe\StripeClient($this->_apiKey);
             $chkOut=$this->_stripe->checkout->sessions->create($params);
             // Ottieni il link di pagamento
             $payment_link = $chkOut->url;
@@ -236,9 +226,9 @@ class StripeController
         $ret="ERROR";
         try {
             // Usa l'API di ricerca per trovare la Checkout Session con il metadata specifico
-            if (isset($stripeKeyId) && !empty($stripeKeyId))
-                $this->_keyInit($stripeKeyId);
-            $this->_stripe = new \Stripe\StripeClient($this->_strkey);
+            if (isset($keyName) && !empty($keyName))
+                return "ERROR: you must INIT: no key found!";
+            $this->_stripe = new \Stripe\StripeClient($this->_apiKey);
             $events=$this->_stripe->events->all(['limit'=>20,'type'=>'charge.*']);
             foreach ($events->data as $event){
                 $ret=$this->_eventGet ($event,$stripeSessionId);
@@ -293,9 +283,9 @@ class StripeController
         $ret=[];
         try {
             // $endpointSecret is your Stripe CLI webhook secret key.
-            if (isset($stripeKeyId) && !empty($stripeKeyId))
-                $this->_keyInit($stripeKeyId);
-            $this->_stripe = new \Stripe\StripeClient($this->_strkey);
+            if (isset($keyName) && !empty($keyName))
+                return "ERROR: you must INIT: no key found!";
+            $this->_stripe = new \Stripe\StripeClient($this->_apiKey);
             if (isset($endpointSecret) && !empty($endpointSecret)){
 
                 $payload = @file_get_contents('php://input');
@@ -316,7 +306,7 @@ class StripeController
                     //http_response_code(400);
                 }
                 // Handle the event
-                echo 'Received unknown event type ' . $event->type;
+                return 'ERROR: Received unknown event type ' . $event->type;
                 //http_response_code(200);
             }
         } catch (\Throwable $e) {

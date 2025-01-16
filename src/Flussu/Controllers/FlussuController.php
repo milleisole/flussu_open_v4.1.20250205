@@ -172,9 +172,17 @@ class FlussuController
             Ex:/wh/w8567567746a/12345-12345-12345-12345 OR /wh/123456-123456-123456-123456/BLOCKNAME
             The session id (if any) must be passed as a parameter            
         */
-        
+        $is_echo=false;
         $parts=explode("/",$theCallString);
-        $anyIdent="[".$parts[2]."]";
+        if ($parts[2]=="show"){
+            array_splice($parts, 2, 1);
+            $is_echo=true;
+        }
+        if (str_starts_with($parts[2],"[") && str_ends_with($parts[2],"]")){
+            $anyIdent=$parts[2];
+        } else {
+            $anyIdent="[".$parts[2]."]";
+        }
         $hnd=new HandlerNC();
         $wid=$hnd->getFlussuWID($anyIdent);
         $WID=$anyIdent;
@@ -219,8 +227,23 @@ class FlussuController
             }
             $terms["$"."web_caller"]=$caller;
             $terms["$"."webhook"]=true;
-            $eng=new Engine();
-            $res=$eng->execWorker($wid,$sid,$bid,$terms);
+            if ($is_echo==false){
+                $eng=new Engine();
+                $res=$eng->execWorker($wid,$sid,$bid,$terms);
+            } else {
+                echo "<h2>FLUSSU ECHO WEBHOOK</h2><hr>";
+                echo "<strong>WID</strong>=$WID&nbsp;($wid)<br>";
+                echo "<strong>SID</strong>=$sid<hr><h3>VARS</h3><div style='padding-left:30px'>";
+                foreach ($vars as $key => $value){
+                    echo "<strong>$key</strong>=".htmlentities($value)."<br>";
+                }
+                echo "</div><hr><h3>TERMS</h3><div style='padding-left:30px'>";
+                foreach ($terms as $key => $value){
+                    echo "<strong>$key</strong>=".htmlentities($value)."<br>";
+                }
+                echo "</div>";
+                die();
+            }
         }
         return $res;
     }

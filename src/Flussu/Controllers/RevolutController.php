@@ -21,14 +21,9 @@
  * -------------------------------------------------------*/
 
 namespace Flussu\Controllers;
-use Auth;
-use Dompdf\Dompdf;
-use Dompdf\Options;
-use Flussu\General;
-use Flussu\Flussuserver\Command;
-use Log;
 
-class RevolutController 
+
+class RevolutController  extends AbsPayProviders
 {
     private $clientId;
     private $clientSecret;
@@ -89,6 +84,9 @@ class RevolutController
         return json_decode($result, true);
     }
 
+    function createPayLink($paymentId,$description,$amount,$prodImg,$successUri,$cancelUri){
+        return $this->createPaymentLink($description, $amount);
+    }
     public function createPaymentLink($description, $amount)
     {
         $url = $this->apiUrl . '/payment-links';

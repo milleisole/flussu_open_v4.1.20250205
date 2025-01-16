@@ -342,12 +342,12 @@ class Executor{
                         //
                         $Sess->assignVars($innerParams[1],$tmpFile);
                         break;
-                    case "getStripePaymentLink":
-                        $stcn=new \Flussu\Controllers\StripeController();
-                        //   0             1          2        3           4        5        6                7
-                        //$stripeKeyId,$paymentId,$prodName,$prodPrice,$prodImg,$successUri,$cancelUri,$varStripeRetUriName
-                        $res=$stcn->createStripeLink($innerParams[0],$innerParams[1],$innerParams[2],$innerParams[3],$innerParams[4],$innerParams[5],$innerParams[6]);
-                        $Sess->assignVars("$".$innerParams[7],$res);
+                    case "getPaymentLink":
+                        //   0                   1                     2         3          4           5                         6                             7                            8                             9
+                        //$provider,$stripeCompanyAccountName,$stripeKeyType,$paymentId, $prodName,$prodPrice   ,$prodImg                          ,$successUri                    ,$cancelUri                  , $varStripeRetUriName
+                        // stripe  , milleisole              , test OR prod , 123456  ,  puzzle  , 4999 (49,99) , https://www.sample.com/image.jpg, https://www.sample.com/ok.php, https://www.sample.com/ko.php, stripeRetUri
+                        $res=$this->_getPaymentLink($innerParams);
+                        $Sess->assignVars("$".$innerParams[9],$res);
                         break;
                     case "excelAddRow":
                         $fileName=$innerParams[0];
@@ -600,6 +600,23 @@ class Executor{
         }
         return $str;
     }
+
+    private function _getPaymentLink($Params){
+        $providerClass = 'Flussu\\Controllers\\' . ucfirst(strtolower($Params[0]))."Controller";
+        if (!class_exists($providerClass)) {
+            throw new \Exception("NoProvider", "Provider [".$Params[0]."] not found or not defined");
+        }
+        $stcn=new $providerClass();
+        if ($stcn->init($Params[1],$Params[2])){
+            $res=$stcn->createPayLink($Params[3],$Params[4],$Params[5],$Params[6],$Params[7],$Params[8]);
+        }
+        else {
+            $res=$Params[0]." init ERROR! Company Name or Key Type not found!";
+        }
+        return $res;
+    }
+
+
 
 
     /**

@@ -20,20 +20,12 @@
  * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 namespace Flussu\Controllers;
-use Auth;
-use Session;
-use Exception;
-
-class JomobileSms 
+/**
+ * Provides functionality to send SMS messages using the JoMobile API.
+ */
+class JomobileSms extends AbsSmsSender
 {
-    private $_apiKey="";
-    //private $_myHandler=null;
-    function __construct($apiKey) {
-        $this->_apiKey=$apiKey;
-    }
-    function sendSms($senderName,$toNumber,$textMessage){
-
-
+    public function sendSms($senderName,$toNumber,$textMessage){
         $opts=[
             "token"=>$this->_apiKey,
             "phone"=>$toNumber,
@@ -68,81 +60,5 @@ class JomobileSms
         }
         return json_encode($ret);
     }
-
-/**
-     * @param  string  $url
-     * @param  string  $method
-     * @param  array   $opts
-     * @return bool|string
-     */
-    private function sendRequest(string $url, string $method, array $opts = [])
-    {
-        $Url = $url . '?' . http_build_query($opts);
-        $curl_info = [
-            CURLOPT_URL            => $Url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 5,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => $method,
-        ];
-
-        if ($opts == []) {
-            unset($curl_info[CURLOPT_POSTFIELDS]);
-        }
-        $curl = curl_init();
-
-        curl_setopt_array($curl, $curl_info);
-        $response = curl_exec($curl);
-        $info     = curl_getinfo($curl);
-
-        curl_close($curl);
-
-        return $response;
-    }
-
-
-
-    private function sendAsV1ApiPost($senderName,$toNumber,$textMessage)
-    {
-        $env=[
-            "number"=>[$toNumber],
-            "senderID"=>trim($senderName),
-            "text"=>trim($textMessage),
-            "type"=>"sms",
-            "lifetime"=>120,
-            "delivery"=>"false"
-        ];
-
-        //bisogna richiedere il token api V1 / POST
-
-        $jenv=json_encode([$env]);
-        $curl_info = [
-            CURLOPT_URL            => "https://restapi.jomobile.online/v1/send",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_TIMEOUT        => 6000,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => "POST",
-            CURLOPT_POSTFIELDS     => [""=>$jenv],
-            CURLOPT_HTTPHEADER     => ["X-Access-Token: "=>$this->_apiKey]
-        ];
-
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, $curl_info);
-        $response = curl_exec($curl);
-
-        $info           = curl_getinfo($curl);
-
-
-        curl_close($curl);
-
-        return $response;
-    }
-
+   
 }

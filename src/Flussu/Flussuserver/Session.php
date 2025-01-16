@@ -1237,6 +1237,8 @@ class Session {
         }
         // Handler Close Session
         $sessClose=intval((microtime(true) - $start_time) * 1000);
+        //if ($_SESSION["Log"])
+        //    General::log("End session : ".$_SESSION["Log"]);
         General::log("SID:".$this->_sessId.":".$durmsec+$sessClose."ms (Calc:".$durmsec."ms + Close:".$sessClose."ms)"); 
         $_SESSION["vars0"]=$this->_arVars;
     }

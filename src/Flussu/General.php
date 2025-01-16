@@ -87,12 +87,9 @@ class General {
     static function getHrTimeDiff(){
         return (hrtime(true) - self::$sTime); 
     }
-
     static function DoCache():bool{
         return self::$_CacheResults;
     }
-
-
     static function Log_nocaller($log_msg,$forced=false)
     {
         $debug=isset($_ENV["debug_log"])?$_ENV["debug_log"]:false;
@@ -129,7 +126,6 @@ class General {
             self::Log_nocaller(" #".$caller."# ".$log_msg,$forced=false);
         }
     }
-
     static function Persist($objId,$objImg,$refType="gen",$refId="gen")
     {
         if (self::$UseCache){
@@ -150,7 +146,6 @@ class General {
             }
         }
     } 
-
     static function getCaller($v){
         //$v=debug_backtrace();
         $caller="[call from:???]";
@@ -171,7 +166,6 @@ class General {
         }
         return $caller;
     } 
-
     static function Deserialize($objId,$refType="gen",$refId="gen")
     {
         $fname=hash('sha256', $objId);
@@ -200,14 +194,12 @@ class General {
             }
         }
     }
-
     static private function _smartEncrypt($value){
         return strrev(bin2hex($value));
     }
     static private function _smartDecrypt($value){
         return hex2bin(strrev($value));
     }
-
     static function PutCache($id, $cacheable,$refType,$refId){
         if (self::$_CacheResults){ 
             self::Persist($id,json_encode($cacheable),$refType,$refId);
@@ -696,6 +688,119 @@ class General {
 
 // VERIFICA SE USATE (PHP NE HA GIA' UNA OTTIMA):
 
+
+class HttpApi {
+
+    private array $headers;
+    private string $proxy = "";
+    private array $curlInfo = [];
+    private array $contentTypes;
+    private int $timeout = 0;
+    public function __construct()
+    {
+        /*
+        $this->contentTypes = [
+            "application/json"    => "Content-Type: application/json",
+            "multipart/form-data" => "Content-Type: multipart/form-data",
+        ];
+
+        $this->headers = [
+            $this->contentTypes["application/json"],
+            "Authorization: Bearer $PASSED_KEY",
+        ];*/
+    }
+
+        /**
+     * @param  int  $timeout
+     */
+    public function setTimeout(int $timeout)
+    {
+        $this->timeout = $timeout;
+    }
+
+    /**
+     * @param  string  $proxy
+     */
+    public function setProxy(string $proxy)
+    {
+        if ($proxy && strpos($proxy, '://') === false) {
+            $proxy = 'https://'.$proxy;
+        }
+        $this->proxy = $proxy;
+    }
+
+    /**
+     * @param  array  $header
+     * @return void
+     */
+    public function setHeader(array $header)
+    {
+        if ($header) {
+            foreach ($header as $key => $value) {
+                $this->headers[$key] = $value;
+            }
+        }
+    }
+
+     /**
+     * @param  string  $url
+     * @param  string  $method GET / POST
+     * @param  array   $opts
+     * @return bool|string
+     */
+    public function exec(string $url, string $method, array $opts = [])
+    {
+        $post_fields = json_encode($opts);
+        $method=strtoupper($method);
+        switch($method){
+            case "GET":
+            case "POST":
+                break;
+            default:
+                throw new \Exception("HttpApi: Invalid GET/POST parameter");
+        }
+        $resp="";
+
+        if (array_key_exists('file', $opts) || array_key_exists('image', $opts)) {
+            $this->headers[0] = $this->contentTypes["multipart/form-data"];
+            $post_fields      = $opts;
+        } else {
+            $this->headers[0] = $this->contentTypes["application/json"];
+        }
+        $curl_info = [
+            CURLOPT_URL            => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => $this->timeout,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => $method,
+            CURLOPT_POSTFIELDS     => $post_fields,
+            CURLOPT_HTTPHEADER     => $this->headers,
+        ];
+
+        if ($opts == []) {
+            unset($curl_info[CURLOPT_POSTFIELDS]);
+        }
+
+        if (!empty($this->proxy)) {
+            $curl_info[CURLOPT_PROXY] = $this->proxy;
+        }
+        
+        $curl = curl_init();
+
+        curl_setopt_array($curl, $curl_info);
+        $response = curl_exec($curl);
+
+        $info           = curl_getinfo($curl);
+        $this->curlInfo = $info;
+
+        curl_close($curl);
+
+        return $response;
+    }
+}
 
 class EmailAddressValidator {
 /**
