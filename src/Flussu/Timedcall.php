@@ -34,15 +34,37 @@
  * Releases/Updates:
  *                  Some refactor and cache management
  * -------------------------------------------------------*/
-namespace Flussu\Flussuserver;
+namespace Flussu;
 
-//require __DIR__ . '/../../../autoloader.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Flussu\Flussuserver\NC\HandlerNC;
 use Flussu\Flussuserver\Session;
+use Flussu\Config;
 use Flussu\General;
 
+$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv->load( );
+
+if (!function_exists('config')) {
+    /**
+     * Helper per accedere ai valori di configurazione tramite
+     * dot notation. Es.: config('services.google.private_key').
+     *
+     * @param string $key
+     * @return mixed
+     */
+    function config(string $key,$default=null)
+    {
+        // Ritorna il valore chiamando la classe Singleton
+        return Config::init()->get($key,$default);
+    }
+}
 /* -----------------------------------------------------------------------------------
+
+USO (anche da terminale):
+  php /[path..]/[..to..]/[..flussuserverdir]/src/Flussu/Timedcall.php
+
 Questa classe è richiamata ogni minuto dal sistema 
 PERTANTO UNA PARTE DI CODICE E' OPEN, CIOE' DIRETTA 
 ========================================
@@ -60,7 +82,7 @@ e salvare
 Creare il file cronjobs.5m.sh
   nano /home/[user]/cronjobs.5m.sh
 e scrivere (per ogni flussuserver presente nel server)
-  php /home/[user]/[flussuserverdir]/Flussu/Flussuserver/Timedcall.php
+  php /home/[user]/[flussuserverdir]/src/Flussu/Timedcall.php
 e salvare
 
 rendere eseguibile il file
@@ -80,7 +102,7 @@ class Timedcall {
         $vc=new \Flussu\Controllers\VersionController();
         $vcbv=$vc->getDbVersion();
         echo "\033[01;42m\033[01;97m       Flussu Server       \033[0m\r\n";
-        echo " sv:\033[01;32mv".$_ENV["minor"].".".$_ENV["major"].".".$_ENV["release"]."  \033[0m\r\n";
+        echo " sv:\033[01;32mv".$_ENV["major"].".".$_ENV["minor"].".".$_ENV["release"]."  \033[0m\r\n";
         echo " sn:\033[01;32m".$_ENV["server"]."\033[0m\r\n";
         echo " db:".$_ENV["db_name"]." [\033[01;32mv".$vcbv."\033[0m]\r\n";
         if ($vcbv<7){
@@ -90,6 +112,7 @@ class Timedcall {
         echo "- - - - - - - - - - - - - -\r\nTimedcall routine\r\n";
     }
     public function exec(){
+        General::Log("Timedcall: exec start");
         echo "\033[01;32m".date("Y-m-d H:i:s")."\033[0m - start\r\n";
         $rows=$this->_WofoD->getTimedCalls(true);
         $srvCall="https://".$_ENV["server"]."/flussueng.php?TCV=1&WID={{wid}}&SID={{sid}}&BID={{bid}}&£is_timed_call=1{{data}}";
@@ -133,23 +156,9 @@ class Timedcall {
 
     private function _sendRequest(string $url)
     {
-        $Url = $url ;
-        $curl_info = [
-            CURLOPT_URL            => $Url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING       => '',
-            CURLOPT_MAXREDIRS      => 10,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST  => "get"
-        ];
-        $curl = curl_init();
-        curl_setopt_array($curl, $curl_info);
-        $response = curl_exec($curl);
-        $info= curl_getinfo($curl);
-        curl_close($curl);
-        $response = json_encode($response);
-        return $response;
+      General::Log("Timedcall: ".$url);
+      $hc=new HttpCaller();
+      return $hc->exec($url,"GET");
     }
 
 
