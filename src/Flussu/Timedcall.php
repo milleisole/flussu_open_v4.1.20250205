@@ -160,6 +160,4 @@ class Timedcall {
       $hc=new HttpCaller();
       return $hc->exec($url,"GET");
     }
-
-
 }
