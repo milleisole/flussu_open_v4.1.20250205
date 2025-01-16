@@ -23,6 +23,20 @@
       "aws_secret_access_key": "xxxxxx/xxxxxxxxxxxxxx/xxxxxxxxxxxxxxxEXAMPLE",
       "region": "us-east-1"
     }
+  },
+  "webhooks":{
+    "zapier":{
+      "sign":["Zapier"],
+      "call":"ZapierController@apicall"
+    },
+    "stripe":{
+      "sign":["Stripe/","//stripe.com/"],
+      "call":"StripeController@webhook"
+    },
+    "revolut":{
+      "sign":["Revolut ","/revolut "],
+      "call":"RevolutController@webhook"
+    }
   }
 }
   

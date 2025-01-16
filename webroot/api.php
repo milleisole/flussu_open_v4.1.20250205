@@ -109,7 +109,7 @@ if (strpos($_SERVER["SCRIPT_URL"],"license") || strpos($_SERVER["QUERY_STRING"],
     }
 } else if (stripos($_SERVER["SCRIPT_URL"],"/wh/")===0){
     /*
-    It's a WEB HOOK call, so we need to handle it here.
+    It's a specificed DIRECT WEB HOOK call, so we need to handle it here.
     The first part must be a Workflow-id
     If there is a second part, it must be a block id
     */
@@ -125,13 +125,45 @@ if (strpos($_SERVER["SCRIPT_URL"],"license") || strpos($_SERVER["QUERY_STRING"],
     }
 } else {
     $apiPage=basename($_SERVER['REQUEST_URI']);
-    if (strtolower(substr($apiPage,0,3))=="zap"){
-        General::log("Extcall Zapier Controller: ".$apiPage." - ".$_SERVER["REQUEST_URI"]);
-        $fc=new ZapierController();
-    } else {
+    $req=new Request();
+    /*
+    It's a WEB HOOK call, if can be Flussu or other system, so we need to check
+    */
+    // Se la call non viene da servizi riconosciuti, allor passala a flussu!
+    if (!checkUnattendedWebHookCall($req,$apiPage)){
         General::log("Extcall Flussu Controller: ".$apiPage." - ".$_SERVER["REQUEST_URI"]);
         $fc=new FlussuController();
+        $fc->apiCall($req,$apiPage);
     }
-    $req=new Request();
-    $fc->apiCall($req,$apiPage);
+}
+
+//EXTERNAL CALLS - CONFIGURED ON config/.services.json
+function checkUnattendedWebHookCall($req,$apiPage){
+    $callSign=$_SERVER['HTTP_USER_AGENT']." ".$_SERVER['HTTP_ORIGIN'];
+    $wh=config("webhooks");
+    $iwh="";
+    $idf="";
+    foreach ($wh as $service => $sign) {
+        $idf=$service;
+        foreach ($sign['sign'] as $p_sign) {
+            if (strpos($callSign, $p_sign) !== false) {
+                $iwh=$sign['call'];
+                break;
+            }
+        }
+        if ($iwh) break;    
+    }
+    if ($iwh){
+        // Richiama Caller
+        $iwh=explode("@",$iwh);
+        $providerClass = 'Flussu\\Controllers\\' . $iwh[0];
+        if (class_exists($providerClass)) {
+            $handlerCall=new $providerClass();
+            General::log("Extcall from $idf - Called controller: ".$iwh[0]."->".$iwh[1]." - "."$"."callSign='".$callSign."'");
+            $handlerCall->{$iwh[1]}($req,$apiPage);
+            return true;
+        }
+    }
+    return false;
+
 }
