@@ -1031,7 +1031,7 @@ try {
                         $errMsg=$this->_sanitizeErrMsg($this->arr_print($e));
                     $this->_WofoS->recLog("  - execution EXCEPTION:".$errMsg);
                     $findErr=true;
-                    General::Log("Block code exec ERROR #1:".$this->arr_print($e));
+                    General::Log("Block code exec PARSE-ERROR #1:".$this->arr_print($e));
                     $this->_WofoS->statusError(true);
                 } catch(\Throwable $e){
                     if (strpos($e->getFile(),"eval()")!==false)
@@ -1044,15 +1044,16 @@ try {
                     $this->_WofoS->statusError(true);
                 }
                 ini_set('display_errors', $old);
+                /*
                 if ($findErr==false && error_get_last()){
-                    $errMsg=$this->getErrMessage($theCode,$block["description"],null);
+                    $errMsg=$this->getErrMessage($theCode,"(before) ".$block["description"],null);
                     if ($errMsg!=""){
                         $this->_WofoS->recLog("  - exec EXCEPTION:".$errMsg);
                         error_clear_last();
                         $this->_WofoS->statusError(booVal: true);
                         General::Log("Block code exec ERROR #3:".$errMsg);
                     }
-                }
+                }*/
             } else {
                 $this->_WofoS->statusError(true);
                 $this->_WofoS->recLog("  - block code EXCEPTION:".$this->_sanitizeErrMsg($err));
@@ -1100,8 +1101,8 @@ try {
                                     $vval=@eval("try{return $vname;} catch (\Throwable "."$"."e){return "."$"."e;}");
                                     if ($vval instanceof Throwable)
                                     {
-                                        //è un errore
-                                        $this->_WofoS->recLog($vval->getMessage());
+                                        //FORSE è un errore
+                                        $this->_WofoS->recLog("NOT really an error...".$vval->getMessage());
                                         $this->_WofoS->statusError(true);
                                     } else {
                                         if (!is_null($vval)){

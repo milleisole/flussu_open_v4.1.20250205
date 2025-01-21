@@ -95,7 +95,7 @@ class General {
         $debug=isset($_ENV["debug_log"])?$_ENV["debug_log"]:false;
         if ($debug || $forced) {
             $log_dir=$_SERVER['DOCUMENT_ROOT']."/../Uploads/";
-            $now = (\DateTime::createFromFormat('U.u', microtime(true)))->format("m.d.y H:i:s.u");
+            $now = (\DateTime::createFromFormat('U.u', microtime(true)))->format("H:i:s.u");
             //$now=$now;
             if (isset($_SESSION["FlussuSid"]))
                 $now.=" S:".$_SESSION["FlussuSid"];
