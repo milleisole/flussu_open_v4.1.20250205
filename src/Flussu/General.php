@@ -95,6 +95,12 @@ class General {
         $debug=isset($_ENV["debug_log"])?$_ENV["debug_log"]:false;
         if ($debug || $forced) {
             $log_dir=$_SERVER['DOCUMENT_ROOT']."/../Uploads/";
+            $now = (\DateTime::createFromFormat('U.u', microtime(true)))->format("m.d.y H:i:s.u");
+            //$now=$now;
+            if (isset($_SESSION["FlussuSid"]))
+                $now.=" S:".$_SESSION["FlussuSid"];
+            $now.="| ";
+
             if ($_ENV["debug_path"])
                 $log_dir=$_SERVER['DOCUMENT_ROOT']."/../".$_ENV["debug_path"];
             try{
@@ -110,10 +116,9 @@ class General {
                         $e->getMessage();
                     }
                 }
-                $now = \DateTime::createFromFormat('U.u', microtime(true));
-                file_put_contents($log_filename, $now->format("m.d.y H:i:s.u").$log_msg."\n", FILE_APPEND);
+                file_put_contents($log_filename, $now.$log_msg."\n", FILE_APPEND);
             } catch (\Throwable $e) {
-                file_put_contents($log_filename, $now->format("m.d.y H:i:s.u")." ERRORE!: ".json_encode($e)."\n", FILE_APPEND);
+                file_put_contents($log_filename, $now." ERRORE!: ".json_encode($e)."\n", FILE_APPEND);
             }
         }
     }
@@ -691,23 +696,24 @@ class General {
 
 class HttpApi {
 
-    private array $headers;
+    private array $headers=[];
     private string $proxy = "";
     private array $curlInfo = [];
-    private array $contentTypes;
+    private array $contentTypes=[];
     private int $timeout = 0;
-    public function __construct()
+    public function __construct(string $BEARER_KEY=null)
     {
-        /*
         $this->contentTypes = [
             "application/json"    => "Content-Type: application/json",
             "multipart/form-data" => "Content-Type: multipart/form-data",
         ];
 
-        $this->headers = [
-            $this->contentTypes["application/json"],
-            "Authorization: Bearer $PASSED_KEY",
-        ];*/
+        if (!is_null($BEARER_KEY)){
+            $this->headers = [
+                $this->contentTypes["application/json"],
+                "Authorization: Bearer $BEARER_KEY",
+            ];
+        }
     }
 
         /**
@@ -762,10 +768,10 @@ class HttpApi {
         $resp="";
 
         if (array_key_exists('file', $opts) || array_key_exists('image', $opts)) {
-            $this->headers[0] = $this->contentTypes["multipart/form-data"];
+            $this->headers[] = $this->contentTypes["multipart/form-data"];
             $post_fields      = $opts;
         } else {
-            $this->headers[0] = $this->contentTypes["application/json"];
+            $this->headers[] = $this->contentTypes["application/json"];
         }
         $curl_info = [
             CURLOPT_URL            => $url,

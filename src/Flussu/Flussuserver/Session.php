@@ -156,6 +156,7 @@ class Session {
             }
         } /*else
             $this->_checkIsStarting();*/
+        $_SESSION["FlussuSid"]=$this->_sessId;
     }
 
     private $_wasBid="";

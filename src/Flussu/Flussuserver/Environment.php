@@ -64,6 +64,7 @@ require_once(__DIR__ . "/Command.php");
 
 use Flussu\Flussuserver\Command;
 use Flussu\General;
+use Flussu\HttpApi;
 use Flussu\HttpCaller;
 
 class Environment {
@@ -160,6 +161,10 @@ class Environment {
     public function getStripeChargeInfo ($stripeChargeId,$keyName=""){return $this->_getStripeChargeInfo($stripeChargeId,$keyName);}
     public function getStripeSessInfo   ($keyName,$stripeSessId){return $this->_getStripeSessInfo($stripeSessId,$keyName);}
     
+    public function getResultFromHttpApi($URI,$method="GET"){
+        $HT=new HttpApi();
+        return $HT->exec($URI,$method);
+    }
     
     public function getPaymentLink($provider, $configId, $keyType, $paymentId, $description,$amount,$imageUri,$successUri,$cancelUri,$varStripeRetUriName){
         $this->_addToResArray("getPaymentLink", array($provider, $configId, $keyType, $paymentId, $description,$amount,$imageUri,$successUri,$cancelUri,$varStripeRetUriName));
@@ -297,8 +302,8 @@ class Environment {
     // v3.0.4
     // get shorter uri from HTTP API
     private function _getShortUri($longUri){
-        $shirnker=new FluLuUriShrinkController();
-        return $shirnker->shrink($longUri);
+        $shrinker=new FluLuUriShrinkController();
+        return $shrinker->shrink($longUri);
     }
 
     public function isDisposableEmailAddress($emailAddr){

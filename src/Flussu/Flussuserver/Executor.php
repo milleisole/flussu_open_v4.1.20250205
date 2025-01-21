@@ -691,6 +691,7 @@ class Executor{
     private function _sendEmail($Sess,$params, $bid=""){
         $res=false;
         $wem=new Command();
+        $providerCode=null;
         $attaches=[];
         $usrEmail=""; // rilevato da usename usato per autenticare l'account email.
         $usrName= 'Flussu Service';
@@ -705,7 +706,7 @@ class Executor{
                 $attaches=$params[5];
         }
         $Sess->recLog("Mail send:");
-        $result = $wem->localSendMail($Sess, $usrEmail, $usrName,$params[0],$params[1],$params[2],$params[3],$bid,$attaches); 
+        $result = $wem->localSendMail($Sess, $usrEmail, $usrName,$params[0],$params[1],$params[2],$params[3],$bid,$attaches,$providerCode); 
         $Sess->recLog($result);
         $res=true;
         return $res;

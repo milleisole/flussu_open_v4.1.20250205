@@ -64,17 +64,23 @@ class Command {
     public function __construct (){
         $this->_path=General::getDocRoot();
     }
-    private function _sendEMail(Session $sess, $fromEmail, $fromName, $email, $subject, $tMessage, $hMessage, $replyTo, $attaches)
+    private function _sendEMail(Session $sess, $fromEmail, $fromName, $email, $subject, $tMessage, $hMessage, $replyTo, $attaches,$providerCode="")
     {
-        $email_server   = config("services.email.ovh.smtp_host");
-        $email_port     = config("services.email.ovh.smtp_port");
-        $email_auth     = config("services.email.ovh.smtp_auth",0)!=0;
-        $email_user     = config("services.email.ovh.smtp_user");
-        $email_passwd   = config("services.email.ovh.smtp_pass");
+        if ($providerCode=="")
+            $provider=config("services.email.default");
+        else
+            $provider=$providerCode;
+        
+        $provider="services.email.".$provider;
+        $email_server   = config($provider.".smtp_host");
+        $email_port     = config($provider.".smtp_port");
+        $email_auth     = config($provider.".smtp_auth",0)!=0;
+        $email_user     = config($provider.".smtp_user");
+        $email_passwd   = config($provider.".smtp_pass");
         if (General::isCurtatoned($email_passwd))
             $email_passwd=General::montanara($email_passwd,999);
 
-        $email_encrypt  = $_ENV["smtp_encrypt"];
+        $email_encrypt  = config($provider.".smtp_encrypt");
         $mail = new PHPMailer(true);
         General::log("Sending e-mail to:".$email. " - subj:".$subject);
 
@@ -206,7 +212,7 @@ class Command {
         return  $readable;
     }
 
-    public function localSendMail(Session $sess, $fromEmail, $fromName, $toEmail, $subject, $message, $replyTo, $blk_id, $attaches=null){
+    public function localSendMail(Session $sess, $fromEmail, $fromName, $toEmail, $subject, $message, $replyTo, $blk_id, $attaches=null,$providerCode=null){
         $res="";
         try{
             $tmessage=Command::textSanitize($message);
@@ -222,7 +228,7 @@ class Command {
             $htmlEmail=str_replace("  "," ",$htmlEmail);
             $htmlEmail=str_replace("  "," ",$htmlEmail);
 
-            return $this->_sendEMail($sess, $fromEmail, $fromName, $toEmail, $subject, $A, $htmlEmail, $replyTo, $attaches);
+            return $this->_sendEMail($sess, $fromEmail, $fromName, $toEmail, $subject, $A, $htmlEmail, $replyTo, $attaches,$providerCode);
         }catch(\Exception $e){
             $res.="\r\nE02: "+$e->getMessage();
         }
@@ -256,9 +262,10 @@ class Command {
     public function execRemoteCommandProtocol($address, $protocol="GET", $jsonData=null){
         $exit=true;
         $done=false;
+        $fluV=$_ENV["major"].".". $_ENV["minor"];
         do {
             $ch = curl_init($address);
-            curl_setopt( $ch, CURLOPT_USERAGENT, "Flussu/3.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1" );
+            curl_setopt( $ch, CURLOPT_USERAGENT, "Flussu/".$fluV." (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1" );
             if (trim(strtoupper($protocol))=="POST" && (!is_null($jsonData) && !empty($jsonData)))
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
             curl_setopt($ch, CURLOPT_COOKIE, "flussu='server'");
