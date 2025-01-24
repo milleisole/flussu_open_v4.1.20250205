@@ -1783,7 +1783,8 @@ class HandlerNC extends HandlerBaseNC {
                     $theElem["exit_num"]=strval($elm["exit_num"]);
                     //$theElem["css"]=strval($elm["css"]);
                     // INVESTIGATE CSS BUG
-                    $theElem["css"]=strval(json_encode(json_decode(str_replace(['}"','"{','\"'],['}','{','"'],str_replace(":{}}",':""}',$elm["css"])),true)));
+                    $theElem["css"]=json_decode(str_replace(['}"','"{','\"'],['}','{','"'],str_replace(":{}}",':""}',$elm["css"])),true);
+                    //$theElem["css"]=json_decode($theElem["css"],true);
                     $theElem["note"]="";
                     $theElem["langs"]=[];
                     $langs=$this->getFlofoElementText($elm["elem_id"],$LNG);
