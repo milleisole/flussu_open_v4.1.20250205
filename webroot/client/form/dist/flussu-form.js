@@ -1,8 +1,8 @@
 /*************************************************************************
-Flussu Client Script - updated to v3.0
-Script to handle Flussu's typeform-display (v3.0.6 - rel 20241118)
+Flussu Client Script - updated to v4.1
+Script to handle Flussu's typeform-display (v4.1.0 - rel 20250118)
 > Notify-Server separation implemented
-Copyright (C) 2021-2024 Mille Isole SRL - Palermo (Italy)
+Copyright (C) 2021-2025 Mille Isole SRL - Palermo (Italy)
 *************************************************************************/
 
 // determine display platform checking if mobile device
@@ -71,47 +71,6 @@ function flussuBuildInterface(){
             `;
         }
         $("#flussu-form").html(_builtHtml);
-    /*} else {
-        $("#flussu-form").html(`
-        <script>
-            var link = document.createElement("link");
-            link.type = "text/css"; link.rel = "stylesheet";
-            link.href = "`+flussuSrv+`client/form/css/flussu-form-mobile-"+fCssVer+".css";
-            document.body.appendChild(link);
-        </script>
-        <script src="`+flussuSrv+`client/assets/script/jquery.blockUI.js"></script>
-        <div class="row">
-            <div class="col-12" style="padding-top:1px;margin-top:1px">
-                <nav id="main-menu">
-                    <ul>
-                        <li><a href="#">Restart</a></li>
-                        <li><a href="#">Language</a></li>
-                    </ul>
-                </nav>
-                <input type="checkbox" id="hamburger-input" class="burger-shower" />
-                <h3 id="flussuTitle" class="d-flex justify-content-center flussu-title">(loading ...)</h3>
-                <!-- <div id="flussu-menu" style="color:#ffffff;position:relative;top:-39px;font-weight:800;font-size:2rem;margin-left:5px"> -->
-                <label id="hamburger-menu" for="hamburger-input">
-                    <nav id="sidebar-menu">
-                        <h3>Menu</h3>
-                        <ul>
-                            <li><a href="#">Restart</a></li>
-                            <li><a href="#">Language</a></li>
-                        </ul>
-                    </nav>
-                </label>
-                <div class="overlay-menu"></div>
-               <!-- </div> -->
-                <div class="chat_window" style="position:relative;top:-30px;left:3px;">
-                    <div id="flussuHeaderBtm" style="display:none" class="flussu-head"></div>
-                    <div id="flussu-environment" style="display:none" class="flussu-wrap"></div>
-                    <div id="flussu-startarea" style="display:none;padding-top:200px" class="container d-flex h-100 justify-content-center"></div>
-                </div>
-            </div>
-        </div>
-        <div id="throbber" style="display:none;"><img width="100px" src="`+flussuSrv+`client/assets/img/busy.gif" /></div>
-        `);
-    }*/
     $(document.body).append(`
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
         <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></symbol>
@@ -925,18 +884,17 @@ function add_shw_Anchor(eType, inputId, eText, eCss) {
     if (eText.trim().substring(0, 4) != "http")
         eText = "http://" + eText.trim();
 
-    if (eCss.display_info.subtype == "button" && wCss=="replace") {
-        res="<button class='btn btn-primary' onclick='window.location.href=\""+eText.replace(/'/g, "\\'")+"\";'>"+desc+"</button>";
-    } else {
-        res = "<a target='_blank' href='" + eText.replace(/'/g, "\\'") + "' class='flussu-link ";
-        if (eCss.display_info.subtype == "button") {
-            res += "btn btn-primary'>" + desc;
-        } else
-            res += wCss + "'>" + desc;
-        textToSpeech(". ! . ! . ! "+desc);
-        res += "</a>";
-        //<a target='_blank' href='https://www.geryp.com' class='flussu-link btn btn-primary'>RIMPIAZZA</a>
-    }
+    target="_blank";
+    if (wCss=="replace" || wCss=="self")
+	target="_self";
+    res = "<a target='"+target+"' href='" + eText.replace(/'/g, "\\'") + "' class='flussu-link ";
+    if (eCss.display_info.subtype == "button") 
+        res += "btn btn-primary'>";
+    else
+        res += wCss + "'>";
+    res +=desc;
+    textToSpeech(". ! . ! . ! "+desc);
+    res += "</a>";
     htmlTxt +=res;
 }
 var btnSpeechAdded=false;
