@@ -35,14 +35,27 @@ class Dbh {
 
   private $_inited=false;
 
+
   private function _init () {
-    $this->_db_host=$_ENV["db_host"];
-    $this->_db_user=$_ENV["db_user"];
-    $this->_db_pwd=$_ENV["db_pass"];
+    if (isset($_ENV["db_host"]))
+        $this->_db_host=$_ENV["db_host"];
+    else
+        $this->_db_host=$_ENV["FLX_HOST"];
+    if (isset($_ENV["db_user"]))
+        $this->_db_user=$_ENV["db_user"];
+    else
+        $this->_db_user=$_ENV["FLX_USER"];
+    if (isset($_ENV["db_pass"]))
+        $this->_db_pwd=$_ENV["db_pass"];
+    else
+        $this->_db_pwd=$_ENV["FLX_PASSWORD"];
     if (General::isCurtatoned($this->_db_pwd))
       $this->_db_pwd=General::montanara($this->_db_pwd,999);
-    $this->_db_dbName=$_ENV["db_name"];
-    $this->_inited=true;
+    if (isset($_ENV["db_name"]))
+      $this->_db_dbName=$_ENV["db_name"];
+    else
+      $this->_db_dbName=$_ENV["FLX_DATABASE"];
+  $this->_inited=true;
   }
 
   protected function connect($transact=false){
