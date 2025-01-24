@@ -222,7 +222,7 @@ class StripeController extends AbsPayProviders
         }
         return $res;
     }
-    function getStripePaymentResult($stripeKeyId,$stripeSessionId){
+    function getStripePaymentResult( $stripeSessionId){
         $ret="ERROR";
         try {
             // Usa l'API di ricerca per trovare la Checkout Session con il metadata specifico

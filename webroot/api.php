@@ -78,9 +78,14 @@ if (strpos($_SERVER["SCRIPT_URL"],"license") || strpos($_SERVER["QUERY_STRING"],
     die (file_get_contents(
         "favicon.ico"     
     ));
-} else if ($_SERVER["SCRIPT_URL"]=="/checkversion" || $_SERVER["SCRIPT_URL"]=="/update"){
+} else if ($_SERVER["SCRIPT_URL"]=="/checkversion" || $_SERVER["SCRIPT_URL"]=="/update" || $_SERVER["SCRIPT_URL"]=="/refreshviews"|| $_SERVER["SCRIPT_URL"]=="/views"){
     $fc=new VersionController();
-    die($fc->execCheck());
+    $res=$fc->execCheck();
+    if ($_SERVER["SCRIPT_URL"]=="/views" || $_SERVER["SCRIPT_URL"]=="/refreshviews"){
+        $res.="<hr><h4>Refresh views:</h4>";
+        $res.=$fc->refreshViews();
+    }
+    die($res);
 } else if ($_SERVER["SCRIPT_URL"]=="/"){
     header('Access-Control-Allow-Origin: *'); 
     header('Access-Control-Allow-Methods: *');

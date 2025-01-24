@@ -278,7 +278,10 @@ if (is_null($wSess)){
                 $Key=$fe[0];
                 $fem=$fe[1];
             }
-            $stInfo=json_decode(str_replace(['}"','"{','\"'],['}','{','"'],str_replace(":{}}",':""}',$Elmm[1])),true);
+            if (is_string($Elmm[1]))
+                $stInfo=json_decode(str_replace(['}"','"{','\"'],['}','{','"'],str_replace(":{}}",':""}',$Elmm[1])),true);
+            else 
+                $stInfo=$Elmm[1];
             if (is_null($stInfo))
                 $stInfo=["class"=>"","display_info"=>""];
             //$Elm[1]=json_decode($Elmm[1],true);

@@ -386,17 +386,29 @@ class Worker {
                         if ($newFrmXctdBid!=null && !empty($newFrmXctdBid))
                             $frmXctdBid=$newFrmXctdBid;
                         else {
-                            //blocco non trovato seleziono blocco successivo.
-                            $frmXctdBid=$this->_WofoS->getBlockId();
+                            try{
+                                $WID2=\Flussu\Flussuserver\NC\HandlerNC::WID2Wofoid($this->_WofoS->getVarValue("$"."_MemSeStat")->Wwid);
+                                $newFrmXctdBid=$this->_WofoD->getBlockUuidFromDescription($WID2,$parts[1]);
+                            } catch (\Throwable $e){
+
+                            }
+                            if ($newFrmXctdBid!=null && !empty($newFrmXctdBid))
+                                $frmXctdBid=$newFrmXctdBid;
+                            else 
+                                $frmXctdBid=$this->_WofoS->getBlockId();
                         }
                     }
                     $lBlk=$this->_WofoD->buildFlussuBlock($this->_WofoS->getWid(),$frmXctdBid,$this->_WofoS->getLang());
-                    for($i=0;$i<count($lBlk["exits"]);$i++){
-                        if ($lBlk["exits"][$i]["exit_dir"]!="0" && $lBlk["exits"][$i]["exit_dir"]!=""){
-                            $hasExit=true;
-                            break;
+                    if ($lBlk){
+                        for($i=0;$i<count($lBlk["exits"]);$i++){
+                            if ($lBlk["exits"][$i]["exit_dir"]!="0" && $lBlk["exits"][$i]["exit_dir"]!=""){
+                                $hasExit=true;
+                                break;
+                            }
+                            //$bExit= $lBlk->exits[$i];
                         }
-                        //$bExit= $lBlk->exits[$i];
+                    } else {
+                        General::log("ERROR: Block not found: ".$frmXctdBid." (Wid:".$this->_WofoS->getWid()." - called from ".$this->_WofoS->getBlockId().")");
                     }
                     if (!$hasExit){
                         $res.="\r\nNo more blocks or last block...";

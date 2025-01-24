@@ -590,7 +590,9 @@ function elab(obj) {
         if (obj.error.indexOf("E89")>0){
             flussuSid="";
             flussuBid="";
-            initWorkflow();
+            alert("Questo processo è terminato.");
+            $("#flussuChat").hide();
+            return
             // The session is expired
         } else {
             //alert ("ERROR:\r\n"+obj.error);
@@ -598,6 +600,15 @@ function elab(obj) {
     } else {
         if (obj.sid == null) {
             eraseCookie("flussuSid");
+            try{
+                if (obj[""][0]=="finiu"){
+                    alert("Questo processo è terminato.");
+                    $("#flussuChat").hide();
+                    return;
+                }
+            } catch (e){
+
+            }
             initWorkflow(flussuId, titElemId, butElemId)
             return;
         }
@@ -663,8 +674,8 @@ function elab2(obj) {
         } else
             key = Key;
         if (Array.isArray(mVal)) {
-            try{strmVal = mVal[0].replace(/["]+/g, '');} catch ($e){}
-            try{Css=JSON.parse(mVal[1])} catch ($e){Css=mVal[1];}
+            try{strmVal = mVal[0].replace(/["]+/g, '');} catch (e){}
+            try{Css=JSON.parse(mVal[1])} catch (e){Css=mVal[1];}
             //Css = mVal[1];
         } else
             strmVal = mVal.replace(/["]+/g, '');
@@ -973,7 +984,12 @@ function add_inp_Button(eType, inputId, eText, eCss, isGUIreq) {
 	       ss=eText.split("/");
 		eText=ss[ss.length-1];
 	 }
-        onClk = "onclick='execFlussuForm(\"" + flussuBlock + "\",\"$ex!" + inputId + "\",\"" + eText.replace(/'/g, "-") + "\")'";
+     skip=false;
+     try{
+     if (eCss["display_info"]["subtype"]=="skip-validation")
+        skip=true;
+     } catch (e){}
+     onClk = "onclick='execFlussuForm(\"" + flussuBlock + "\",\"$ex!" + inputId + "\",\"" + eText.replace(/'/g, "-") + "\","+ skip + ")'";
 	 if(wCss=="img"){
             if (bText.trim()!="")
         	    htmlTxt += "<div class='btn btn-primary flussu-btn-img'><img src='"+bText+"' "+ onClk + " id='flubut" + btnNum + "'></div>";    
@@ -1226,9 +1242,9 @@ const b5Alert = (message, type) => {
       -end-
   ----------------------------------- */
 
-function execFlussuForm(blockId, btnName, btnVal) {
+function execFlussuForm(blockId, btnName, btnVal, skipValidation) {
     textToSpeech("{CANC}");
-    if (checkMand()){
+    if (skipValidation===true || checkMand()){
         btnVal = unescape(btnVal);
         aLink = "";
         if (btnVal.startsWith("http://") || btnVal.startsWith("https://")) {

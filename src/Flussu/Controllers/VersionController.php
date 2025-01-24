@@ -430,6 +430,28 @@ use Flussu\Flussuserver\Request;
         return $res;
     }
 
+
+
+
+
+
+
+
+
+
+    public function refreshViews(){
+        $res="D10_T:".$this->execSql("DROP TABLE IF EXISTS `v10_wf_prj`;");
+        $res.="<br>D15_T:".$this->execSql("DROP TABLE IF EXISTS `v15_prj_wf_usr`;");
+        $res.="<br>D20_T:".$this->execSql("DROP TABLE IF EXISTS `v20_prj_wf_all`;");
+        $res.="<br>D10_V:".$this->execSql("DROP VIEW IF EXISTS `v10_wf_prj`;");
+        $res.="<br>D15_V:".$this->execSql("DROP VIEW IF EXISTS `v15_prj_wf_usr`;");
+        $res.="<br>D20_V:".$this->execSql("DROP VIEW IF EXISTS `v20_prj_wf_all`;");
+        $res.="<br>C10_V:".$this->execSql("CREATE VIEW `v10_wf_prj` AS select `wf`.`c10_id` AS `wf_id`,ifnull(`pw`.`c85_prj_id`,0) AS `prj_id` from ((`t10_workflow` `wf` left join `t85_prj_wflow` `pw` on(`pw`.`c85_flofoid` = `wf`.`c10_id`)) left join `t83_project` `pr` on(`pr`.`c83_id` = `pw`.`c85_prj_id`));");
+        $res.="<br>C15_V:".$this->execSql("CREATE VIEW `v15_prj_wf_usr` AS select `v2`.`wf_id` AS `wf_id`,`v2`.`prj_id` AS `prj_id`,ifnull(`p`.`c83_desc`,'@GENERIC') AS `c83_desc`,`w2`.`c10_name` AS `c10_name`,ifnull(`u`.`c87_usr_id`,`w2`.`c10_userid`) AS `c87_usr_id` from (((`t10_workflow` `w2` left join `v10_wf_prj` `v2` on(`w2`.`c10_id` = `v2`.`wf_id`)) left join `t83_project` `p` on(`p`.`c83_id` = `v2`.`prj_id`)) left join `t87_prj_user` `u` on(`u`.`c87_prj_id` = `v2`.`prj_id`)) order by ifnull(`p`.`c83_desc`,'@GENERIC'),`w2`.`c10_name` ;");
+        $res.="<br>C12_V:".$this->execSql("CREATE VIEW `v20_prj_wf_all` AS select `v15_prj_wf_usr`.`wf_id` AS `wf_id`,`v15_prj_wf_usr`.`prj_id` AS `prj_id`,`v15_prj_wf_usr`.`c83_desc` AS `prj_name`,`v15_prj_wf_usr`.`c10_name` AS `wf_name`,`v15_prj_wf_usr`.`c87_usr_id` AS `wf_user`,`t80_user`.`c80_email` AS `usr_email`,`t80_user`.`c80_name` AS `usr_name`,`t10_workflow`.`c10_active` AS `wf_active`,`t10_workflow`.`c10_deleted` AS `dt_deleted`,`t10_workflow`.`c10_validfrom` AS `dt_validfrom`,`t10_workflow`.`c10_validuntil` AS `dt_validuntil` from ((`v15_prj_wf_usr` join `t10_workflow` on(`v15_prj_wf_usr`.`wf_id` = `t10_workflow`.`c10_id`)) join `t80_user` on(`t80_user`.`c80_id` = `v15_prj_wf_usr`.`c87_usr_id`)) order by `v15_prj_wf_usr`.`c83_desc`,`v15_prj_wf_usr`.`c10_name`;");
+        return $res;
+    }
+
     function execSql($SqlCommand,$SqlARRParams=null, $Transactional=false) {
         //if (!is_null($SqlARRParams))
             $this->_UBean->setsearchData($SqlARRParams);

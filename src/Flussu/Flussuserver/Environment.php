@@ -159,7 +159,7 @@ class Environment {
     public function sendPremiumEmailwAttaches ($toAddress,$subject,$message,$replyTo="",$senderName="",$attachFiles=[])  {$this->_addToResArray("sendEmail", array($toAddress,$subject,$message,$replyTo,$senderName,$attachFiles)); }
     public function httpSend            ($URI,$dataArray=null,$retResVarName=null) {$this->_addToResArray("httpSend", array($URI, (is_null($dataArray))?"":json_encode($dataArray),(is_null($retResVarName))?"":$retResVarName));}
     public function getStripeChargeInfo ($stripeChargeId,$keyName=""){return $this->_getStripeChargeInfo($stripeChargeId,$keyName);}
-    public function getStripeSessInfo   ($keyName,$stripeSessId){return $this->_getStripeSessInfo($stripeSessId,$keyName);}
+    public function getStripeSessInfo   ($configId, $keyType,$stripeSessId){return $this->_getStripeSessInfo($stripeSessId, $configId, $keyType);}
     
     public function getResultFromHttpApi($URI,$method="GET"){
         $HT=new HttpApi();
@@ -432,9 +432,11 @@ class Environment {
         return $res;
     }
 
-    private function _getStripeSessInfo($stripeSessId,$keyName){
+    private function _getStripeSessInfo($stripeSessId, $configId, $keyType){
         $stcn=new \Flussu\Controllers\StripeController();
-        $res=$stcn->getStripePaymentResult($keyName,$stripeSessId);
+        $stcn->init($configId, $keyType);
+        
+        $res=$stcn->getStripePaymentResult($stripeSessId);
         /* ---------------------------------------
                     RETURN -NULL- OR:
         ------------------------------------------

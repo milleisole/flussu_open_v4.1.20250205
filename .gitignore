@@ -10,3 +10,4 @@
 /config/services.json
 .env
 composer.lock
+*.BAK
