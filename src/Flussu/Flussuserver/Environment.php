@@ -64,7 +64,6 @@ require_once(__DIR__ . "/Command.php");
 
 use Flussu\Flussuserver\Command;
 use Flussu\General;
-use Flussu\HttpApi;
 use Flussu\HttpCaller;
 
 class Environment {
@@ -162,7 +161,7 @@ class Environment {
     public function getStripeSessInfo   ($configId, $keyType,$stripeSessId){return $this->_getStripeSessInfo($stripeSessId, $configId, $keyType);}
     
     public function getResultFromHttpApi($URI,$method="GET"){
-        $HT=new HttpApi();
+        $HT=new HttpCaller();
         return $HT->exec($URI,$method);
     }
     

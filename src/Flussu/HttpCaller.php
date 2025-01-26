@@ -45,8 +45,15 @@ private array $contentTypes; // Stores different content types for the request
 private int $timeout = 0; // Stores the timeout setting for the request
 
 // Constructor    
-public function __construct()
+public function __construct(string $BEARER_KEY=null)
     {
+        if (!is_null($BEARER_KEY)){
+            $this->headers = [
+                $this->contentTypes["application/json"],
+                "Authorization: Bearer $BEARER_KEY",
+            ];
+        }
+        $this->headers = [];
         $this->contentTypes = [
             "application/json"                => "Content-Type: application/json",
             "multipart/form-data"             => "Content-Type: multipart/form-data",
@@ -58,16 +65,6 @@ public function __construct()
             "image/jpeg"                      => "Content-Type: image/jpeg",
             "image/png"                       => "Content-Type: image/png",
         ];
-        /*
-        $this->contentTypes = [
-            "application/json"    => "Content-Type: application/json",
-            "multipart/form-data" => "Content-Type: multipart/form-data",
-        ];
-
-        $this->headers = [
-            $this->contentTypes["application/json"],
-            "Authorization: Bearer $PASSED_KEY",
-        ];*/
     }
 
         /**
@@ -110,22 +107,26 @@ public function __construct()
      */
     public function exec(string $url, string $method, array $opts = [])
     {
-        $post_fields = json_encode($opts);
         $method=strtoupper($method);
         switch($method){
             case "GET":
             case "POST":
                 break;
             default:
-                throw new \Exception("HttpApi: Invalid GET/POST parameter");
+                throw new \Exception("HttpCaller: Invalid GET/POST parameter");
         }
         $resp="";
 
+        $post_fields      = $opts;
         if (array_key_exists('file', $opts) || array_key_exists('image', $opts)) {
             $this->headers[0] = $this->contentTypes["multipart/form-data"];
-            $post_fields      = $opts;
         } else {
-            $this->headers[0] = $this->contentTypes["application/json"];
+            if ($method=="GET"){
+                $url = $url . '?' . http_build_query($opts);
+            } else {
+                $post_fields = json_encode($opts);
+                $this->headers[0] = $this->contentTypes["application/json"];
+            }
         }
         $curl_info = [
             CURLOPT_URL            => $url,
@@ -140,7 +141,7 @@ public function __construct()
             CURLOPT_HTTPHEADER     => $this->headers,
         ];
 
-        if ($opts == []) {
+        if ($opts == [] || $method=="GET"){
             unset($curl_info[CURLOPT_POSTFIELDS]);
         }
 
@@ -161,4 +162,3 @@ public function __construct()
         return $response;
     }
 }
-
