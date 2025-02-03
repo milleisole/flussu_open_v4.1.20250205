@@ -38,17 +38,17 @@ then use the following command at prompt:
 
 7. apt-get install chromium-chromedriver firefox-geckodriver 
    (non mandatory, it is needed if you want to use the scraping functions)
-8. sh batchinstall.sh
+8. Then add security for various dir, add cron call and install vendor software (composer)
+   sh batchinstall.sh
 
 configure your installation:
 
 9. use the file ".env.sample" rename to ".env" then open with a text editor
    and configure as you need/wish
 
-Open a browser and call flussu server to check version and
-update the database:
-
-10. http(s)://yourwebsite.com/api.php/checkversion
+Open a browser and call flussu server to check database version and check for
+any database updates:
+10. http(s)://yourwebsite.com/views
 
 # Docs & Database
 take a look at the /Docs folder

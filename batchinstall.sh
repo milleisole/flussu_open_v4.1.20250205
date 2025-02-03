@@ -1,3 +1,8 @@
-sudo chmod -R 775 Uploads
-sudo chmod -R 775 webroot
+#!/bin/bash
+chmod -R 775 Uploads
+chmod -R 775 Logs
+chmod -R 775 webroot
 composer install
+cd bin
+chmod +x add2cron.sh
+./add2cron.sh

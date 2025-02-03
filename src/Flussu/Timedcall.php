@@ -127,6 +127,68 @@ class Timedcall
             $m_time->add(new \DateInterval('PT' . $minutes_to_add . 'M'));
             if ($m_time <= $now) {
                 //$wid=General::camouf($row["wid"]);
+                $WID="";
+                $SID="";
+                if ($row["sid"]) {
+                    $SID=$row["sid"];
+                    echo $m_time->format("Y-m-d H:i:s") . " - accepted. SID:" . $SID . "\r\n";
+                } else {
+                    $WID = "[" . General::camouf($row["wid"]) . "]";
+                    echo $m_time->format("Y-m-d H:i:s") . " - accepted. WID:" . $WID . "\r\n";
+                }
+                $this->_WofoD->disableTimedCall($row["seq"]);
+
+                if ($SID){
+                    $sess = new Session($SID);
+                    if (!$sess->isExpired()) {
+                        $uri = str_replace(["&WID={{wid}}","{{sid}}","{{bid}}"], ["",$SID, $row["bid"]], $srvCall);
+                        $theData = "";
+                        if (!is_null($row["e_data"]) && !empty($row["e_data"])) {
+                            $theData = "&" . str_replace("$", "£", $row["e_data"]);
+                        }
+                        $uri = str_replace("{{data}}", $theData, $uri);
+                        echo "                     - " . $uri . "\r\n";
+                        $result = $this->_sendRequest($uri);
+                        echo "                     - " . $result . "\r\n";
+                    } else {
+                        $result = "ERROR:[0]:Session expired";
+                        echo "                     - SESSION EXPIRED!\r\n";
+                    }
+                } else {
+                    // WID EXECUTION...
+                    $uri = str_replace(["{{wid}}","&SID={{sid}}","&BID={{bid}}"], [$WID,"", ""], $srvCall);
+                    $theData = "";
+                    if (!is_null($row["e_data"]) && !empty($row["e_data"])) {
+                        $theData = "&" . str_replace("$", "£", $row["e_data"]);
+                    }
+                    $uri = str_replace("{{data}}", $theData, $uri);
+                    echo "                     - " . $uri . "\r\n";
+                    $result = $this->_sendRequest($uri);
+                    echo "                     - " . $result . "\r\n";
+                }
+                $this->_WofoD->updateTimedCall($row["seq"], $result);
+            } else {
+                echo $m_time->format("Y-m-d H:i:s") . " is in the future.\r\n";
+            }
+        }
+        echo "\r\n\033[01;32m" . date("Y-m-d H:i:s") . "\033[0m - end\r\n---------------------------\r\n";
+    }
+
+
+    public function completeExec()
+    {
+        General::Log("Timedcall: exec start");
+        echo "\033[01;32m" . date("Y-m-d H:i:s") . "\033[0m - start\r\n";
+        $rows = $this->_WofoD->getTimedCalls(true);
+        $srvCall = "https://" . $_ENV["server"] . "/flussueng.php?TCV=1&WID={{wid}}&SID={{sid}}&BID={{bid}}&£is_timed_call=1{{data}}";
+        foreach ($rows as $row) {
+            // Verifica se la data è corretta!
+            $now = new \DateTime();
+            $minutes_to_add = $row["e_min"];
+            $m_time = new \DateTime($row["s_date"]);
+            $m_time->add(new \DateInterval('PT' . $minutes_to_add . 'M'));
+            if ($m_time <= $now) {
+                //$wid=General::camouf($row["wid"]);
                 $WID = "[" . General::camouf($row["wid"]) . "]";
                 echo $m_time->format("Y-m-d H:i:s") . " - accepted. WID:" . $WID . " - SID:" . $row["sid"] . "\r\n";
 
@@ -154,6 +216,7 @@ class Timedcall
         }
         echo "\r\n\033[01;32m" . date("Y-m-d H:i:s") . "\033[0m - end\r\n---------------------------\r\n";
     }
+
 
     private function _sendRequest(string $url)
     {

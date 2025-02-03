@@ -1,5 +1,5 @@
 /*************************************************************************
-Flussu Client Script - updated to v4.1
+Flussu Client Script - updated to v4.1 rel 20250203
 Script to handle Flussu's typeform-display (v4.1.0 - rel 20250118)
 > Notify-Server separation implemented
 Copyright (C) 2021-2025 Mille Isole SRL - Palermo (Italy)
@@ -461,7 +461,7 @@ function getWorkflowInfo() {
         })
         .fail(function(xhr, status, error) {
               eraseCookie("flussuSid");
-              location.reload();
+              //location.reload();
               //alert("Internet error:"+status+"\r\n"+error);
     }),'json';
 }
@@ -937,30 +937,38 @@ function add_inp_Button(eType, inputId, eText, eCss, isGUIreq) {
     if (wCss=="chk"){
         htmlTxt += "<label class='container'><input type='checkbox' id='flubut" + btnNum + "'>&nbsp;"+bText+"<span class='checkmark'></span></label>";    
     } else {
-	 if(wCss=="img"){
-		bText=eText;
-	       ss=eText.split("/");
-		eText=ss[ss.length-1];
-	 }
-     skip=false;
-     try{
-     if (eCss["display_info"]["subtype"]=="skip-validation")
-        skip=true;
-     } catch (e){}
-     onClk = "onclick='execFlussuForm(\"" + flussuBlock + "\",\"$ex!" + inputId + "\",\"" + eText.replace(/'/g, "-") + "\","+ skip + ")'";
-	 if(wCss=="img"){
-            if (bText.trim()!="")
-        	    htmlTxt += "<div class='btn btn-primary flussu-btn-img'><img src='"+bText+"' "+ onClk + " id='flubut" + btnNum + "'></div>";    
-	 } else {
-		if (wCss=="btn-chk")
-            htmlTxt += "<div><label><button class='btn btn-primary flussu-btn-chk " + wCss + "' " + onClk + " id='flubut" + btnNum + "'></button><span class='flussu-lbl-chk'>" + bText + "</span></label></div>";
-	    else {
-            if (wCss.indexOf("}")>0)
-                wCss="";
-       		htmlTxt += "<button class='btn btn-primary flussu-btn " + wCss + "' " + onClk + " id='flubut" + btnNum + "'>" + bText + "</button>";
+        if(wCss=="img"){
+            bText=eText;
+            ss=eText.split("/");
+            eText=ss[ss.length-1];
         }
-	 }
+        skip=false;
+        try{
+        if (eCss["display_info"]["subtype"]=="skip-validation")
+            skip=true;
+        } catch (e){}
+        onClk0 = "execFlussuForm(\"" + flussuBlock + "\",\"$ex!" + inputId + "\",\"" + eText.replace(/'/g, "-") + "\","+ skip + ")";
+        onClk = "onclick='"+onClk0+"'";
+        if(wCss=="img"){
+            if (bText.trim()!="")
+                htmlTxt += "<div class='btn btn-primary flussu-btn-img'><img src='"+bText+"' "+ onClk + " id='flubut" + btnNum + "'></div>";    
+        } else {
+            if (wCss=="btn-chk")
+                htmlTxt += "<div><label><button class='btn btn-primary flussu-btn-chk " + wCss + "' " + onClk + " id='flubut" + btnNum + "'></button><span class='flussu-lbl-chk'>" + bText + "</span></label></div>";
+            else {
+                if (wCss.indexOf("}")>0)
+                    wCss="";
+                htmlTxt += "<button class='btn btn-primary flussu-btn " + wCss + "' " + onClk + " id='flubut" + btnNum + "'>" + bText + "</button>";
+            }
+        }
         btnNum++;
+    }
+    if (eCss["class"].startsWith("auto") || eCss["class"].startsWith("exec")){
+        parts=eCss["class"].split("|");
+        if (parts.length>1){
+            timeDiff=parts[1];
+            scheduleAction(timeDiff, onClk0);
+        }
     }
 }
 
@@ -1047,6 +1055,12 @@ function add_inp_Select(eType, inputId, arrElems, eCss, defVal) {
     } else
         htmlTxt += "<div style='background:red;color:white;padding:30px;font-size:2em' class='text-center'>NO ARRAY!</div>";
     
+}
+
+function scheduleAction(timeDiff, action) {
+    const [hours, minutes, seconds] = timeDiff.split(':').map(Number);
+    const totalMilliseconds = ((hours * 3600) + (minutes * 60) + seconds) * 1000;
+    setTimeout(action, totalMilliseconds);
 }
 
 function _chooseSel(selElems,defVal){

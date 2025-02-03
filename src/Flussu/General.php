@@ -93,8 +93,9 @@ class General {
     static function Log_nocaller($log_msg,$forced=false)
     {
         $debug=isset($_ENV["debug_log"])?$_ENV["debug_log"]:false;
+        $res=false;
         if ($debug || $forced) {
-            $log_dir=$_SERVER['DOCUMENT_ROOT']."/../Uploads/";
+            $log_dir=$_SERVER['DOCUMENT_ROOT']."/../Logs/";
             $now = (\DateTime::createFromFormat('U.u', microtime(true)))->format("H:i:s.u");
             //$now=$now;
             if (isset($_SESSION["FlussuSid"]))
@@ -106,21 +107,22 @@ class General {
             try{
                 if (!file_exists($log_dir))
                     mkdir($log_dir, 0777, true);
-                $log_filename = $log_dir.'/log_' . date('d-M-Y') . '.log';
-                if (!file_exists($log_filename)){
+                $log_filename = str_replace("//","/",$log_dir.'/log_' . date('d-M-Y') . '.log');
+                $oldlog= $log_dir.'log_' . date('d-M-Y', strtotime('-1 month')). '.log';
+                if (file_exists($oldlog)){
                     try{
-                        $oldlog= $log_dir.'log_' . date('d-M-Y', strtotime('-1 month')). '.log';
                         unlink($oldlog);
                     } catch (\Throwable $e) {
                         // do nothing.
                         $e->getMessage();
                     }
                 }
-                file_put_contents($log_filename, $now.$log_msg."\n", FILE_APPEND);
+                $res=file_put_contents($log_filename, $now.$log_msg."\n", FILE_APPEND);
             } catch (\Throwable $e) {
-                file_put_contents($log_filename, $now." ERRORE!: ".json_encode($e)."\n", FILE_APPEND);
+                $res=file_put_contents($log_filename, $now." ERRORE!: ".json_encode($e)."\n", FILE_APPEND);
             }
         }
+        return $res;
     }
     static function Log($log_msg,$forced=false)
     {
@@ -158,11 +160,14 @@ class General {
             foreach ($v as $k=>$val){
                 if (isset ($val["file"]) && stripos($val["file"],"general.php")===false && stripos($val["class"],"general")===false){
                     $exp=explode("/",$val["file"]);
-                    if (is_object($val["args"][0]))
+                    $func="???";
+                    if (count($val["args"])>0 && is_object($val["args"][0]))
                         $args="[object]";
-                    else
+                    else if (is_array($val["args"])){
                         $args=implode(",",$val["args"]);
-                    $caller=end($exp)."->".$val["function"]."(".$args.")";
+                        $func=$val["function"];
+                    }
+                    $caller=end($exp)."->".$func."(".$args.")";
                     break;
                 }
             }
