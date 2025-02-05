@@ -572,6 +572,8 @@ class Executor{
     private function CheckParentesys($str,$badCmds,$offset=0){
         // NON FINITO
         return $str;
+        
+        /*
         $start = strpos($str, '(',$offset);
         if ($start!==false){
             $end = strpos($str, ')', $start + 1);
@@ -599,6 +601,7 @@ class Executor{
             }
         }
         return $str;
+        */
     }
 
     private function _getPaymentLink($Params){
