@@ -18,6 +18,8 @@
  *      This is the main entrance to the Flussu Server, a PHP script
  *      to handle all the requests to this server. 
  * 
+ * --------------------------------------------------------------------
+ * REL 20250502 - 4.1 - Mille Isole SRL
  * --------------------------------------------------------------------*/
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -30,7 +32,7 @@ use Flussu\General;
 use Flussu\Config;
 
 // VERSION
-$FlussuVersion="4.1.0.20240113";
+$FlussuVersion="4.1.20250502";
 $FVP=explode(".",$FlussuVersion);
 $v=$FVP[0];
 $m=$FVP[1];

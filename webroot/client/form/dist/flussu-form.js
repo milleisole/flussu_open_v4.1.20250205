@@ -1,6 +1,6 @@
 /*************************************************************************
-Flussu Client Script - updated to v4.1 rel 20250203
-Script to handle Flussu's typeform-display (v4.1.0 - rel 20250118)
+Flussu Client Script - updated to v4.1 rel 20250205
+Script to handle Flussu's typeform-display (v4.1.20250205)
 > Notify-Server separation implemented
 Copyright (C) 2021-2025 Mille Isole SRL - Palermo (Italy)
 *************************************************************************/

@@ -1,6 +1,6 @@
 <?php
 /* --------------------------------------------------------------------*
- * Flussu v4.1.0 - Mille Isole SRL - Released under Apache License 2.0
+ * Flussu v4.1 - Mille Isole SRL - Released under Apache License 2.0
  * --------------------------------------------------------------------*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  * CLASS PATH:    Flussu\Api\V40\FlussuHandler
  * -------------------------------------------------------*
  * UPDATE:  25.01.2021 - Aldus - Flussu v2.0
- * VERSION REL.:     4.1.0 20250113 
+ * VERSION REL.:     4.1.20250205
  * UPDATE DATE:      12.01:2025 
  * -------------------------------------------------------*/
 /**
@@ -39,7 +39,7 @@
  * components work together seamlessly to provide a reliable and efficient API service.
  * 
  * @package App\Flussu\Api\V40
- * @version 4.0.0
+ * @version 4.1.20250205
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  */
 
