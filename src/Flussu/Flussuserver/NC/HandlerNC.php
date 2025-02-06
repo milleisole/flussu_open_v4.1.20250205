@@ -229,6 +229,7 @@ class HandlerNC extends HandlerBaseNC {
                 $dres=$this->getData();
                 if (count($dres)>0){
                     $wid= $dres[0]["c10_id"];
+                    $WID=self::Wofoid2WID($wid);
                 } else {
                     // ERRORE!
                     $wid=-1;
