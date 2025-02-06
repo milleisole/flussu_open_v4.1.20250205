@@ -67,7 +67,7 @@ use Flussu\General;
 use Flussu\HttpCaller;
 
 class Environment {
-    private $_version="3.0.4";
+    private $_version="4.1.20250205";
     private $_exitNum=-1;
     private $_media="pc"; 
     private $_channel="web"; 
